@@ -62,6 +62,12 @@ namespace DGJv3
         private bool _isUserPrior = false;
 
         /// <summary>
+        /// 单曲最大播放时长
+        /// </summary>
+        public double MaxPlayTime { get => _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
+        private double _maxPlayTime;
+
+        /// <summary>
         /// 当前播放时间
         /// </summary>
         public TimeSpan CurrentTime
@@ -282,6 +288,11 @@ namespace DGJv3
                     info.Lyric = info.Module.SafeGetLyricById(info.Id);
                 }
                 Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
+            }
+
+            if (MaxPlayTime <= CurrentTimeDouble)
+            {
+                Next();
             }
         }
 

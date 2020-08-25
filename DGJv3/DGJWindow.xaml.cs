@@ -191,6 +191,7 @@ namespace DGJv3
             Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
             SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
             SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+            Player.MaxPlayTime = config.MaxPlayTime;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
@@ -242,6 +243,7 @@ namespace DGJv3
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
             PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
             SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
+            MaxPlayTime = Player.MaxPlayTime,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
             ScribanTemplate = Writer.ScribanTemplate,

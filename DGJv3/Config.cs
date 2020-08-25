@@ -31,6 +31,9 @@ namespace DGJv3
         [JsonProperty("msid")]
         public string SecondaryModuleId { get; set; }
 
+        [JsonProperty("dmpt")]
+        public double MaxPlayTime { get; set; } = 600;
+
         [JsonProperty("dmts")]
         public uint MaxTotalSongNum { get; set; } = 10;
 
