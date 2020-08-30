@@ -170,6 +170,7 @@ namespace DGJv3
 
             InitializeComponent();
 
+
             ApplyConfig(Config.Load());
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };

@@ -103,7 +103,7 @@ namespace DGJv3
 
         private void Download()
         {
-            currentSong.FilePath = Path.Combine(Utilities.SongsCacheDirectoryPath, CleanFileName($"{currentSong.ModuleName}{currentSong.SongName}{currentSong.SongId}{DateTime.Now.ToBinary().ToString("X")}.mp3.点歌姬缓存"));
+            currentSong.FilePath = Path.Combine(Utilities.SongsCacheDirectoryPath, CleanFileName($"{currentSong.ModuleName}{currentSong.SongName}{currentSong.SongId}{DateTime.Now.ToBinary():X}.mp3.点歌姬缓存"));
 
             try { Directory.CreateDirectory(Utilities.SongsCacheDirectoryPath); } catch (Exception) { }
 
