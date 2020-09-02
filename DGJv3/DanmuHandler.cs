@@ -69,8 +69,7 @@ namespace DGJv3
             string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
             string rest = string.Join(" ", commands.Skip(1));
 
-          //  if (danmakuModel.isAdmin)
-            if (true)
+            if (danmakuModel.isAdmin)
             {
                 switch (commands[0])
                 {
