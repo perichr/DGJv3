@@ -55,6 +55,7 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
+            base.Start();
         }
 
         public override void Admin()
