@@ -34,6 +34,9 @@ namespace DGJv3
         [JsonProperty("dmpt")]
         public double MaxPlayTime { get; set; } = 600;
 
+        [JsonProperty("acps")]
+        public bool IsAllowCancelPlayingSong { get; set; } = true;
+
         [JsonProperty("dmts")]
         public uint MaxTotalSongNum { get; set; } = 10;
 

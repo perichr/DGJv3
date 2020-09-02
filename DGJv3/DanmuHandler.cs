@@ -37,6 +37,12 @@ namespace DGJv3
         public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
         private uint _maxPersonSongNum;
 
+        /// <summary>
+        /// 允许取消正在播放的歌曲
+        /// </summary>
+        public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
+        private bool _isAllowCancelPlayingSong;
+
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -133,7 +139,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName);
+                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));//IsAllowCancelPlayingSong
                             RemoveSong(songItem);
                         });
                     }

@@ -190,9 +190,8 @@ namespace DGJv3
             Player.Volume = config.Volume;
             Player.IsUserPrior = config.IsUserPrior;
             Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
-            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
-            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
             Player.MaxPlayTime = config.MaxPlayTime;
+            DanmuHandler.IsAllowCancelPlayingSong = config.IsAllowCancelPlayingSong;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
@@ -213,15 +212,25 @@ namespace DGJv3
                 IsLogRedirectDanmaku = false;
             }
 
-            Playlist.Clear();
-            foreach (var item in config.Playlist)
+            Task.Run(async () =>
             {
-                item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
-                if (item.Module != null)
+                await Task.Delay(3000); // 不合理的做法，但我是抄的楼上，自己没动脑子！
+                SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
+                SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Playlist.Add(item);
-                }
-            }
+                    Playlist.Clear();
+                    foreach (var item in config.Playlist)
+                    {
+                        item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
+                        if (item.Module != null)
+                        {
+                            Playlist.Add(item);
+                        }
+                    }
+                });
+            });
+
 
             Blacklist.Clear();
             foreach (var item in config.Blacklist)
@@ -240,6 +249,7 @@ namespace DGJv3
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
             IsUserPrior = Player.IsUserPrior,
+            IsAllowCancelPlayingSong= DanmuHandler.IsAllowCancelPlayingSong,
             Volume = Player.Volume,
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
             PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
