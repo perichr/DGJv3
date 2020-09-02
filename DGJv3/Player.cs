@@ -290,7 +290,7 @@ namespace DGJv3
                 Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
             }
 
-            if (MaxPlayTime <= CurrentTimeDouble)
+            if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
             {
                 Next();
             }
