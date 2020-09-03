@@ -13,6 +13,7 @@ namespace DGJv3
 
         private VersionChecker versionChecker;
 
+        public static DGJMain SELF { get; set; }
         public DGJMain()
         {
             try
@@ -36,6 +37,7 @@ namespace DGJv3
             catch (Exception) { }
             window = new DGJWindow(this);
             versionChecker = new VersionChecker("DGJv3");
+            SELF = this;
             Task.Run(() =>
             {
                 if (versionChecker.FetchInfo())
