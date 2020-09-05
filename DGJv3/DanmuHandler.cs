@@ -24,6 +24,7 @@ namespace DGJv3
         private SearchModules SearchModules;
 
         private Dispatcher dispatcher;
+        private History history { get; set; }
 
         /// <summary>
         /// 最多点歌数量
@@ -51,6 +52,7 @@ namespace DGJv3
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
+            history = new History();
         }
 
 
@@ -138,7 +140,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));//IsAllowCancelPlayingSong
+                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));
                             RemoveSong(songItem);
                         });
                     }
@@ -175,6 +177,7 @@ namespace DGJv3
                     return;
                 }
                 Log($"点歌成功:{songInfo.Name}");
+                history.Write(songInfo, danmakuModel.UserName);
                 dispatcher.Invoke(callback: () =>
                 {
                     if (CanAddSong(danmakuModel.UserName) &&

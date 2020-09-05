@@ -103,6 +103,7 @@
     <Compile Include="DownloadStatus.cs" />
     <Compile Include="EnumerationExtension.cs" />
     <Compile Include="FuckRegsvr32.cs" />
+    <Compile Include="History.cs" />
     <Compile Include="InternalModule\LwlApiBaidu.cs" />
     <Compile Include="InternalModule\LwlApiBaseModule.cs" />
     <Compile Include="InternalModule\LwlApiKugou.cs" />
