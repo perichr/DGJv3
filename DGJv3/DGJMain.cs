@@ -62,8 +62,14 @@ namespace DGJv3
 
         public override void Admin()
         {
+            window.TryApplyConfig();
             window.Show();
             window.Activate();
+        }
+        public override void Start()
+        {
+            window.TryApplyConfig();
+            base.Start();
         }
 
         public override void DeInit() => window.DeInit();

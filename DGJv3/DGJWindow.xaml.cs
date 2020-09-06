@@ -51,6 +51,8 @@ namespace DGJv3
 
         public int LogDanmakuLengthLimit { get; set; }
 
+        private bool ApplyConfigReady = false;
+
         public void Log(string text)
         {
             PluginMain.Log(text);
@@ -174,13 +176,17 @@ namespace DGJv3
 
             InitializeComponent();
 
-
-            ApplyConfig(Config.Load());
-
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
             PluginMain.Connected += (sender, e) => { LwlApiBaseModule.RoomId = e.roomid; };
             PluginMain.Disconnected += (sender, e) => { LwlApiBaseModule.RoomId = 0; };
 
+        }
+
+        public void TryApplyConfig()
+        {
+            if (ApplyConfigReady)
+                return;
+            ApplyConfig(Config.Load());
         }
 
         /// <summary>
@@ -208,7 +214,6 @@ namespace DGJv3
             {
                 Task.Run(async () =>
                 {
-                    await Task.Delay(2000); // 其实不应该这么写的，不太合理
                     IsLogRedirectDanmaku = await LoginCenterAPIWarpper.DoAuth(PluginMain);
                 });
             }
@@ -216,32 +221,24 @@ namespace DGJv3
             {
                 IsLogRedirectDanmaku = false;
             }
-
-            Task.Run(async () =>
+            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
+            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+            Playlist.Clear();
+            foreach (var item in config.Playlist)
             {
-                await Task.Delay(3000); // 不合理的做法，但我是抄的楼上，自己没动脑子！
-                SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
-                SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
-                Application.Current.Dispatcher.Invoke(() =>
+                item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
+                if (item.Module != null)
                 {
-                    Playlist.Clear();
-                    foreach (var item in config.Playlist)
-                    {
-                        item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
-                        if (item.Module != null)
-                        {
-                            Playlist.Add(item);
-                        }
-                    }
-                });
-            });
-
+                    Playlist.Add(item);
+                }
+            }
 
             Blacklist.Clear();
             foreach (var item in config.Blacklist)
             {
                 Blacklist.Add(item);
             }
+            ApplyConfigReady = true;
         }
 
         /// <summary>
