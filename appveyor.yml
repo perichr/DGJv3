@@ -1,4 +1,3 @@
-image: Visual Studio 2017
 version: 0.0.0.{build}
 platform: Any CPU
 skip_tags: true
@@ -10,9 +9,6 @@ assembly_info:
   assembly_file_version: $(APPVEYOR_BUILD_VERSION)
   assembly_informational_version: $(APPVEYOR_BUILD_VERSION)
 
-environment:
-  github_access_token:
-    secure: 3n2WMbrqWb0nmy2LBmu7w6dJltiHHC4LCoNuIKBh7fKV0xfxCwVGOxbTpunLI2pe
 
 cache:
   - packages
@@ -33,15 +29,14 @@ for:
     only:
       - master # including pull requests target at master
   configuration: Release
-  before_deploy: # wont run on pull request
-    - ps: ./CI/appveyor_deploy.ps1
   deploy: # wont run on pull request
     provider: GitHub
     release: v$(APPVEYOR_BUILD_VERSION)
     description: "# 点歌姬 $(APPVEYOR_BUILD_VERSION)\n\nCI 自动发布"
     auth_token:
-      secure: 3n2WMbrqWb0nmy2LBmu7w6dJltiHHC4LCoNuIKBh7fKV0xfxCwVGOxbTpunLI2pe
+      secure: F6IbjAMR1BNnH/Q4DYY991sHSUDPSRU8Rh5hLxK1ZEA6cBuousBxwcHUj2iU5dT/
     artifact: DGJv3.dll
+    force_update: true
   artifacts:
     - path: DGJv3\bin\Release
       name: DGJv3ReleaseBuild
