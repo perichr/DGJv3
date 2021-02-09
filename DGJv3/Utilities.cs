@@ -47,5 +47,9 @@ namespace DGJv3
 
         internal static readonly string SparePlaylistUser = "空闲歌单";
 
+        internal static readonly string SongsHistoryDirectoryPath = Path.Combine(DataDirectoryPath, "点歌历史");
+
+        internal static readonly string SongsHistoryFilePath = Path.Combine(SongsHistoryDirectoryPath, "今日点歌.txt");
+
     }
 }

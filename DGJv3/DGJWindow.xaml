@@ -311,9 +311,16 @@
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">用户点歌优先于空闲歌单播放</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding DanmuHandler.IsAllowCancelPlayingSong}"/>
+                                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">允许取消正在播放的歌曲</TextBlock>
+                                </StackPanel>
+                                <StackPanel Margin="5" Orientation="Horizontal">
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding IsLogRedirectDanmaku}" x:Name="LogRedirectToggleButton" Checked="LogRedirectToggleButton_OnChecked"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">点歌反馈发送到弹幕（需要登录中心）</TextBlock>
                                 </StackPanel>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding Player.MaxPlayTime,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="单曲最大播放时长（秒）" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>

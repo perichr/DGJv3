@@ -44,6 +44,8 @@ namespace DGJv3
 
         private DateTime lastUpdateTime;
 
+        private DateTime startDownloadTime;
+
         private long lastUpdateDownloadedSize;
 
         private DateTime lastHighspeedTime;
@@ -65,6 +67,11 @@ namespace DGJv3
             if (DownloadPercentage > 0 && (DateTime.Now - lastHighspeedTime > timeout))
             {
                 Log("下载速度过慢，防卡下载自动取消");
+                CancelDownload();
+            }
+            if (DownloadPercentage > 0 && (DateTime.Now - startDownloadTime > TimeSpan.FromSeconds(30)))
+            {
+                Log("下载时间过久，下载自动取消");
                 CancelDownload();
             }
         }
@@ -103,13 +110,14 @@ namespace DGJv3
 
         private void Download()
         {
-            currentSong.FilePath = Path.Combine(Utilities.SongsCacheDirectoryPath, CleanFileName($"{currentSong.ModuleName}{currentSong.SongName}{currentSong.SongId}{DateTime.Now.ToBinary().ToString("X")}.mp3.点歌姬缓存"));
+            currentSong.FilePath = Path.Combine(Utilities.SongsCacheDirectoryPath, CleanFileName($"{currentSong.ModuleName}{currentSong.SongName}{currentSong.SongId}{DateTime.Now.ToBinary():X}.mp3.点歌姬缓存"));
 
             try { Directory.CreateDirectory(Utilities.SongsCacheDirectoryPath); } catch (Exception) { }
 
             // currentSong = songItem;
 
             currentSong.Status = SongStatus.Downloading;
+            startDownloadTime = DateTime.Now;
             if (currentSong.Module.IsHandleDownlaod)
             {
                 IsModuleDownloading = true;

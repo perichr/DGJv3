@@ -8,7 +8,9 @@ namespace DGJv3
         [JsonIgnore]
         public SearchModule Module;
 
+#pragma warning disable CS0067 // 从不使用事件“SongInfo.PropertyChanged”
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore CS0067 // 从不使用事件“SongInfo.PropertyChanged”
 
         [JsonProperty("smid")]
         public string ModuleId { get; set; }

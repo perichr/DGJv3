@@ -84,8 +84,7 @@ namespace DGJv3
             return LoginCenterAPI.checkAuthorization(plugin) == LoginCenter.API.AuthorizationResult.Success;
         }
 
-        public Task<string> trySendMessage(int roomid, string msg, int color = 16777215, int mode = 1,
-            int rnd = -1, int fontsize = 25)
+        public Task<string> trySendMessage(int roomid, string msg, int color = 16777215, int mode = 1, int rnd = -1, int fontsize = 25)
         {
             return LoginCenterAPI.trySendMessage(roomid, msg, color, mode, rnd, fontsize);
         }

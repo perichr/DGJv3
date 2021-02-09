@@ -51,47 +51,53 @@ namespace DGJv3
 
         public int LogDanmakuLengthLimit { get; set; }
 
+        private bool ApplyConfigReady = false;
+
         public void Log(string text)
         {
             PluginMain.Log(text);
-
             if (IsLogRedirectDanmaku)
             {
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        if (!PluginMain.RoomId.HasValue) { return; }
-
-                        string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
-                        string result = LoginCenterAPIWarpper.Send(PluginMain.RoomId.Value, finalText);
-                        if (result == null)
-                        {
-                            PluginMain.Log("发送弹幕时网络错误");
-                        }
-                        else
-                        {
-                            var j = JObject.Parse(result);
-                            if (j["msg"].ToString() != string.Empty)
-                            {
-                                PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.GetType().FullName.Equals("LoginCenter.API.PluginNotAuthorizedException"))
-                        {
-                            IsLogRedirectDanmaku = false;
-                        }
-                        else
-                        {
-                            PluginMain.Log("弹幕发送错误 " + ex.ToString());
-                        }
-                    }
-                });
+                SendMessage(text);
             }
         }
+        void SendMessage(string text)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    if (!PluginMain.RoomId.HasValue) { return; }
+                    string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
+                    string result = await SendDanmaku.SendDanmakuAsync(PluginMain.RoomId.Value, finalText, LoginCenter.API.LoginCenterAPI.getCookies());
+                    if (result == null)
+                    {
+                        PluginMain.Log("发送弹幕时网络错误");
+                    }
+                    else
+                    {
+                        var j = JObject.Parse(result);
+                        if (j["msg"].ToString() != string.Empty)
+                        {
+                            PluginMain.Log("发送弹幕时服务器返回：" + j["msg"].ToString());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.GetType().FullName.Equals("LoginCenter.API.PluginNotAuthorizedException"))
+                    {
+                        IsLogRedirectDanmaku = false;
+                    }
+                    else
+                    {
+                        PluginMain.Log("弹幕发送错误 " + ex.ToString());
+                    }
+                }
+            });
+        }
+
+        
 
         public DGJWindow(DGJMain dGJMain)
         {
@@ -170,11 +176,17 @@ namespace DGJv3
 
             InitializeComponent();
 
-            ApplyConfig(Config.Load());
-
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
             PluginMain.Connected += (sender, e) => { LwlApiBaseModule.RoomId = e.roomid; };
             PluginMain.Disconnected += (sender, e) => { LwlApiBaseModule.RoomId = 0; };
+
+        }
+
+        public void TryApplyConfig()
+        {
+            if (ApplyConfigReady)
+                return;
+            ApplyConfig(Config.Load());
         }
 
         /// <summary>
@@ -183,34 +195,24 @@ namespace DGJv3
         /// <param name="config"></param>
         private void ApplyConfig(Config config)
         {
+            LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
+
             Player.PlayerType = config.PlayerType;
             Player.DirectSoundDevice = config.DirectSoundDevice;
             Player.WaveoutEventDevice = config.WaveoutEventDevice;
             Player.Volume = config.Volume;
             Player.IsUserPrior = config.IsUserPrior;
             Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
-            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
-            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+            Player.MaxPlayTime = config.MaxPlayTime;
+            DanmuHandler.IsAllowCancelPlayingSong = config.IsAllowCancelPlayingSong;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
-            IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
+            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled ? config.IsLogRedirectDanmaku : false;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
-            LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
-            if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
-            {
-                Task.Run(async () =>
-                {
-                    await Task.Delay(2000); // 其实不应该这么写的，不太合理
-                    IsLogRedirectDanmaku = await LoginCenterAPIWarpper.DoAuth(PluginMain);
-                });
-            }
-            else
-            {
-                IsLogRedirectDanmaku = false;
-            }
-
+            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
+            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
             Playlist.Clear();
             foreach (var item in config.Playlist)
             {
@@ -226,6 +228,7 @@ namespace DGJv3
             {
                 Blacklist.Add(item);
             }
+            ApplyConfigReady = true;
         }
 
         /// <summary>
@@ -238,10 +241,12 @@ namespace DGJv3
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
             IsUserPrior = Player.IsUserPrior,
+            IsAllowCancelPlayingSong= DanmuHandler.IsAllowCancelPlayingSong,
             Volume = Player.Volume,
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
             PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
             SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
+            MaxPlayTime = Player.MaxPlayTime,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
             ScribanTemplate = Writer.ScribanTemplate,

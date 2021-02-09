@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
+using System.Text.RegularExpressions;
 
 namespace DGJv3
 {
@@ -23,6 +24,7 @@ namespace DGJv3
         private SearchModules SearchModules;
 
         private Dispatcher dispatcher;
+        private History history { get; set; }
 
         /// <summary>
         /// 最多点歌数量
@@ -36,6 +38,12 @@ namespace DGJv3
         public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
         private uint _maxPersonSongNum;
 
+        /// <summary>
+        /// 允许取消正在播放的歌曲
+        /// </summary>
+        public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
+        private bool _isAllowCancelPlayingSong;
+
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -44,6 +52,7 @@ namespace DGJv3
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
+            history = new History();
         }
 
 
@@ -69,22 +78,26 @@ namespace DGJv3
                     case "切歌":
                         {
                             // Player.Next();
-
                             dispatcher.Invoke(() =>
                             {
-                                if (Songs.Count > 0)
+                                RemoveSong(0);
+                                Log( "切歌成功！");
+
+                                // TODO: 切指定序号的歌曲
+                                if (commands.Length > 1
+                                   && int.TryParse(rest, out int i)
+                                   && i > 1
+                                   && Songs.Count >= i
+                                   )
                                 {
-                                    Songs[0].Remove(Songs, Downloader, Player);
-                                    Log("切歌成功！");
+                                    i--;
+                                    SongItem si = Songs[i];
+                                    Songs.RemoveAt(i);
+                                    Songs.Insert(0, si);
                                 }
                             });
 
-                            /*
-                            if (commands.Length >= 2)
-                            {
-                                // TODO: 切指定序号的歌曲
-                            }
-                            */
+
                         }
                         return;
                     case "暂停":
@@ -127,11 +140,8 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && x.Status != SongStatus.Playing);
-                            if (songItem != null)
-                            {
-                                songItem.Remove(Songs, Downloader, Player);
-                            }
+                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));
+                            RemoveSong(songItem);
                         });
                     }
                     return;
@@ -167,6 +177,7 @@ namespace DGJv3
                     return;
                 }
                 Log($"点歌成功:{songInfo.Name}");
+                history.Write(songInfo, danmakuModel.UserName);
                 dispatcher.Invoke(callback: () =>
                 {
                     if (CanAddSong(danmakuModel.UserName) &&
@@ -192,7 +203,7 @@ namespace DGJv3
             return Songs.Count < MaxTotalSongNum ? (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum) : false;
         }
 
-        private readonly static char[] SPLIT_CHAR = { ' ' };
+        private static readonly char[] SPLIT_CHAR = { ' ' };
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
@@ -205,5 +216,22 @@ namespace DGJv3
 
         public event LogEvent LogEvent;
         private void Log(string message, Exception exception = null) => LogEvent?.Invoke(this, new LogEventArgs() { Message = message, Exception = exception });
+
+
+        private void RemoveSong(int i)
+        {
+            if (Songs.Count > i)
+            {
+                RemoveSong(Songs[i]);
+            }
+        }
+
+        private void RemoveSong(SongItem songItem)
+        {
+            if (songItem != null)
+            {
+                songItem.Remove(Songs, Downloader, Player);
+            }
+        }
     }
 }

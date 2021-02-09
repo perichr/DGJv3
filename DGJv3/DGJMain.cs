@@ -13,6 +13,7 @@ namespace DGJv3
 
         private VersionChecker versionChecker;
 
+        public static DGJMain SELF { get; set; }
         public DGJMain()
         {
             try
@@ -36,6 +37,7 @@ namespace DGJv3
             catch (Exception) { }
             window = new DGJWindow(this);
             versionChecker = new VersionChecker("DGJv3");
+            SELF = this;
             Task.Run(() =>
             {
                 if (versionChecker.FetchInfo())
@@ -55,12 +57,19 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
+            ///base.Start();感觉逻辑上不能因为懒惰急着自动启动
         }
 
         public override void Admin()
         {
+            window.TryApplyConfig();
             window.Show();
             window.Activate();
+        }
+        public override void Start()
+        {
+            window.TryApplyConfig();
+            base.Start();
         }
 
         public override void DeInit() => window.DeInit();
