@@ -195,6 +195,8 @@ namespace DGJv3
         /// <param name="config"></param>
         private void ApplyConfig(Config config)
         {
+            LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
+
             Player.PlayerType = config.PlayerType;
             Player.DirectSoundDevice = config.DirectSoundDevice;
             Player.WaveoutEventDevice = config.WaveoutEventDevice;
@@ -206,21 +208,9 @@ namespace DGJv3
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
-            IsLogRedirectDanmaku = config.IsLogRedirectDanmaku;
+            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled ? config.IsLogRedirectDanmaku : false;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
-            LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
-            if (LogRedirectToggleButton.IsEnabled && IsLogRedirectDanmaku)
-            {
-                Task.Run(async () =>
-                {
-                    IsLogRedirectDanmaku = await LoginCenterAPIWarpper.DoAuth(PluginMain);
-                });
-            }
-            else
-            {
-                IsLogRedirectDanmaku = false;
-            }
             SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
             SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
             Playlist.Clear();
