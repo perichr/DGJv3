@@ -23,29 +23,28 @@ namespace DGJv3
             Modules = new ObservableCollection<SearchModule>();
 
             NullModule = new NullSearchModule();
-            Modules.Add(NullModule);
+            AddModule(NullModule);
 
-            Modules.Add(new LwlApiNetease());
-            Modules.Add(new LwlApiTencent());
-            Modules.Add(new LwlApiKugou());
-            Modules.Add(new LwlApiBaidu());
-            Modules.Add(new LwlApiXiami());
-
-            // TODO: 加载外置拓展
-
-            void logaction(string log)
-            {
-                Log(log);
-            }
-
-            foreach (var m in Modules)
-            {
-                m._log = logaction;
-            }
+            AddModule(new LwlApiNetease());
+            AddModule(new LwlApiTencent());
+            AddModule(new LwlApiKugou());
+            AddModule(new LwlApiBaidu());
+            AddModule(new LwlApiXiami());
 
             PrimaryModule = Modules[1];
             SecondaryModule = Modules[2];
         }
+
+        public void AddModule(SearchModule m)
+        {
+            Modules.Add(m);
+            m._log = logaction;
+        }
+        void logaction(string log)
+        {
+            Log(log);
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
