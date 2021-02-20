@@ -307,20 +307,29 @@ namespace DGJv3
             currentSong.Status = SongStatus.Playing;
 
             wavePlayer = CreateIWavePlayer();
-            mp3FileReader = new Mp3FileReader(currentSong.FilePath);
-            sampleChannel = new SampleChannel(mp3FileReader)
+            try
             {
-                Volume = Volume
-            };
+                mp3FileReader = new Mp3FileReader(currentSong.FilePath);
+                sampleChannel = new SampleChannel(mp3FileReader)
+                {
+                    Volume = Volume
+                };
 
-            wavePlayer.PlaybackStopped += (sender, e) => UnloadSong();
+                wavePlayer.PlaybackStopped += (sender, e) => UnloadSong();
 
-            wavePlayer.Init(sampleChannel);
-            wavePlayer.Play();
+                wavePlayer.Init(sampleChannel);
+                wavePlayer.Play();
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+
+            }
+            catch (Exception ex)
+            {
+                Log($"歌曲{songItem.SongName}解析失败，可能是vip或无版权曲目。", ex);
+                UnloadSong();
+            }
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ namespace DGJv3.InternalModule
                     $"/song/lyric?id={Id}&lv=1&kv=1&tv=-1");
                 var json = JObject.Parse(response);
 
-                return json["lrc"]["lyric"].ToString();
+                return json.SelectToken("lrc.lyric")?.ToString();
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace DGJv3.InternalModule
                     API_PATH +
                     $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1000&offset=0&total=true&limit=3");
                 var json = JObject.Parse(response);
-                var playlist = (json["result"]["playlists"] as JArray)?[0] as JObject;
+                var playlist = (json.SelectToken("result.playlists") as JArray)?[0] as JObject;
                 Id = playlist.Value<int>("id");
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace DGJv3.InternalModule
                     API_PATH +
                     $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1&offset=0&total=true&limit=3");
                 var json = JObject.Parse(response);
-                return (json["result"]["tracks"] as JArray)?.Select(song =>
+                return (json.SelectToken("result.tracks") as JArray)?.Select(song =>
                 {
                     SongInfo songInfo;
 
@@ -109,7 +109,7 @@ namespace DGJv3.InternalModule
                     API_PATH +
                     $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1&offset=0&total=true&limit=3");
                 var json = JObject.Parse(response);
-                var song = (json["result"]["songs"] as JArray)?[0] as JObject;
+                var song = (json.SelectToken("result.songs") as JArray)?[0] as JObject;
 
                 SongInfo songInfo;
 
