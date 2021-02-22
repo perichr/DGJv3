@@ -177,8 +177,8 @@ namespace DGJv3
             InitializeComponent();
 
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
-            PluginMain.Connected += (sender, e) => { LwlApiBaseModule.RoomId = e.roomid; };
-            PluginMain.Disconnected += (sender, e) => { LwlApiBaseModule.RoomId = 0; };
+            PluginMain.Connected += (sender, e) => { ApiBaseModule.RoomId = e.roomid; };
+            PluginMain.Disconnected += (sender, e) => { ApiBaseModule.RoomId = 0; };
 
         }
 

@@ -163,9 +163,6 @@ namespace DGJv3
             }
         }
 
-        [Obsolete("Use GetLyricById instead", true)]
-        protected abstract string GetLyric(SongItem songInfo);
-
         protected abstract string GetLyricById(string Id);
 
         internal string SafeGetLyricById(string Id)
@@ -184,9 +181,7 @@ namespace DGJv3
         /// <summary>
         /// 主插件调用用
         /// </summary>
-        /// <param name="who">搜索人昵称(一般会是主播)</param>
         /// <param name="keyword"></param>歌单的关键词(或ID)
-        /// <param name="needLyric">是否需要歌词</param>
         /// <returns></returns>
         public List<SongInfo> SafeGetPlaylist(string keyword)
         {

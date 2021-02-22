@@ -10,24 +10,20 @@ using System.Web;
 
 namespace DGJv3.InternalModule
 {
-    internal class LwlApiBaseModule : SearchModule
+    internal class ApiBaseModule : SearchModule
     {
-        private string ServiceName = "undefined";
+        private string ServiceName;
 
         protected void SetServiceName(string name) => ServiceName = name;
 
-        private const string API_PROTOCOL = "https://";
-        private const string API_HOST = "v1.itooi.cn";
-        private const string API_PATH = "/";
-
         protected const string INFO_PREFIX = "";
-        protected const string INFO_AUTHOR = "Genteure & LWL12";
-        protected const string INFO_EMAIL = "dgj@genteure.com";
-        protected const string INFO_VERSION = "1.1";
+        protected const string INFO_AUTHOR = "Genteure & perichr";
+        protected const string INFO_EMAIL = "dgj@genteure.com;i@perichr.org";
+        protected const string INFO_VERSION = "2.0";
 
         internal static int RoomId = 0;
 
-        internal LwlApiBaseModule()
+        internal ApiBaseModule()
         {
             IsPlaylistSupported = true;
         }
@@ -39,129 +35,22 @@ namespace DGJv3.InternalModule
 
         protected override string GetDownloadUrl(SongItem songInfo)
         {
-            try
-            {
-                JObject dlurlobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/song?id={songInfo.SongId}"));
-
-                if (dlurlobj["code"].ToString() == "200")
-                {
-                    return $"{API_PROTOCOL}{API_HOST}{API_PATH}{ServiceName}/url?id={songInfo.SongId}";
-                }
-                else
-                {
-                    Log($"歌曲 {songInfo.SongName} 因为版权不能下载");
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log($"歌曲 {songInfo.SongName} 疑似版权不能下载(ex:{ex.Message})");
-                return null;
-            }
+            throw new NotImplementedException();
         }
 
         protected override string GetLyricById(string Id)
         {
-            try
-            {
-                return Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/lrc?id={Id}");
-            }
-            catch (Exception ex)
-            { Log("歌词获取错误(ex:" + ex.ToString() + ",id:" + Id + ")"); }
-
-            return null;
+            throw new NotImplementedException();
         }
 
         protected override List<SongInfo> GetPlaylist(string keyword)
         {
-            try
-            {
-                List<SongInfo> songInfos = new List<SongInfo>();
-
-                JObject playlist = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/search?id={HttpUtility.UrlEncode(keyword)}&type=songList&pageSize=5&page=0"));
-
-                if (playlist["code"]?.ToObject<int>() == 200)
-                {
-                    List<JToken> result = (playlist["data"]["playlists"] as JArray).ToList();
-
-                    //if (result.Count() > 50)
-                    //    result = result.Take(50).ToList();
-
-                    result.ForEach(song =>
-                    {
-                        try
-                        {
-                            var songInfo = new SongInfo(this,
-                                song["id"].ToString(),
-                                song["name"].ToString(),
-                                (song["ar"] as JArray).Select(x => x["name"].ToString()).ToArray());
-
-                            songInfo.Lyric = null;//在之后再获取Lyric
-
-                            songInfos.Add(songInfo);
-                        }
-                        catch (Exception) { }
-                    });
-
-                    return songInfos;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("获取歌单信息时出错 " + ex.Message);
-                return null;
-            }
+            throw new NotImplementedException();
         }
 
         protected override SongInfo Search(string keyword)
         {
-            string result_str;
-            try
-            {
-                result_str = Fetch(API_PROTOCOL, API_HOST, API_PATH + ServiceName + $"/search?keyword={HttpUtility.UrlEncode(keyword)}&type=song&pageSize=5&page=0");
-            }
-            catch (Exception ex)
-            {
-                Log("搜索歌曲时网络错误：" + ex.Message);
-                return null;
-            }
-
-            JObject song = null;
-            try
-            {
-                JObject info = JObject.Parse(result_str);
-                if (info["code"].ToString() == "200")
-                {
-                    song = (info["data"]["songs"] as JArray)?[0] as JObject;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("搜索歌曲解析数据错误：" + ex.Message);
-                return null;
-            }
-
-            SongInfo songInfo;
-
-            try
-            {
-                songInfo = new SongInfo(
-                    this,
-                    song["id"].ToString(),
-                    song["name"].ToString(),
-                    (song["ar"] as JArray).Select(x => x["name"].ToString()).ToArray()
-                );
-            }
-            catch (Exception ex)
-            { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
-
-            songInfo.Lyric = GetLyricById(songInfo.Id);
-
-            return songInfo;
+            throw new NotImplementedException();
         }
 
         protected static string Fetch(string prot, string host, string path, string data = null, string referer = null)
@@ -308,12 +197,6 @@ namespace DGJv3.InternalModule
                 exception = ex;
                 return false;
             }
-        }
-
-        [Obsolete("Use GetLyricById instead", true)]
-        protected override string GetLyric(SongItem songInfo)
-        {
-            throw new NotImplementedException();
         }
 
         private static readonly Dictionary<string, DNSResult> DNSList = new Dictionary<string, DNSResult>();

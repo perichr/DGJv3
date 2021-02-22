@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace DGJv3.InternalModule
 {
-    internal sealed class LwlApiNetease : LwlApiBaseModule
+    internal sealed class ApiNetease : ApiBaseModule
     {
         private const string API_PROTOCOL = "http://";
         private const string API_HOST = "music.163.com";
         private const string API_PATH = "/api";
 
-        internal LwlApiNetease()
+        internal ApiNetease()
         {
             SetServiceName("netease");
             SetInfo("网易云音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索网易云音乐的歌曲");
@@ -50,47 +50,31 @@ namespace DGJv3.InternalModule
             }
         }
 
-        protected override List<SongInfo> GetPlaylist(string keyword)
+        protected override List<SongInfo> GetPlaylist(string id)
         {
-            var Id = 0;
             try
             {
                 var response = Fetch(API_PROTOCOL, API_HOST,
                     API_PATH +
-                    $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1000&offset=0&total=true&limit=3");
+                    $"/v6/playlist/detail?id={id}");
                 var json = JObject.Parse(response);
-                var playlist = (json.SelectToken("result.playlists") as JArray)?[0] as JObject;
-                Id = playlist.Value<int>("id");
-            }
-            catch (Exception ex)
-            {
-                Log($"歌单下载错误(ex:{ex.Message})");
-                return null;
-            }
-
-            try
-            {
-                var response = Fetch(API_PROTOCOL, API_HOST,
-                    API_PATH +
-                    $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1&offset=0&total=true&limit=3");
-                var json = JObject.Parse(response);
-                return (json.SelectToken("result.tracks") as JArray)?.Select(song =>
+                return (json.SelectToken("playlist.tracks") as JArray)?.Select(song =>
                 {
                     SongInfo songInfo;
-
                     try
                     {
                         songInfo = new SongInfo(
                             this,
                             song["id"].ToString(),
                             song["name"].ToString(),
-                            (song["artists"] as JArray).Select(x => x["name"].ToString()).ToArray()
+                            (song["ar"] as JArray).Select(x => x["name"].ToString()).ToArray()
                         );
                     }
                     catch (Exception ex)
                     { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
+                    songInfo.Lyric = null;//在之后再获取Lyric
 
-                    songInfo.Lyric = GetLyricById(songInfo.Id);
+                    //songInfo.Lyric = GetLyricById(songInfo.Id);
                     return songInfo;
                 }).ToList();
             }
@@ -107,33 +91,22 @@ namespace DGJv3.InternalModule
             {
                 var response = Fetch(API_PROTOCOL, API_HOST,
                     API_PATH +
-                    $"/search/get/web?csrf_token=hlpretag=&hlposttag=&s={keyword}&type=1&offset=0&total=true&limit=3");
+                    $"/search/pc?s={keyword}&limit=20&offset=0&type=1");
                 var json = JObject.Parse(response);
                 var song = (json.SelectToken("result.songs") as JArray)?[0] as JObject;
 
                 SongInfo songInfo;
-
-                try
-                {
-                    songInfo = new SongInfo(
-                        this,
-                        song["id"].ToString(),
-                        song["name"].ToString(),
-                        (song["artists"] as JArray).Select(x => x["name"].ToString()).ToArray()
-                    );
-                }
-                catch (Exception ex)
-                { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
-
+                songInfo = new SongInfo(
+                    this,
+                    song["id"].ToString(),
+                    song["name"].ToString(),
+                    (song["artists"] as JArray).Select(x => x["name"].ToString()).ToArray()
+                );
                 songInfo.Lyric = GetLyricById(songInfo.Id);
-
                 return songInfo;
             }
             catch (Exception ex)
-            {
-                Log(ex.Message);
-                return null;
-            }
+            { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
         }
     }
 }

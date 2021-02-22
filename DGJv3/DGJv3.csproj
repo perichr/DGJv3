@@ -106,12 +106,9 @@
     <Compile Include="EnumerationExtension.cs" />
     <Compile Include="FuckRegsvr32.cs" />
     <Compile Include="History.cs" />
-    <Compile Include="InternalModule\LwlApiBaidu.cs" />
-    <Compile Include="InternalModule\LwlApiBaseModule.cs" />
-    <Compile Include="InternalModule\LwlApiKugou.cs" />
-    <Compile Include="InternalModule\LwlApiNetease.cs" />
-    <Compile Include="InternalModule\LwlApiTencent.cs" />
-    <Compile Include="InternalModule\LwlApiXiami.cs" />
+    <Compile Include="InternalModule\ApiBaseModule.cs" />
+    <Compile Include="InternalModule\ApiNetease.cs" />
+    <Compile Include="InternalModule\ApiTencent.cs" />
     <Compile Include="LoginCenterAPIWarpper.cs" />
     <Compile Include="LyricChangedEvent.cs" />
     <Compile Include="NullSearchModule.cs" />
