@@ -163,7 +163,22 @@ namespace DGJv3
             }
         }
 
+        protected abstract string GetLyric(SongItem songItem);
+
         protected abstract string GetLyricById(string Id);
+
+        internal string SafeGetLyric(SongItem songInfo)
+        {
+            try
+            {
+                return GetLyric(songInfo);
+            }
+            catch (Exception ex)
+            {
+                WriteError(ex, "Id: " + songInfo.SongId);
+                return null;
+            }
+        }
 
         internal string SafeGetLyricById(string Id)
         {

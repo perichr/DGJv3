@@ -283,11 +283,12 @@ namespace DGJv3
 
 
                 SongInfo info = Playlist[index];
+                SongItem item = new SongItem(info, Utilities.SparePlaylistUser);
                 if (info.Lyric == null)
                 {
-                    info.Lyric = info.Module.SafeGetLyricById(info.Id);
+                    info.Lyric = info.Module.SafeGetLyric(item);
                 }
-                Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
+                Songs.Add(item);
             }
 
             if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
@@ -327,7 +328,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                Log($"歌曲“{songItem.SongName}”下载文件解析失败。", ex);
+                Log($"歌曲“{songItem.SongName}”（{songItem.ModuleName}）解析失败，可能为VIP或无版权。", ex);
                 UnloadSong();
             }
         }

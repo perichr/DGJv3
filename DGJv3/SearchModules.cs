@@ -27,6 +27,7 @@ namespace DGJv3
 
             AddModule(new ApiNetease());
             AddModule(new ApiTencent());
+            AddModule(new ApiKugou());
 
             PrimaryModule = Modules[1];
             SecondaryModule = Modules[2];

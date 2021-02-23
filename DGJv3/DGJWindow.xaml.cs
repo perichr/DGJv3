@@ -208,7 +208,7 @@ namespace DGJv3
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             Writer.ScribanTemplate = config.ScribanTemplate;
-            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled ? config.IsLogRedirectDanmaku : false;
+            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
             SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;

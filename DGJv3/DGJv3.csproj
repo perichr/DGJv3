@@ -108,6 +108,7 @@
     <Compile Include="History.cs" />
     <Compile Include="InternalModule\ApiBaseModule.cs" />
     <Compile Include="InternalModule\ApiNetease.cs" />
+    <Compile Include="InternalModule\ApiKugou.cs" />
     <Compile Include="InternalModule\ApiTencent.cs" />
     <Compile Include="LoginCenterAPIWarpper.cs" />
     <Compile Include="LyricChangedEvent.cs" />

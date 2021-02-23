@@ -200,7 +200,7 @@ namespace DGJv3
         /// <returns></returns>
         private bool CanAddSong(string username)
         {
-            return Songs.Count < MaxTotalSongNum ? (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum) : false;
+            return Songs.Count < MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum);
         }
 
         private static readonly char[] SPLIT_CHAR = { ' ' };

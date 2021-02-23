@@ -38,6 +38,11 @@ namespace DGJv3.InternalModule
             throw new NotImplementedException();
         }
 
+        protected override string GetLyric(SongItem songInfo)
+        {
+            return GetLyricById(songInfo.SongId);
+        }
+
         protected override string GetLyricById(string Id)
         {
             throw new NotImplementedException();
@@ -53,13 +58,14 @@ namespace DGJv3.InternalModule
             throw new NotImplementedException();
         }
 
-        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null)
+
+        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null, string cookie = null)
         {
             for (int retryCount = 0; retryCount < 4; retryCount++)
             {
                 try
                 {
-                    return Fetch_exec(prot, host, path, data, referer);
+                    return Fetch_exec(prot, host, path, data, referer, cookie);
                 }
                 catch (WebException)
                 {
@@ -75,7 +81,7 @@ namespace DGJv3.InternalModule
             return null;
         }
 
-        private static string Fetch_exec(string prot, string host, string path, string data = null, string referer = null)
+        private static string Fetch_exec(string prot, string host, string path, string data = null, string referer = null, string cookie = null)
         {
             string address;
             if (GetDNSResult(host, out string ip))
@@ -92,12 +98,14 @@ namespace DGJv3.InternalModule
             request.Timeout = 4000;
             request.Host = host;
             request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local") + " RoomId/" + RoomId.ToString();
-
             if (referer != null)
             {
                 request.Referer = referer;
             }
-
+            if (cookie != null)
+            {
+                request.Headers.Add("Cookie",cookie);
+            }
             if (data != null)
             {
                 var postData = Encoding.UTF8.GetBytes(data);
