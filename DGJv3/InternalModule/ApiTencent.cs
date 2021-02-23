@@ -16,11 +16,11 @@ namespace DGJv3.InternalModule
             SetServiceName("tencent");
             SetInfo("QQ音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索QQ音乐的歌曲");
         }
-        protected override string GetDownloadUrl(SongItem songInfo)
+        protected override string GetDownloadUrl(SongItem songItem)
         {
             try
             {
-                string cfg = $"/musicu.fcg?data=%7b%22req_0%22%3a%7b%22module%22%3a%22vkey.GetVkeyServer%22%2c%22method%22%3a%22CgiGetVkey%22%2c%22param%22%3a%7b%22guid%22%3a%220%22%2c%22songmid%22%3a%5b%22{songInfo.SongId}%22%5d%2c%22songtype%22%3a%5b0%5d%2c%22uin%22%3a%220%22%2c%22loginflag%22%3a1%2c%22platform%22%3a%2220%22%7d%7d%7d";
+                string cfg = $"/musicu.fcg?data=%7b%22req_0%22%3a%7b%22module%22%3a%22vkey.GetVkeyServer%22%2c%22method%22%3a%22CgiGetVkey%22%2c%22param%22%3a%7b%22guid%22%3a%220%22%2c%22songmid%22%3a%5b%22{songItem.SongId}%22%5d%2c%22songtype%22%3a%5b0%5d%2c%22uin%22%3a%220%22%2c%22loginflag%22%3a1%2c%22platform%22%3a%2220%22%7d%7d%7d";
                 JObject dlurlobj = JObject.Parse(Fetch(API_PROTOCOL, API_HOST, API_PATH + cfg));
                 //string filename = "C400" + songInfo.SongId + ".m4a";
                 string purl = dlurlobj.SelectToken("req_0.data.midurlinfo[0].purl")?.ToString();
@@ -29,17 +29,21 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.SongName} 不能下载(ex:{ex.Message})");
+                Log($"歌曲 {songItem.SongName} 不能下载(ex:{ex.Message})");
                 return null;
             }
         }
-        protected override string GetLyricById(string Mid)
+        protected override string GetLyric(SongItem songItem)
+        {
+            return GetLyricBySongInfo(songItem.Info);
+        }
+        string GetLyricBySongInfo(SongInfo songInfo)
         {
             try
             {
                 var response = Fetch(API_PROTOCOL,
                     "c.y.qq.com",
-                    $"/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={Mid}&format=json&nobase64=1",
+                    $"/lyric/fcgi-bin/fcg_query_lyric_new.fcg?songmid={songInfo.Id}&format=json&nobase64=1",
                     null,
                     "https://y.qq.com/portal/player.html");
                 var json = JObject.Parse(response);
@@ -48,7 +52,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {Mid} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌曲 {songInfo.Id} 歌词下载错误(ex:{ex.Message})");
                 return null;
             }
         }
@@ -106,7 +110,7 @@ namespace DGJv3.InternalModule
                     song["songname"].ToString(),
                     (song["singer"] as JArray).Select(x => x["name"].ToString()).ToArray()
                 );
-                songInfo.Lyric = GetLyricById(songInfo.Id);
+                songInfo.Lyric = GetLyricBySongInfo(songInfo);
 
                 return songInfo;
             }

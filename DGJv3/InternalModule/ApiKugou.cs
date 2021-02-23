@@ -31,7 +31,7 @@ namespace DGJv3.InternalModule
             return dateTime.ToUniversalTime().ToString("O");
         }
 
-        protected override string GetDownloadUrl(SongItem songInfo)
+        protected override string GetDownloadUrl(SongItem songItem)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace DGJv3.InternalModule
                 string resualt = Fetch(
                     API_PROTOCOL,
                     "wwwapi.kugou.com",
-                    API_PATH +  $"/index.php?r=play/getdata&hash={songInfo.SongId}&album_id={songInfo.GetInfo("albumid")}",
+                    API_PATH +  $"/index.php?r=play/getdata&hash={songItem.SongId}&album_id={songItem.GetInfo("albumid")}",
                     null,
                     "https://www.kugou.com/",
                     COOKIES);
@@ -49,7 +49,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.SongName} 不能下载(ex:{ex.Message})");
+                Log($"歌曲 {songItem.SongName} 不能下载(ex:{ex.Message})");
                 return null;
             }
         }
@@ -57,13 +57,13 @@ namespace DGJv3.InternalModule
         {
             return GetLyricBySongInfo(songItem.Info);
         }
-        string GetLyricBySongInfo(SongInfo songItem)
+        string GetLyricBySongInfo(SongInfo songInfo)
         {
             try
             {
                 var response = Fetch(API_PROTOCOL,
                     API_HOST,
-                    API_PATH + $"/index.php?r=play/getdata&hash={songItem.Id}&album_id={songItem.GetInfo("albumid")}",
+                    API_PATH + $"/index.php?r=play/getdata&hash={songInfo.Id}&album_id={songInfo.GetInfo("albumid")}",
                     null,
                     "https://www.kugou.com/",
                     COOKIES);
@@ -73,7 +73,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songItem.Id} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌曲 {songInfo.Id} 歌词下载错误(ex:{ex.Message})");
                 return null;
             }
         }

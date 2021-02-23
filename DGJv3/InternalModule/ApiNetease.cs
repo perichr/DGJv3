@@ -17,35 +17,37 @@ namespace DGJv3.InternalModule
             SetInfo("网易云音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索网易云音乐的歌曲");
         }
 
-        protected override string GetDownloadUrl(SongItem songInfo)
+        protected override string GetDownloadUrl(SongItem songItem)
         {
             try
             {
-                // api.Request(CloudMusicApiProviders.SongUrl,
-                //     new Dictionary<string, string> { { "id", songInfo.SongId } }, out var response);
-                return $"https://music.163.com/song/media/outer/url?id={songInfo.SongId}.mp3";
+                return $"https://music.163.com/song/media/outer/url?id={songItem.SongId}.mp3";
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.SongName} 疑似版权不能下载(ex:{ex.Message})");
+                Log($"歌曲 {songItem.SongName} 疑似版权不能下载(ex:{ex.Message})");
                 return null;
             }
         }
 
-        protected override string GetLyricById(string Id)
+        protected override string GetLyric(SongItem songItem)
+        {
+            return GetLyricBySongInfo(songItem.Info);
+        }
+        string GetLyricBySongInfo(SongInfo songInfo)
         {
             try
             {
                 var response = Fetch(API_PROTOCOL, API_HOST,
                     API_PATH +
-                    $"/song/lyric?id={Id}&lv=1&kv=1&tv=-1");
+                    $"/song/lyric?id={songInfo.Id}&lv=1&kv=1&tv=-1");
                 var json = JObject.Parse(response);
 
                 return json.SelectToken("lrc.lyric")?.ToString();
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {Id} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌曲 {songInfo.Id} 歌词下载错误(ex:{ex.Message})");
                 return null;
             }
         }
@@ -102,7 +104,7 @@ namespace DGJv3.InternalModule
                     song["name"].ToString(),
                     (song["artists"] as JArray).Select(x => x["name"].ToString()).ToArray()
                 );
-                songInfo.Lyric = GetLyricById(songInfo.Id);
+                songInfo.Lyric = GetLyricBySongInfo(songInfo);
                 return songInfo;
             }
             catch (Exception ex)
