@@ -25,11 +25,11 @@ namespace DGJv3
             NullModule = new NullSearchModule();
             AddModule(NullModule);
 
-            AddModule(new LwlApiNetease());
-            AddModule(new LwlApiTencent());
-            AddModule(new LwlApiKugou());
-            AddModule(new LwlApiBaidu());
-            AddModule(new LwlApiXiami());
+            AddModule(new ApiNetease());
+            AddModule(new ApiTencent());
+            AddModule(new ApiKugou());
+            AddModule(new ApiKuwo());
+            AddModule(new ApiBiliBiliMusic());
 
             PrimaryModule = Modules[1];
             SecondaryModule = Modules[2];

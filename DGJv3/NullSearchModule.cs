@@ -20,7 +20,6 @@ namespace DGJv3
             return null;
         }
 
-        [Obsolete("Use GetLyricById instead", true)]
         protected override string GetLyric(SongItem songInfo)
         {
             return null;

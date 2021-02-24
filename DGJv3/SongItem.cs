@@ -10,73 +10,61 @@ namespace DGJv3
         internal SongItem(SongInfo songInfo, string userName)
         {
             Status = SongStatus.WaitingDownload;
-
             UserName = userName;
+            Info = songInfo;
 
-            Module = songInfo.Module;
-            SongId = songInfo.Id;
-            SongName = songInfo.Name;
-            Singers = songInfo.Singers;
             Lyric = (songInfo.Lyric == null) ? Lrc.NoLyric : Lrc.InitLrc(songInfo.Lyric);
-            Note = songInfo.Note;
 
         }
+        /// <summary>
+        /// 歌曲信息
+        /// </summary>
+        public SongInfo Info
+        { get; internal set; }
 
         /// <summary>
         /// 搜索模块名称
         /// </summary>
         public string ModuleName
-        { get { return Module.ModuleName; } }
+        { get => Info.Module.ModuleName;  }
+
 
         /// <summary>
         /// 搜索模块
         /// </summary>
         internal SearchModule Module
-        { get; set; }
+        { get => Info.Module; }
 
         /// <summary>
         /// 歌曲ID
         /// </summary>
         public string SongId
-        { get; internal set; }
+        { get=>Info.Id; }
 
         /// <summary>
         /// 歌名
         /// </summary>
         public string SongName
-        { get; internal set; }
+        { get=>Info.Name; }
 
         /// <summary>
         /// string的歌手列表
         /// </summary>
         public string SingersText
-        {
-            get
-            {
-                string output = "";
-                foreach (string str in Singers)
-                    output += str + ";";
-                return output;
-            }
-        }
+        { get => Info.SingersText; }
+        
 
         /// <summary>
         /// 歌手列表
         /// </summary>
         public string[] Singers
-        { get; internal set; }
+        { get=>Info.Singers; }
 
         /// <summary>
         /// 点歌人
         /// </summary>
         public string UserName
         { get; internal set; }
-
-        // /// <summary>
-        /// 下载地址
-        /// </summary>
-        // public string DownloadURL
-        // { get; internal set; }
 
         /// <summary>
         /// 歌曲文件储存路径
@@ -94,8 +82,18 @@ namespace DGJv3
         /// 歌曲备注
         /// </summary>
         public string Note
-        { get; internal set; }
+        { get => Info.Note; }
 
+        /// <summary>
+        /// 歌曲备注
+        /// </summary>
+        public IDictionary<string,string> ExtInfo
+        { get=>Info.ExtInfo; }
+
+        public string GetInfo(string key)
+        {
+            return Info.GetInfo(key);
+        }
         /// <summary>
         /// 歌曲状态
         /// </summary>

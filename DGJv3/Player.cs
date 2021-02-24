@@ -72,12 +72,12 @@ namespace DGJv3
         /// </summary>
         public TimeSpan CurrentTime
         {
-            get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.CurrentTime;
+            get => mediaFileReader == null ? TimeSpan.Zero : mediaFileReader.CurrentTime;
             set
             {
-                if (mp3FileReader != null)
+                if (mediaFileReader != null)
                 {
-                    mp3FileReader.CurrentTime = value;
+                    mediaFileReader.CurrentTime = value;
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace DGJv3
         /// <summary>
         /// 歌曲全长
         /// </summary>
-        public TimeSpan TotalTime { get => mp3FileReader == null ? TimeSpan.Zero : mp3FileReader.TotalTime; }
+        public TimeSpan TotalTime { get => mediaFileReader == null ? TimeSpan.Zero : mediaFileReader.TotalTime; }
 
         public string TotalTimeString { get => Math.Floor(TotalTime.TotalMinutes) + ":" + TotalTime.Seconds; }
 
@@ -185,7 +185,7 @@ namespace DGJv3
 
         private IWavePlayer wavePlayer = null;
 
-        private Mp3FileReader mp3FileReader = null;
+        private MediaFoundationReader mediaFileReader = null;
 
         private SampleChannel sampleChannel = null;
 
@@ -229,7 +229,7 @@ namespace DGJv3
         /// <param name="e"></param>
         private void UpdateTimeTimer_Tick(object sender, EventArgs e)
         {
-            if (mp3FileReader != null)
+            if (mediaFileReader != null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
 
@@ -283,11 +283,12 @@ namespace DGJv3
 
 
                 SongInfo info = Playlist[index];
+                SongItem item = new SongItem(info, Utilities.SparePlaylistUser);
                 if (info.Lyric == null)
                 {
-                    info.Lyric = info.Module.SafeGetLyricById(info.Id);
+                    info.Lyric = info.Module.SafeGetLyric(item);
                 }
-                Songs.Add(new SongItem(info, Utilities.SparePlaylistUser));
+                Songs.Add(item);
             }
 
             if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
@@ -307,20 +308,29 @@ namespace DGJv3
             currentSong.Status = SongStatus.Playing;
 
             wavePlayer = CreateIWavePlayer();
-            mp3FileReader = new Mp3FileReader(currentSong.FilePath);
-            sampleChannel = new SampleChannel(mp3FileReader)
+            try
             {
-                Volume = Volume
-            };
+                mediaFileReader = new MediaFoundationReader(currentSong.FilePath);
+                sampleChannel = new SampleChannel(mediaFileReader)
+                {
+                    Volume = Volume
+                };
 
-            wavePlayer.PlaybackStopped += (sender, e) => UnloadSong();
+                wavePlayer.PlaybackStopped += (sender, e) => UnloadSong();
 
-            wavePlayer.Init(sampleChannel);
-            wavePlayer.Play();
+                wavePlayer.Init(sampleChannel);
+                wavePlayer.Play();
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+
+            }
+            catch (Exception ex)
+            {
+                Log($"歌曲“{songItem.SongName}”（{songItem.ModuleName}）解析失败，可能为VIP或无版权。", ex);
+                UnloadSong();
+            }
         }
 
         /// <summary>
@@ -336,13 +346,13 @@ namespace DGJv3
 
             try
             {
-                mp3FileReader?.Dispose();
+                mediaFileReader?.Dispose();
             }
             catch (Exception) { }
 
             wavePlayer = null;
             sampleChannel = null;
-            mp3FileReader = null;
+            mediaFileReader = null;
 
             try
             {

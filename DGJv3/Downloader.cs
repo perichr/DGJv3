@@ -153,7 +153,14 @@ namespace DGJv3
                         webClient.DownloadProgressChanged += OnDownloadProgressChanged;
                         webClient.DownloadFileCompleted += OnDownloadFileCompleted;
                         webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.450 Safari/537.35");
-
+                        if (currentSong.GetInfo("referer") != null)
+                        {
+                            webClient.Headers.Add("Referer", currentSong.GetInfo("referer"));
+                        }
+                        if (currentSong.GetInfo("cookie") != null)
+                        {
+                            webClient.Headers.Add("Cookie", currentSong.GetInfo("cookie"));
+                        }
                         webClient.DownloadFileAsync(new Uri(url), currentSong.FilePath);
                     }
                     else

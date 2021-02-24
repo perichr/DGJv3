@@ -38,7 +38,6 @@ namespace DGJv3
         /// </summary>
         public string ModuleDescription { get; private set; } = "没有填写说明";
 
-
         /// <summary>
         /// 是否负责下载
         /// </summary>
@@ -75,9 +74,8 @@ namespace DGJv3
                 return uniqueId;
             }
         }
+
         private string uniqueId = null;
-
-
 
         /// <summary>
         /// <para>设置搜索模块信息</para>
@@ -107,7 +105,7 @@ namespace DGJv3
             }
         }
 
-        #endregion
+        #endregion 模块信息
 
         /// <summary>
         /// 搜索歌曲
@@ -163,10 +161,22 @@ namespace DGJv3
             }
         }
 
-        [Obsolete("Use GetLyricById instead", true)]
-        protected abstract string GetLyric(SongItem songInfo);
+        protected abstract string GetLyric(SongItem songItem);
 
         protected abstract string GetLyricById(string Id);
+
+        internal string SafeGetLyric(SongItem songInfo)
+        {
+            try
+            {
+                return GetLyric(songInfo);
+            }
+            catch (Exception ex)
+            {
+                WriteError(ex, "Id: " + songInfo.SongId);
+                return null;
+            }
+        }
 
         internal string SafeGetLyricById(string Id)
         {
@@ -184,9 +194,7 @@ namespace DGJv3
         /// <summary>
         /// 主插件调用用
         /// </summary>
-        /// <param name="who">搜索人昵称(一般会是主播)</param>
         /// <param name="keyword"></param>歌单的关键词(或ID)
-        /// <param name="needLyric">是否需要歌词</param>
         /// <returns></returns>
         public List<SongInfo> SafeGetPlaylist(string keyword)
         {
@@ -226,14 +234,12 @@ namespace DGJv3
             }
         }
 
-
         /// <summary>
         /// 设置搜索模块时会调用
         /// 会在新线程调用
         /// </summary>
         protected virtual void Setting()
         {
-
         }
 
         /// <summary>
