@@ -38,7 +38,6 @@ namespace DGJv3
         /// </summary>
         public string ModuleDescription { get; private set; } = "没有填写说明";
 
-
         /// <summary>
         /// 是否负责下载
         /// </summary>
@@ -75,9 +74,8 @@ namespace DGJv3
                 return uniqueId;
             }
         }
+
         private string uniqueId = null;
-
-
 
         /// <summary>
         /// <para>设置搜索模块信息</para>
@@ -107,7 +105,7 @@ namespace DGJv3
             }
         }
 
-        #endregion
+        #endregion 模块信息
 
         /// <summary>
         /// 搜索歌曲
@@ -236,14 +234,12 @@ namespace DGJv3
             }
         }
 
-
         /// <summary>
         /// 设置搜索模块时会调用
         /// 会在新线程调用
         /// </summary>
         protected virtual void Setting()
         {
-
         }
 
         /// <summary>

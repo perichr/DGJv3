@@ -2,21 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DGJv3.InternalModule
 {
-    internal sealed class ApiKugou : ApiBaseModule
+    internal sealed class ApiBiliBiliMusic : ApiBaseModule
     {
         private const string API_PROTOCOL = "https://";
-        private const string API_HOST = "www.kugou.com";
-        private const string API_PATH = "/yy";
-        private const string COOKIES = "kg_mid=355721c2749fe30472161adf09b5748d";
+        private const string API_HOST = "www.bilibili.com";
+        private const string API_PATH = "/audio";
 
-        internal ApiKugou()
+        internal ApiBiliBiliMusic()
         {
             SetServiceName("kugou");
-            SetInfo("酷狗音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索酷狗音乐的歌曲");
+            SetInfo("Bilibili音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索Bilibili音乐的歌曲");
         }
 
         protected override string GetDownloadUrl(SongItem songItem)
@@ -25,14 +23,15 @@ namespace DGJv3.InternalModule
             {
                 FetchConfig fc = new FetchConfig
                 {
-                    host = "wwwapi.kugou.com",
-                    path = API_PATH + $"/index.php?r=play/getdata&hash={songItem.SongId}&album_id={songItem.GetInfo("albumid")}",
-                    referer = "https://www.kugou.com/",
-                    cookie = COOKIES
+                    host = API_HOST,
+                    path = API_PATH + $"/music-service-c/web/url?sid={songItem.SongId}",
+                    referer = API_PROTOCOL + API_HOST + API_PATH,
+                    gzip = true
                 };
                 string resualt = Fetch(fc);
+
                 JObject dlurlobj = JObject.Parse(resualt);
-                string url = dlurlobj.SelectToken("data.play_url")?.ToString();
+                string url = dlurlobj.SelectToken("data.cdns[0]")?.ToString();
                 return url;
             }
             catch (Exception ex)
@@ -49,20 +48,22 @@ namespace DGJv3.InternalModule
 
         private string GetLyricBySongInfo(SongInfo songInfo)
         {
+            //Bilibi]li音乐频道目前不支持动态歌词格式，暂时先堆一起再说。
             try
             {
                 FetchConfig fc = new FetchConfig
                 {
                     host = API_HOST,
-                    path = API_PATH + $"/index.php?r=play/getdata&hash={songInfo.Id}&album_id={songInfo.GetInfo("albumid")}",
-                    referer = "https://www.kugou.com/",
-                    cookie = COOKIES
+                    path = API_PATH + $"/music-service-c/web/song/info?sid={songInfo.Id}",
+                    referer = API_PROTOCOL + API_HOST + API_PATH,
+                    gzip = true
                 };
-                var response = Fetch(fc);
-
-                var json = JObject.Parse(response);
-                var lyric = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(json.SelectToken("data.lyrics")?.ToString()));
-                return lyric;
+                string url = JObject.Parse(Fetch(fc))
+                        .SelectToken("data.lyric")
+                    ?.ToString();
+                if (String.IsNullOrWhiteSpace(url)) return String.Empty;
+                return "[00:00]" + Fetch(new FetchConfig(url) { referer = API_PROTOCOL + API_HOST + API_PATH })
+                    .Replace("\n", "    ");
             }
             catch (Exception ex)
             {
@@ -77,28 +78,24 @@ namespace DGJv3.InternalModule
             {
                 FetchConfig fc = new FetchConfig
                 {
-                    prot = "http://",
-                    host = "m.kugou.com",
-                    path = $"/plist/list/{id}?json=true",
-                    referer = $"http://m.kugou.com/plist/list/{id}",
-                    cookie = COOKIES
+                    host = API_HOST,
+                    path = API_PATH + $"/music-service-c/web/song/of-menu?pn=1&ps=100&sid={id}",
+                    referer = API_PROTOCOL + API_HOST + API_PATH,
+                    gzip = true
                 };
-                var response = Fetch(fc);
-
-                var json = JObject.Parse(response);
-                return (json.SelectToken("list.list.info") as JArray)?.Select(song =>
+                var json = JObject.Parse(Fetch(fc));
+                return (json.SelectToken("data.data") as JArray)?.Select(song =>
                 {
                     SongInfo songInfo;
                     try
                     {
-                        string[] filename = song["filename"].ToString().Split(new char[3] { ' ', '-', ' ' });
                         songInfo = new SongInfo(
                             this,
-                            song["hash"].ToString(),
-                            filename[0],
-                            filename[1].Split('\u3001')
+                            song["id"].ToString(),
+                            song["title"].ToString(),
+                            song["author"].ToString().Split(new char[3] { ' ', '·', ' ' })
                         );
-                        songInfo.SetInfo("albumid", song["album_id"].ToString());
+                        songInfo.SetInfo("referer", API_PROTOCOL + API_HOST + API_PATH);
                     }
                     catch (Exception ex)
                     { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
@@ -117,24 +114,23 @@ namespace DGJv3.InternalModule
         {
             try
             {
-                var response = Fetch(API_PROTOCOL, "songsearch.kugou.com",
-                    $"/song_search_v2?keyword={keyword}&pagesize=1");
+                var response = Fetch(API_PROTOCOL, "api.bilibili.com",
+                    API_PATH + $"/music-service-c/s?search_type=audio&page=0&pagesize=1&keyword={keyword}");
                 var json = JObject.Parse(response);
-                var song = json.SelectToken("data.lists[0]");
+                var song = json.SelectToken("data.result[0]");
                 SongInfo songInfo;
                 songInfo = new SongInfo(
                     this,
-                    song["FileHash"].ToString(),
-                    song["SongName"].ToString(),
-                    song["SingerName"].ToString().Split('\u3001')
+                    song["id"].ToString(),
+                    song["title"].ToString(),
+                    song["author"].ToString().Split(new char[3] { ' ', '·', ' ' })
                 );
-                songInfo.SetInfo("albumid", song["AlbumID"].ToString());
                 songInfo.Lyric = GetLyricBySongInfo(songInfo);
-
+                songInfo.SetInfo("referer", API_PROTOCOL + API_HOST + API_PATH);
                 return songInfo;
             }
             catch (Exception ex)
-            { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
+            { Log($"歌曲信息{keyword}获取结果错误：" + ex.Message); return null; }
         }
     }
 }

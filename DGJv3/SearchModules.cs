@@ -29,6 +29,7 @@ namespace DGJv3
             AddModule(new ApiTencent());
             AddModule(new ApiKugou());
             AddModule(new ApiKuwo());
+            AddModule(new ApiBiliBiliMusic());
 
             PrimaryModule = Modules[1];
             SecondaryModule = Modules[2];

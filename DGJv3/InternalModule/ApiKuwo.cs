@@ -34,7 +34,8 @@ namespace DGJv3.InternalModule
         {
             return GetLyricBySongInfo(songItem.Info);
         }
-        string GetLyricBySongInfo(SongInfo songInfo)
+
+        private string GetLyricBySongInfo(SongInfo songInfo)
         {
             try
             {
@@ -49,7 +50,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.Id} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌曲 {songInfo.Name} 歌词下载错误(ex:{ex.Message})");
                 return null;
             }
         }

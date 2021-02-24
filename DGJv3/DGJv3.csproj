@@ -107,6 +107,7 @@
     <Compile Include="FuckRegsvr32.cs" />
     <Compile Include="History.cs" />
     <Compile Include="InternalModule\ApiBaseModule.cs" />
+    <Compile Include="InternalModule\ApiBiliBiliMusic.cs" />
     <Compile Include="InternalModule\ApiKuwo.cs" />
     <Compile Include="InternalModule\ApiNetease.cs" />
     <Compile Include="InternalModule\ApiKugou.cs" />

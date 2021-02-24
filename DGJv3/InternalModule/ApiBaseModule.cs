@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace DGJv3.InternalModule
 {
@@ -28,19 +26,19 @@ namespace DGJv3.InternalModule
             IsPlaylistSupported = true;
         }
 
-        protected override DownloadStatus Download(SongItem item)
+        protected override DownloadStatus Download(SongItem songItem)
         {
             throw new NotImplementedException();
         }
 
-        protected override string GetDownloadUrl(SongItem songInfo)
+        protected override string GetDownloadUrl(SongItem songItem)
         {
             throw new NotImplementedException();
         }
 
-        protected override string GetLyric(SongItem songInfo)
+        protected override string GetLyric(SongItem songItem)
         {
-            return GetLyricById(songInfo.SongId);
+            return GetLyricById(songItem.SongId);
         }
 
         protected override string GetLyricById(string Id)
@@ -58,14 +56,52 @@ namespace DGJv3.InternalModule
             throw new NotImplementedException();
         }
 
+        protected class FetchConfig
+        {
+            public string prot { get; set; } = "https://";
+            public string host { get; set; }
+            public string path { get; set; }
+            public string data { get; set; } = null;
+            public string referer { get; set; } = null;
+            public string cookie { get; set; } = null;
+            public bool gzip { get; set; } = false;
 
-        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null, string cookie = null)
+            private Regex reg = new Regex(@"(?imn)(?<prot>http[s]?://)(?<host>[^\/]+)(?<path>.*$)");
+
+            public FetchConfig()
+            {
+            }
+
+            public FetchConfig(string url)
+            {
+                Match m = reg.Match(url);
+                this.prot = m.Groups["prot"].Value;
+                this.host = m.Groups["host"].Value;
+                this.path = m.Groups["path"].Value;
+            }
+
+            public FetchConfig(string prot, string host, string path, string data = null, string referer = null)
+            {
+                this.prot = prot;
+                this.host = host;
+                this.path = path;
+                this.data = data;
+                this.referer = referer;
+            }
+        }
+
+        protected static string Fetch(string prot, string host, string path, string data = null, string referer = null)
+        {
+            return Fetch_exec(new FetchConfig(prot, host, path, data, referer));
+        }
+
+        protected static string Fetch(FetchConfig fc)
         {
             for (int retryCount = 0; retryCount < 4; retryCount++)
             {
                 try
                 {
-                    return Fetch_exec(prot, host, path, data, referer, cookie);
+                    return Fetch_exec(fc);
                 }
                 catch (WebException)
                 {
@@ -81,34 +117,39 @@ namespace DGJv3.InternalModule
             return null;
         }
 
-        private static string Fetch_exec(string prot, string host, string path, string data = null, string referer = null, string cookie = null)
+        private static string Fetch_exec(string prot, string host, string path, string data = null, string referer = null)
+        {
+            return Fetch_exec(new FetchConfig(prot, host, path, data, referer));
+        }
+
+        private static string Fetch_exec(FetchConfig fc)
         {
             string address;
-            if (GetDNSResult(host, out string ip))
+            if (GetDNSResult(fc.host, out string ip))
             {
-                address = prot + ip + path;
+                address = fc.prot + ip + fc.path;
             }
             else
             {
-                address = prot + host + path;
+                address = fc.prot + fc.host + fc.path;
             }
 
             var request = (HttpWebRequest)WebRequest.Create(address);
 
             request.Timeout = 4000;
-            request.Host = host;
+            request.Host = fc.host;
             request.UserAgent = "DMPlugin_DGJ/" + (BuildInfo.Appveyor ? BuildInfo.Version : "local") + " RoomId/" + RoomId.ToString();
-            if (referer != null)
+            if (fc.referer != null)
             {
-                request.Referer = referer;
+                request.Referer = fc.referer;
             }
-            if (cookie != null)
+            if (fc.cookie != null)
             {
-                request.Headers.Add("Cookie",cookie);
+                request.Headers.Add("Cookie", fc.cookie);
             }
-            if (data != null)
+            if (fc.data != null)
             {
-                var postData = Encoding.UTF8.GetBytes(data);
+                var postData = Encoding.UTF8.GetBytes(fc.data);
                 request.Method = "POST";
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.ContentLength = postData.Length;
@@ -117,9 +158,9 @@ namespace DGJv3.InternalModule
                     stream.Write(postData, 0, postData.Length);
                 }
             }
-
             var response = (HttpWebResponse)request.GetResponse();
-            var responseString = new StreamReader(response.GetResponseStream(), Encoding.UTF8).ReadToEnd();
+            var stm = fc.gzip ? new GZipStream(response.GetResponseStream(), System.IO.Compression.CompressionMode.Decompress) : response.GetResponseStream();
+            var responseString = new StreamReader(stm, Encoding.UTF8).ReadToEnd();
             return responseString;
         }
 

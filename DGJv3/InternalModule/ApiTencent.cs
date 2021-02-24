@@ -1,21 +1,22 @@
 ﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DGJv3.InternalModule
 {
-    sealed class ApiTencent : ApiBaseModule
+    internal sealed class ApiTencent : ApiBaseModule
     {
         private const string API_PROTOCOL = "https://";
         private const string API_HOST = "u.y.qq.com";
         private const string API_PATH = "/cgi-bin";
+
         internal ApiTencent()
         {
             SetServiceName("tencent");
             SetInfo("QQ音乐", INFO_AUTHOR, INFO_EMAIL, INFO_VERSION, "搜索QQ音乐的歌曲");
         }
+
         protected override string GetDownloadUrl(SongItem songItem)
         {
             try
@@ -33,11 +34,13 @@ namespace DGJv3.InternalModule
                 return null;
             }
         }
+
         protected override string GetLyric(SongItem songItem)
         {
             return GetLyricBySongInfo(songItem.Info);
         }
-        string GetLyricBySongInfo(SongInfo songInfo)
+
+        private string GetLyricBySongInfo(SongInfo songInfo)
         {
             try
             {
@@ -52,14 +55,13 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.Id} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌曲 {songInfo.Name} 歌词下载错误(ex:{ex.Message})");
                 return null;
             }
         }
 
         protected override List<SongInfo> GetPlaylist(string keyword)
         {
-
             try
             {
                 var response = Fetch(API_PROTOCOL, "c.y.qq.com",
