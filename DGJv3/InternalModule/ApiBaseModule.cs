@@ -12,6 +12,7 @@ namespace DGJv3.InternalModule
     {
         private string ServiceName;
 
+
         protected void SetServiceName(string name) => ServiceName = name;
 
         protected const string INFO_PREFIX = "";

@@ -283,11 +283,11 @@ namespace DGJv3
 
 
                 SongInfo info = Playlist[index];
-                SongItem item = new SongItem(info, Utilities.SparePlaylistUser);
                 if (info.Lyric == null)
                 {
-                    info.Lyric = info.Module.SafeGetLyric(item);
+                    info.Lyric = info.Module.SafeGetLyric(info);
                 }
+                SongItem item = new SongItem(info, Utilities.SparePlaylistUser);
                 Songs.Add(item);
             }
 

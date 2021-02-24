@@ -163,9 +163,11 @@ namespace DGJv3
 
         protected abstract string GetLyric(SongItem songItem);
 
+        protected virtual string GetLyric(SongInfo songInfo) => GetLyricById(songInfo.Id);
+
         protected abstract string GetLyricById(string Id);
 
-        internal string SafeGetLyric(SongItem songInfo)
+        internal string SafeGetLyric(SongInfo songInfo)
         {
             try
             {
@@ -173,7 +175,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                WriteError(ex, "Id: " + songInfo.SongId);
+                WriteError(ex, "Id: " + songInfo.Id);
                 return null;
             }
         }

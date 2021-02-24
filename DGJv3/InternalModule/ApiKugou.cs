@@ -44,10 +44,10 @@ namespace DGJv3.InternalModule
 
         protected override string GetLyric(SongItem songItem)
         {
-            return GetLyricBySongInfo(songItem.Info);
+            return GetLyric(songItem.Info);
         }
 
-        private string GetLyricBySongInfo(SongInfo songInfo)
+        protected override string GetLyric(SongInfo songInfo)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace DGJv3.InternalModule
                     song["SingerName"].ToString().Split('\u3001')
                 );
                 songInfo.SetInfo("albumid", song["AlbumID"].ToString());
-                songInfo.Lyric = GetLyricBySongInfo(songInfo);
+                songInfo.Lyric = GetLyric(songInfo);
 
                 return songInfo;
             }
