@@ -32,10 +32,10 @@ namespace DGJv3.InternalModule
 
         protected override string GetLyric(SongItem songItem)
         {
-            return GetLyricBySongInfo(songItem.Info);
+            return GetLyric(songItem.Info);
         }
 
-        private string GetLyricBySongInfo(SongInfo songInfo)
+        protected override string GetLyric(SongInfo songInfo)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace DGJv3.InternalModule
                     song["name"].ToString(),
                     (song["artists"] as JArray).Select(x => x["name"].ToString()).ToArray()
                 );
-                songInfo.Lyric = GetLyricBySongInfo(songInfo);
+                songInfo.Lyric = GetLyric(songInfo);
                 return songInfo;
             }
             catch (Exception ex)

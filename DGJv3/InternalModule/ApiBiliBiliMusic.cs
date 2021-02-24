@@ -43,10 +43,10 @@ namespace DGJv3.InternalModule
 
         protected override string GetLyric(SongItem songItem)
         {
-            return GetLyricBySongInfo(songItem.Info);
+            return GetLyric(songItem.Info);
         }
 
-        private string GetLyricBySongInfo(SongInfo songInfo)
+        protected override string GetLyric(SongInfo songInfo)
         {
             //Bilibi]li音乐频道目前不支持动态歌词格式，暂时先堆一起再说。
             try
@@ -125,7 +125,7 @@ namespace DGJv3.InternalModule
                     song["title"].ToString(),
                     song["author"].ToString().Split(new char[3] { ' ', '·', ' ' })
                 );
-                songInfo.Lyric = GetLyricBySongInfo(songInfo);
+                songInfo.Lyric = GetLyric(songInfo);
                 songInfo.SetInfo("referer", API_PROTOCOL + API_HOST + API_PATH);
                 return songInfo;
             }
