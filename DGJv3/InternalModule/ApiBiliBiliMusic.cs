@@ -36,7 +36,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songItem.SongName} 不能下载(ex:{ex.Message})");
+                Log($"歌曲不能下载：{songItem.SongName}(ex:{ex.Message})");
                 return null;
             }
         }
@@ -67,7 +67,7 @@ namespace DGJv3.InternalModule
             }
             catch (Exception ex)
             {
-                Log($"歌曲 {songInfo.Name} 歌词下载错误(ex:{ex.Message})");
+                Log($"歌词下载错误：{songInfo.Name}(ex:{ex.Message})");
                 return null;
             }
         }
@@ -98,7 +98,7 @@ namespace DGJv3.InternalModule
                         songInfo.SetInfo("referer", API_PROTOCOL + API_HOST + API_PATH);
                     }
                     catch (Exception ex)
-                    { Log("歌曲信息获取结果错误：" + ex.Message); return null; }
+                    { Log($"歌曲信息获取结果错误(ex:{ex.Message})"); return null; }
 
                     return songInfo;
                 }).ToList();
@@ -130,7 +130,7 @@ namespace DGJv3.InternalModule
                 return songInfo;
             }
             catch (Exception ex)
-            { Log($"歌曲信息{keyword}获取结果错误：" + ex.Message); return null; }
+            { Log($"歌曲信息获取结果错误：{keyword}(ex:{ex.Message})" ); return null; }
         }
     }
 }

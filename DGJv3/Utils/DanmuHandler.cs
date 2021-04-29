@@ -188,7 +188,7 @@ namespace DGJv3
 
                 if (songInfo.IsInBlacklist(Blacklist))
                 {
-                    Log($"歌曲{songInfo.Name}在黑名单中");
+                    Log($"歌曲在黑名单中：{songInfo.Name}");
                     return;
                 }
                 Log($"点歌成功:{songInfo.Name}");

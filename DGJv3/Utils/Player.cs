@@ -325,7 +325,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                Log($"歌曲“{songItem.SongName}”（{songItem.ModuleName}）解析失败，可能为VIP或无版权。", ex);
+                Log($"下载出错，可能为VIP/无版权/网络波动。“{songItem.SongName}”（{songItem.ModuleName}）", ex);
                 UnloadSong();
             }
         }
