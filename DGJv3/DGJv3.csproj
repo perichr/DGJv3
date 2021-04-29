@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\BuildInfo.cs" />
+    <Compile Include="Models\Enums\CommandType.cs" />
     <Compile Include="Models\Items\BlackListItem.cs" />
     <Compile Include="Models\Enums\BlackListType.cs" />
     <Compile Include="Models\UI\Converter\BlackListTypeStringConverter.cs" />

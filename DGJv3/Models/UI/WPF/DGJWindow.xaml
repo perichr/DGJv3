@@ -330,6 +330,9 @@
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     Text="{Binding LogDanmakuLengthLimit,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="弹幕长度限制" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding DanmuHandler.AdminCommand,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="需要房管权限的指令清单（空格分隔）" materialDesign:HintAssist.IsFloating="True"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>

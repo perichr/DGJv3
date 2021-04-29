@@ -52,11 +52,11 @@ namespace DGJv3
         [JsonProperty("ldll")]
         public int LogDanmakuLengthLimit { get; set; } = 20;
 
-        [JsonProperty("plst")]
-        public SongInfo[] Playlist { get; set; } = new SongInfo[0];
-
         [JsonProperty("blst")]
         public BlackListItem[] Blacklist { get; set; } = new BlackListItem[0];
+
+        [JsonProperty("acmd")]
+        public string AdminCommand { get; set; } = "切歌 暂停 播放 音量";
 
         [JsonProperty("sbtp")]
         public string ScribanTemplate { get; set; } = "{{~ for 歌曲 in 播放列表 ~}}{{ if for.index ==1\n" +
@@ -72,6 +72,9 @@ namespace DGJv3
             "end~}}\n" +
             "【{{  歌曲.点歌人 }}】{{ 歌曲.歌名 }} -  {{ 歌曲.歌手 }} \n" +
             "{{~  end ~}}";
+
+        [JsonProperty("plst")]
+        public SongInfo[] Playlist { get; set; } = new SongInfo[0];
 
 
         public Config()

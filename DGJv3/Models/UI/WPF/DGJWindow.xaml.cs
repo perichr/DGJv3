@@ -207,6 +207,7 @@ namespace DGJv3
             DanmuHandler.IsAllowCancelPlayingSong = config.IsAllowCancelPlayingSong;
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
+            DanmuHandler.AdminCommand = config.AdminCommand;
             Writer.ScribanTemplate = config.ScribanTemplate;
             IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
@@ -249,6 +250,7 @@ namespace DGJv3
             MaxPlayTime = Player.MaxPlayTime,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
+            AdminCommand = DanmuHandler.AdminCommand,
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
