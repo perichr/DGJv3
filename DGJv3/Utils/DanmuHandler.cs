@@ -49,6 +49,7 @@ namespace DGJv3
             dispatcher = Dispatcher.CurrentDispatcher;
             Songs = songs;
             Player = player;
+            Player.DanmuHandler = this;
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
@@ -71,61 +72,6 @@ namespace DGJv3
             string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
             string rest = string.Join(" ", commands.Skip(1));
 
-            if (danmakuModel.isAdmin)
-            {
-                switch (commands[0])
-                {
-                    case "切歌":
-                        {
-                            // Player.Next();
-                            dispatcher.Invoke(() =>
-                            {
-                                RemoveSong(0);
-                                Log( "切歌成功！");
-
-                                // TODO: 切指定序号的歌曲
-                                if (commands.Length > 1
-                                   && int.TryParse(rest, out int i)
-                                   && i > 1
-                                   && Songs.Count >= i
-                                   )
-                                {
-                                    i--;
-                                    SongItem si = Songs[i];
-                                    Songs.RemoveAt(i);
-                                    Songs.Insert(0, si);
-                                }
-                            });
-
-
-                        }
-                        return;
-                    case "暂停":
-                    case "暫停":
-                        {
-                            Player.Pause();
-                        }
-                        return;
-                    case "播放":
-                        {
-                            Player.Play();
-                        }
-                        return;
-                    case "音量":
-                        {
-                            if (commands.Length > 1
-                                && int.TryParse(commands[1], out int volume100)
-                                && volume100 >= 0
-                                && volume100 <= 100)
-                            {
-                                Player.Volume = volume100 / 100f;
-                            }
-                        }
-                        return;
-                    default:
-                        break;
-                }
-            }
 
             switch (commands[0])
             {
@@ -145,9 +91,78 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "投票切歌":
+                case "上一首":
                     {
-                        // TODO: 投票切歌
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.LastSongInfo == null) Log("没有上一首歌曲的信息！");
+                            else AddSong(Player.LastSongInfo, danmakuModel.UserName);
+                        });
+                    }
+                    return;
+                case "重播":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.CurrentSong == null) Log("没有正在播放的歌曲！");
+                            else AddSong(Player.CurrentSong.Info, danmakuModel.UserName);
+                        });
+                    }
+                    return;
+                case "信息":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.CurrentSong == null) Log("没有正在播放的歌曲！");
+                            else Log("正在播放：" + Player.CurrentSong.ModuleName +":" +Player.CurrentSong.SongId);
+                        });
+                    }
+                    return;
+                case "切歌":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            RemoveSong(0);
+                            Log("切歌成功！");
+
+                            // 切至指定序号的歌曲
+                            if (commands.Length > 1
+                               && int.TryParse(rest, out int i)
+                               && i > 1
+                               && Songs.Count >= i
+                               )
+                            {
+                                i--;
+                                SongItem si = Songs[i];
+                                Songs.RemoveAt(i);
+                                Songs.Insert(0, si);
+                            }
+                        });
+                    }
+                    return;
+                case "暂停":
+                case "暫停":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        Player.Pause();
+                    }
+                    return;
+                case "播放":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        Player.Play();
+                    }
+                    return;
+                case "音量":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        if (commands.Length > 1
+                            && int.TryParse(commands[1], out int volume100)
+                            && volume100 >= 0
+                            && volume100 <= 100)
+                        {
+                            Player.Volume = volume100 / 100f;
+                        }
                     }
                     return;
                 default:
@@ -173,7 +188,7 @@ namespace DGJv3
 
                 if (songInfo.IsInBlacklist(Blacklist))
                 {
-                    Log($"歌曲{songInfo.Name}在黑名单中");
+                    Log($"歌曲在黑名单中：{songInfo.Name}");
                     return;
                 }
                 Log($"点歌成功:{songInfo.Name}");
@@ -185,10 +200,36 @@ namespace DGJv3
                             x.SongId == songInfo.Id &&
                             x.Module.UniqueId == songInfo.Module.UniqueId)
                     )
-                        Songs.Add(new SongItem(songInfo, danmakuModel.UserName));
+                    AddSong(songInfo, danmakuModel.UserName);
                 });
             }
         }
+
+        public void AddSong(SongInfo songInfo, string userName)
+        {
+            Songs.Add(new SongItem(songInfo, userName));
+            TrySortSongs();
+        }
+
+        /// <summary>
+        /// 用户点歌优先时，尝试调序
+        /// </summary>
+        public void TrySortSongs()
+        {
+            //非用户点歌优先时跳过
+            if (!Player.IsUserPrior) return;
+
+            //播放列表小于2条时跳过
+            if (Songs.Count < 2) return;
+
+            //删除播放列表全部空闲歌单曲目   
+            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToArray();
+            foreach (var songItem in pending) RemoveSong(songItem);
+        }
+
+
+
+
 
         /// <summary>
         /// 能否点歌
