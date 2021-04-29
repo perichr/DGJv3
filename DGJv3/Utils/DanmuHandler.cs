@@ -44,6 +44,29 @@ namespace DGJv3
         public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
         private bool _isAllowCancelPlayingSong;
 
+        public string AdminCommand
+        {
+            get => _admminCommand;
+            set
+            {
+                SetField(ref _admminCommand, value);
+
+                adminCommand = new Dictionary<CommandType, bool>();
+                var ss = value.Replace(',', ' ').Replace('，', ' ').Split(' ');
+                foreach (CommandType item in Enum.GetValues(typeof(CommandType))) adminCommand.Add(item, false);
+                foreach (var item in ss)
+                {
+                    var ct = GetCommandType(item);
+                    if (ct == CommandType.Null) continue;
+                    adminCommand[ct] = true;
+                }
+            }
+        }
+        private string _admminCommand;
+        private Dictionary<CommandType, bool> adminCommand;
+
+
+
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -54,8 +77,8 @@ namespace DGJv3
             SearchModules = searchModules;
             Blacklist = blacklist;
             history = new History();
-        }
 
+        }
 
         /// <summary>
         /// 处理弹幕消息
@@ -72,17 +95,18 @@ namespace DGJv3
             string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
             string rest = string.Join(" ", commands.Skip(1));
 
+            CommandType commandType = GetCommandType(commands[0]);
 
-            switch (commands[0])
+            if (NoCommandRight(commandType, danmakuModel)) return;
+
+            switch (commandType)
             {
-                case "点歌":
-                case "點歌":
+                case CommandType.Add:
                     {
                         DanmuAddSong(danmakuModel, rest);
                     }
                     return;
-                case "取消點歌":
-                case "取消点歌":
+                case CommandType.Cancel:
                     {
                         dispatcher.Invoke(() =>
                         {
@@ -91,7 +115,7 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "上一首":
+                case CommandType.AddLast:
                     {
                         dispatcher.Invoke(() =>
                         {
@@ -100,7 +124,7 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "重播":
+                case CommandType.AddCurent:
                     {
                         dispatcher.Invoke(() =>
                         {
@@ -109,16 +133,16 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "信息":
+                case CommandType.Info:
                     {
                         dispatcher.Invoke(() =>
                         {
                             if (Player.CurrentSong == null) Log("没有正在播放的歌曲！");
-                            else Log("正在播放：" + Player.CurrentSong.ModuleName +":" +Player.CurrentSong.SongId);
+                            else Log("正在播放：" + Player.CurrentSong.ModuleName + ":" + Player.CurrentSong.SongId);
                         });
                     }
                     return;
-                case "切歌":
+                case CommandType.Next:
                     {
                         dispatcher.Invoke(() =>
                         {
@@ -140,22 +164,18 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "暂停":
-                case "暫停":
+                case CommandType.Pause:
                     {
-                        if (!danmakuModel.isAdmin) return;
                         Player.Pause();
                     }
                     return;
-                case "播放":
+                case CommandType.Play:
                     {
-                        if (!danmakuModel.isAdmin) return;
                         Player.Play();
                     }
                     return;
-                case "音量":
+                case CommandType.Volume:
                     {
-                        if (!danmakuModel.isAdmin) return;
                         if (commands.Length > 1
                             && int.TryParse(commands[1], out int volume100)
                             && volume100 >= 0
@@ -168,6 +188,40 @@ namespace DGJv3
                 default:
                     break;
             }
+        }
+
+        private CommandType GetCommandType(string name)
+        {
+            switch (name)
+            {
+                case "点歌":
+                case "點歌":
+                    return CommandType.Add;
+                case "取消點歌":
+                case "取消点歌":
+                    return CommandType.Cancel;
+                case "上一首":
+                    return CommandType.AddLast;
+                case "重播":
+                    return CommandType.AddCurent;
+                case "信息":
+                    return CommandType.Info;
+                case "切歌":
+                    return CommandType.Next;
+                case "暂停":
+                case "暫停":
+                    return CommandType.Pause;
+                case "播放":
+                    return CommandType.Play;
+                case "音量":
+                    return CommandType.Volume;
+            }
+            return CommandType.Null;
+        }
+
+        private bool NoCommandRight(CommandType commandType, DanmakuModel danmakuModel)
+        {
+            return commandType == CommandType.Null || (adminCommand[commandType] && !danmakuModel.isAdmin);
         }
 
         private void DanmuAddSong(DanmakuModel danmakuModel, string keyword)
@@ -200,7 +254,7 @@ namespace DGJv3
                             x.SongId == songInfo.Id &&
                             x.Module.UniqueId == songInfo.Module.UniqueId)
                     )
-                    AddSong(songInfo, danmakuModel.UserName);
+                        AddSong(songInfo, danmakuModel.UserName);
                 });
             }
         }
