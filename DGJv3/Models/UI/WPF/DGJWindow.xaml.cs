@@ -307,7 +307,7 @@ namespace DGJv3
                     return;
                 }
 
-                Songs.Add(new SongItem(songInfo, "主播")); // TODO: 点歌人名字
+                DanmuHandler.AddSong(songInfo, Utilities.AnchorName);
             }
             AddSongsTextBox.Text = string.Empty;
         }

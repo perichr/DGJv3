@@ -16,6 +16,7 @@ namespace DGJv3
                     songList.Remove(songItem);
                     break;
                 case SongStatus.Downloading:
+                    songList.Remove(songItem);
                     downloader.CancelDownload();
                     break;
                 case SongStatus.WaitingPlay:

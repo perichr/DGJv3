@@ -189,9 +189,13 @@ namespace DGJv3
 
         private SampleChannel sampleChannel = null;
 
-        private SongItem currentSong = null;
+        public SongItem CurrentSong { get; private set; } = null;
 
         private int currentLyricIndex = -1;
+
+        public SongInfo LastSongInfo { get; private set; } = null;
+
+        public DanmuHandler DanmuHandler { get; set; }
 
         public Player(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist)
         {
@@ -233,9 +237,9 @@ namespace DGJv3
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
 
-                if (currentSong != null)
+                if (CurrentSong != null)
                 {
-                    var index = currentSong.Lyric.GetLyric(CurrentTimeDouble, out string current, out string upcoming);
+                    var index = CurrentSong.Lyric.GetLyric(CurrentTimeDouble, out string current, out string upcoming);
                     if (index != currentLyricIndex)
                     {
                         currentLyricIndex = index;
@@ -256,21 +260,17 @@ namespace DGJv3
             {
                 LoadSong(Songs[0]);
             }
-            else if (Songs.Count > 1
-                     && currentSong != null
-                     && currentSong.UserName == Utilities.SparePlaylistUser
-                     && Songs.FirstOrDefault(
-                         s => s.UserName != Utilities.SparePlaylistUser)?.Status == SongStatus.WaitingPlay
-                     && IsUserPrior)
+
+            FillSongsWithSparePlaylist();
+
+            if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
             {
                 Next();
-                var pendingRemove = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToList();
-                foreach (var songItem in pendingRemove)
-                {
-                    Songs.Remove(songItem);
-                }
             }
+        }
 
+        private void FillSongsWithSparePlaylist()
+        {
             if (Songs.Count < 2 && IsPlaylistEnabled && Playlist.Count > 0)
             {
                 int index = -1;
@@ -290,12 +290,9 @@ namespace DGJv3
                 SongItem item = new SongItem(info, Utilities.SparePlaylistUser);
                 Songs.Add(item);
             }
-
-            if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
-            {
-                Next();
-            }
         }
+
+
 
         /// <summary>
         /// 加载歌曲并开始播放
@@ -303,14 +300,14 @@ namespace DGJv3
         /// <param name="songItem"></param>
         private void LoadSong(SongItem songItem)
         {
-            currentSong = songItem;
+            CurrentSong = songItem;
 
-            currentSong.Status = SongStatus.Playing;
+            CurrentSong.Status = SongStatus.Playing;
 
             wavePlayer = CreateIWavePlayer();
             try
             {
-                mediaFileReader = new MediaFoundationReader(currentSong.FilePath);
+                mediaFileReader = new MediaFoundationReader(CurrentSong.FilePath);
                 sampleChannel = new SampleChannel(mediaFileReader)
                 {
                     Volume = Volume
@@ -356,15 +353,17 @@ namespace DGJv3
 
             try
             {
-                File.Delete(currentSong.FilePath);
+                File.Delete(CurrentSong.FilePath);
             }
             catch (Exception)
             {
             }
 
-            dispatcher.Invoke(() => Songs.Remove(currentSong));
+            dispatcher.Invoke(() => Songs.Remove(CurrentSong));
 
-            currentSong = null;
+            LastSongInfo = CurrentSong.Info;
+
+            CurrentSong = null;
 
             SetLyric(string.Empty, string.Empty);
 
@@ -373,6 +372,8 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+
+            DanmuHandler.TrySortSongs();
         }
 
         private void SetLyric(string current, string upcoming)

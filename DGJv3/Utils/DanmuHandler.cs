@@ -49,6 +49,7 @@ namespace DGJv3
             dispatcher = Dispatcher.CurrentDispatcher;
             Songs = songs;
             Player = player;
+            Player.DanmuHandler = this;
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
@@ -77,13 +78,12 @@ namespace DGJv3
                 {
                     case "切歌":
                         {
-                            // Player.Next();
                             dispatcher.Invoke(() =>
                             {
                                 RemoveSong(0);
                                 Log( "切歌成功！");
 
-                                // TODO: 切指定序号的歌曲
+                                // 切至指定序号的歌曲
                                 if (commands.Length > 1
                                    && int.TryParse(rest, out int i)
                                    && i > 1
@@ -185,10 +185,36 @@ namespace DGJv3
                             x.SongId == songInfo.Id &&
                             x.Module.UniqueId == songInfo.Module.UniqueId)
                     )
-                        Songs.Add(new SongItem(songInfo, danmakuModel.UserName));
+                    AddSong(songInfo, danmakuModel.UserName);
                 });
             }
         }
+
+        public void AddSong(SongInfo songInfo, string userName)
+        {
+            Songs.Add(new SongItem(songInfo, userName));
+            TrySortSongs();
+        }
+
+        /// <summary>
+        /// 用户点歌优先时，尝试调序
+        /// </summary>
+        public void TrySortSongs()
+        {
+            //非用户点歌优先时跳过
+            if (!Player.IsUserPrior) return;
+
+            //播放列表小于2条时跳过
+            if (Songs.Count < 2) return;
+
+            //删除播放列表全部空闲歌单曲目   
+            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToArray();
+            foreach (var songItem in pending) RemoveSong(songItem);
+        }
+
+
+
+
 
         /// <summary>
         /// 能否点歌
