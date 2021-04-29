@@ -72,60 +72,6 @@ namespace DGJv3
             string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
             string rest = string.Join(" ", commands.Skip(1));
 
-            if (danmakuModel.isAdmin)
-            {
-                switch (commands[0])
-                {
-                    case "切歌":
-                        {
-                            dispatcher.Invoke(() =>
-                            {
-                                RemoveSong(0);
-                                Log( "切歌成功！");
-
-                                // 切至指定序号的歌曲
-                                if (commands.Length > 1
-                                   && int.TryParse(rest, out int i)
-                                   && i > 1
-                                   && Songs.Count >= i
-                                   )
-                                {
-                                    i--;
-                                    SongItem si = Songs[i];
-                                    Songs.RemoveAt(i);
-                                    Songs.Insert(0, si);
-                                }
-                            });
-
-
-                        }
-                        return;
-                    case "暂停":
-                    case "暫停":
-                        {
-                            Player.Pause();
-                        }
-                        return;
-                    case "播放":
-                        {
-                            Player.Play();
-                        }
-                        return;
-                    case "音量":
-                        {
-                            if (commands.Length > 1
-                                && int.TryParse(commands[1], out int volume100)
-                                && volume100 >= 0
-                                && volume100 <= 100)
-                            {
-                                Player.Volume = volume100 / 100f;
-                            }
-                        }
-                        return;
-                    default:
-                        break;
-                }
-            }
 
             switch (commands[0])
             {
@@ -145,9 +91,78 @@ namespace DGJv3
                         });
                     }
                     return;
-                case "投票切歌":
+                case "上一首":
                     {
-                        // TODO: 投票切歌
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.LastSongInfo == null) Log("没有上一首歌曲的信息！");
+                            else AddSong(Player.LastSongInfo, danmakuModel.UserName);
+                        });
+                    }
+                    return;
+                case "重播":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.CurrentSong == null) Log("没有正在播放的歌曲！");
+                            else AddSong(Player.CurrentSong.Info, danmakuModel.UserName);
+                        });
+                    }
+                    return;
+                case "信息":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            if (Player.CurrentSong == null) Log("没有正在播放的歌曲！");
+                            else Log("正在播放：" + Player.CurrentSong.ModuleName +":" +Player.CurrentSong.SongId);
+                        });
+                    }
+                    return;
+                case "切歌":
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            RemoveSong(0);
+                            Log("切歌成功！");
+
+                            // 切至指定序号的歌曲
+                            if (commands.Length > 1
+                               && int.TryParse(rest, out int i)
+                               && i > 1
+                               && Songs.Count >= i
+                               )
+                            {
+                                i--;
+                                SongItem si = Songs[i];
+                                Songs.RemoveAt(i);
+                                Songs.Insert(0, si);
+                            }
+                        });
+                    }
+                    return;
+                case "暂停":
+                case "暫停":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        Player.Pause();
+                    }
+                    return;
+                case "播放":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        Player.Play();
+                    }
+                    return;
+                case "音量":
+                    {
+                        if (!danmakuModel.isAdmin) return;
+                        if (commands.Length > 1
+                            && int.TryParse(commands[1], out int volume100)
+                            && volume100 >= 0
+                            && volume100 <= 100)
+                        {
+                            Player.Volume = volume100 / 100f;
+                        }
                     }
                     return;
                 default:
