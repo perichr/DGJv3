@@ -340,7 +340,6 @@ namespace DGJv3
         /// <param name="userId"></param>
         private void Vote4Next(int userId)
         {
-            Log(userId.ToString());
             if (vote4NextUserCache.Contains(userId))
             {
                 return;
