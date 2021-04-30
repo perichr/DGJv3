@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using System.Windows;
 
 namespace DGJv3
@@ -61,15 +62,73 @@ namespace DGJv3
                 SendMessage(text);
             }
         }
-        void SendMessage(string text)
+
+        private static Queue<string> danmuCache = new Queue<string>();
+
+        private static DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
+        {
+            Interval = TimeSpan.FromSeconds(1.1),
+            IsEnabled = true,
+        };
+
+        /// <summary>
+        /// 循环发送弹幕。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SendDanmuTimer_Tick(object sender, EventArgs e)
+        {
+            if (danmuCache.Count == 0)
+            {
+                senDanmuTimer.Stop();
+                return;
+            };
+            if (danmuCache.Count == 2) danmuCache.TrimExcess();
+            string text = danmuCache.Dequeue();
+            SendDanmu(text);
+        }
+
+        /// <summary>
+        /// 将长字符串拆解为不多于3段并写入缓存。
+        /// </summary>
+        /// <param name="text"></param>
+        private void SendMessage(string text)
+        {
+            if (!PluginMain.RoomId.HasValue) { return; }
+            if (danmuCache.Count == 0) { senDanmuTimer.Start(); }
+            int max = 4;
+            int times = 0;
+            int pos = 0;
+            do
+            {
+                int len = Math.Min(text.Length - pos, LogDanmakuLengthLimit);
+                string value;
+                if (times == max - 1 && LogDanmakuLengthLimit - len < 3)
+                {
+                    value = text.Substring(pos, LogDanmakuLengthLimit - 3) + "...";
+                }
+                else
+                {
+                    value = text.Substring(pos, len);
+                }
+                danmuCache.Enqueue(value);
+                times++;
+                pos += LogDanmakuLengthLimit;
+            }
+            while (times < max && pos < text.Length);
+        }
+
+        /// <summary>
+        /// 直接调用发送弹幕。
+        /// </summary>
+        /// <param name="text"></param>
+        private void SendDanmu(string text)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    if (!PluginMain.RoomId.HasValue) { return; }
-                    string finalText = text.Substring(0, Math.Min(text.Length, LogDanmakuLengthLimit));
-                    string result = await SendDanmaku.SendDanmakuAsync(PluginMain.RoomId.Value, finalText, LoginCenter.API.LoginCenterAPI.getCookies());
+                    string result = await SendDanmaku.SendDanmakuAsync(PluginMain.RoomId.Value, text, LoginCenter.API.LoginCenterAPI.getCookies());
                     if (result == null)
                     {
                         PluginMain.Log("发送弹幕时网络错误");
@@ -96,8 +155,7 @@ namespace DGJv3
                 }
             });
         }
-
-        
+       
 
         public DGJWindow(DGJMain dGJMain)
         {
@@ -179,6 +237,8 @@ namespace DGJv3
             PluginMain.ReceivedDanmaku += (sender, e) => { DanmuHandler.ProcessDanmu(e.Danmaku); };
             PluginMain.Connected += (sender, e) => { ApiBaseModule.RoomId = e.roomid; };
             PluginMain.Disconnected += (sender, e) => { ApiBaseModule.RoomId = 0; };
+
+            senDanmuTimer.Tick += SendDanmuTimer_Tick;
 
         }
 

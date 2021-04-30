@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Windows.Threading;
 using System.Threading.Tasks;
 using LoginCenter.API;
 using Newtonsoft.Json.Linq;
@@ -141,6 +142,7 @@ namespace DGJv3
             }
             return result;
         }
+
 
 
     }
