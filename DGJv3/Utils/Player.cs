@@ -64,7 +64,7 @@ namespace DGJv3
         /// <summary>
         /// 单曲最大播放时长
         /// </summary>
-        public double MaxPlayTime { get => _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
+        public double MaxPlayTime { get => _maxPlayTime < 60 ? 60 : _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
         private double _maxPlayTime;
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace DGJv3
 
             FillSongsWithSparePlaylist();
 
-            if (MaxPlayTime > 60 && MaxPlayTime <= CurrentTimeDouble)
+            if (MaxPlayTime <= CurrentTimeDouble)
             {
                 Next();
             }
@@ -373,7 +373,7 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
 
-            DanmuHandler.TrySortSongs();
+            DanmuHandler.AfterUnloadSong();
         }
 
         private void SetLyric(string current, string upcoming)

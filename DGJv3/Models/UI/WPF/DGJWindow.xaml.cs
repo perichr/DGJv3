@@ -208,6 +208,7 @@ namespace DGJv3
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             DanmuHandler.AdminCommand = config.AdminCommand;
+            DanmuHandler.Vote4NextCount = config.Vote4NextCount;
             Writer.ScribanTemplate = config.ScribanTemplate;
             IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
@@ -251,6 +252,7 @@ namespace DGJv3
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
             AdminCommand = DanmuHandler.AdminCommand,
+            Vote4NextCount = DanmuHandler.Vote4NextCount,
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
             Blacklist = Blacklist.ToArray(),
