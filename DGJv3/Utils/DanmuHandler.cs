@@ -44,6 +44,9 @@ namespace DGJv3
         public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
         private bool _isAllowCancelPlayingSong;
 
+        /// <summary>
+        /// 需要房管权限的指令清单
+        /// </summary>
         public string AdminCommand
         {
             get => _admminCommand;
@@ -63,9 +66,18 @@ namespace DGJv3
             }
         }
         private string _admminCommand;
+
         private Dictionary<CommandType, bool> adminCommand;
 
 
+
+        /// <summary>
+        /// 投票切歌的人数
+        /// </summary>
+        public int Vote4NextCount { get => _vote4NextCount < 1 ? 1 : _vote4NextCount; set => SetField(ref _vote4NextCount, value); }
+        private int _vote4NextCount;
+
+        private ICollection<int> vote4NextUserCache = new List<int>();
 
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
@@ -146,7 +158,20 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            RemoveSong(0);
+                            if (danmakuModel.isAdmin)
+                            {
+                                Player.Next();
+                                return;
+                            }
+                            Vote4Next(danmakuModel.UserID);
+                        });
+                    }
+                    return;
+                case CommandType.Next2:
+                    {
+                        dispatcher.Invoke(() =>
+                        {
+                            Player.Next();
                             Log("切歌成功！");
 
                             // 切至指定序号的歌曲
@@ -176,6 +201,11 @@ namespace DGJv3
                     return;
                 case CommandType.Volume:
                     {
+                        if (commands.Length == 0)
+                        {
+                            Log($"当前音量：{Player.Volume}");
+                            return;
+                        }
                         if (commands.Length > 1
                             && int.TryParse(commands[1], out int volume100)
                             && volume100 >= 0
@@ -190,9 +220,14 @@ namespace DGJv3
             }
         }
 
-        private CommandType GetCommandType(string name)
+        /// <summary>
+        /// 将驶入指令翻译为枚举类型
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private CommandType GetCommandType(string key)
         {
-            switch (name)
+            switch (key)
             {
                 case "点歌":
                 case "點歌":
@@ -206,8 +241,10 @@ namespace DGJv3
                     return CommandType.AddCurent;
                 case "信息":
                     return CommandType.Info;
-                case "切歌":
+                case "下一首":
                     return CommandType.Next;
+                case "切歌":
+                    return CommandType.Next2;
                 case "暂停":
                 case "暫停":
                     return CommandType.Pause;
@@ -219,11 +256,22 @@ namespace DGJv3
             return CommandType.Null;
         }
 
+        /// <summary>
+        /// 判断用户指令是否无权限
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="danmakuModel"></param>
+        /// <returns></returns>
         private bool NoCommandRight(CommandType commandType, DanmakuModel danmakuModel)
         {
             return commandType == CommandType.Null || (adminCommand[commandType] && !danmakuModel.isAdmin);
         }
 
+        /// <summary>
+        /// 通过弹幕点歌
+        /// </summary>
+        /// <param name="danmakuModel"></param>
+        /// <param name="keyword"></param>
         private void DanmuAddSong(DanmakuModel danmakuModel, string keyword)
         {
             if (dispatcher.Invoke(callback: () => CanAddSong(username: danmakuModel.UserName)))
@@ -259,6 +307,11 @@ namespace DGJv3
             }
         }
 
+        /// <summary>
+        /// 添加歌曲
+        /// </summary>
+        /// <param name="songInfo"></param>
+        /// <param name="userName"></param>
         public void AddSong(SongInfo songInfo, string userName)
         {
             Songs.Add(new SongItem(songInfo, userName));
@@ -281,9 +334,45 @@ namespace DGJv3
             foreach (var songItem in pending) RemoveSong(songItem);
         }
 
+        /// <summary>
+        /// 投票切歌
+        /// </summary>
+        /// <param name="userId"></param>
+        private void Vote4Next(int userId)
+        {
+            Log(userId.ToString());
+            if (vote4NextUserCache.Contains(userId))
+            {
+                return;
+            }
+            vote4NextUserCache.Add(userId);
+            if (vote4NextUserCache.Count >= Vote4NextCount)
+            {
+                Player.Next();
+                Log("投票通过，切歌至下一首！");
+            }
+            else
+            {
+                Log($"切歌投票：{vote4NextUserCache.Count}/{Vote4NextCount}");
+            }
+        }
+        /// <summary>
+        /// 清空投票切歌的缓存
+        /// </summary>
+        public void CLearVote4NextCache()
+        {
+            if (vote4NextUserCache.Count == 0) return;
+            vote4NextUserCache.Clear();
+        }
 
-
-
+        /// <summary>
+        /// 卸载歌曲后的处理工作
+        /// </summary>
+        public void AfterUnloadSong()
+        {
+            TrySortSongs();
+            CLearVote4NextCache();
+        }
 
         /// <summary>
         /// 能否点歌

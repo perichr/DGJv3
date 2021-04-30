@@ -58,6 +58,9 @@ namespace DGJv3
         [JsonProperty("acmd")]
         public string AdminCommand { get; set; } = "切歌 暂停 播放 音量";
 
+        [JsonProperty("vnext")]
+        public int Vote4NextCount { get; set; } = 2;
+
         [JsonProperty("sbtp")]
         public string ScribanTemplate { get; set; } = "{{~ for 歌曲 in 播放列表 ~}}{{ if for.index ==1\n" +
             "break\n" +
