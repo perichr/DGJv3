@@ -373,8 +373,7 @@ namespace DGJv3
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalTime)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
 
-            DanmuHandler.TrySortSongs();
-            DanmuHandler.CLearVote4NextCache();
+            DanmuHandler.AfterUnloadSong();
         }
 
         private void SetLyric(string current, string upcoming)

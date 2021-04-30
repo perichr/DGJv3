@@ -55,7 +55,7 @@ namespace DGJv3
                 SetField(ref _admminCommand, value);
 
                 adminCommand = new Dictionary<CommandType, bool>();
-                var ss = value.Replace(',', ' ').Replace('，', ' ').Split(' ');
+                var ss = Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
                 foreach (CommandType item in Enum.GetValues(typeof(CommandType))) adminCommand.Add(item, false);
                 foreach (var item in ss)
                 {
@@ -201,7 +201,7 @@ namespace DGJv3
                     return;
                 case CommandType.Volume:
                     {
-                        if (commands.Length == 0)
+                        if (commands.Length == 1)
                         {
                             Log($"当前音量：{Player.Volume}");
                             return;
