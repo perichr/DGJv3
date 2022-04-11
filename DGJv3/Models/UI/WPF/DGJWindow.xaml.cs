@@ -320,12 +320,26 @@ namespace DGJv3
             LogDanmakuLengthLimit = LogDanmakuLengthLimit,
         };
 
+        public void SaveConfig(bool backup=false)
+        {
+            if(ApplyConfigReady && backup)
+            {
+              try {
+                    File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
+                }
+                catch { }
+
+            }
+            Config.Write(GatherConfig());
+        }
+
+
         /// <summary>
         /// 弹幕姬退出事件
         /// </summary>
         internal void DeInit()
         {
-            Config.Write(GatherConfig());
+            SaveConfig();
 
             Downloader.CancelDownload();
             Player.Next();
@@ -491,6 +505,12 @@ namespace DGJv3
             {
                 LogRedirectToggleButton.IsChecked = false;
             }
+        }
+
+
+        private void ContentSaveSettings_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SaveConfig(true);
         }
     }
 }

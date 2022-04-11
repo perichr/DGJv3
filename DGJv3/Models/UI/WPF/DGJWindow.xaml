@@ -289,10 +289,10 @@
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
                     <!-- 设置开始 -->
-                    <materialDesign:PopupBox Margin="30,0,0,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
+                    <materialDesign:PopupBox Margin="30,0,4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
                                              StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="Settings"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="Settings" ToolTip="设置"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
@@ -341,10 +341,10 @@
                     </materialDesign:PopupBox>
                     <!-- 设置结束 -->
                     <!-- 歌曲黑名单开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="8,0"
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="FilterRemove"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="FilterRemove" ToolTip="黑名单"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
@@ -425,10 +425,10 @@
                     </materialDesign:PopupBox>
                     <!-- 歌曲黑名单结束 -->
                     <!-- 文本输出开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres"
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="FileDocument"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="FileDocument" ToolTip="文本输出格式"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8" Width="800" Height="400">
                             <Grid.RowDefinitions>
@@ -453,6 +453,14 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
+                    <!-- 保存按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" MouseDown="ContentSaveSettings_MouseDown" ToolTip="手动备份原配置并保存当前配置"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                    </materialDesign:PopupBox>
+                    <!-- 保存按钮结束 -->
                 </StackPanel>
 
                 <!-- 播放器进度条 -->

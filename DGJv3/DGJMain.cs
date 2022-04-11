@@ -35,6 +35,11 @@ namespace DGJv3
                 Directory.CreateDirectory(Utilities.DataDirectoryPath);
             }
             catch (Exception) { }
+            try
+            {
+                Directory.CreateDirectory(Utilities.ConfigBackupDirectoryPath);
+            }
+            catch (Exception) { }
             window = new DGJWindow(this);
             versionChecker = new VersionChecker("DGJv3");
             SELF = this;
