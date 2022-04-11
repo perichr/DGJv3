@@ -57,7 +57,6 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
-            ///base.Start();感觉逻辑上不能因为懒惰急着自动启动
         }
 
         public override void Admin()
