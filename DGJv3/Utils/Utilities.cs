@@ -41,6 +41,8 @@ namespace DGJv3
 
         internal static readonly string ConfigFilePath = Path.Combine(DataDirectoryPath, "config.json");
 
+        internal static readonly string ConfigBackupDirectoryPath = Path.Combine(DataDirectoryPath, "配置备份");
+
         internal static readonly string ScribanOutputFilePath = Path.Combine(DataDirectoryPath, "信息.txt");
 
         internal static readonly string LyricOutputFilePath = Path.Combine(DataDirectoryPath, "歌词.txt");

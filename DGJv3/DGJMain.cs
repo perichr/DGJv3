@@ -35,6 +35,11 @@ namespace DGJv3
                 Directory.CreateDirectory(Utilities.DataDirectoryPath);
             }
             catch (Exception) { }
+            try
+            {
+                Directory.CreateDirectory(Utilities.ConfigBackupDirectoryPath);
+            }
+            catch (Exception) { }
             window = new DGJWindow(this);
             versionChecker = new VersionChecker("DGJv3");
             SELF = this;
@@ -57,7 +62,6 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
-            ///base.Start();感觉逻辑上不能因为懒惰急着自动启动
         }
 
         public override void Admin()

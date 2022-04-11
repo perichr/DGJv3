@@ -52,23 +52,20 @@ namespace DGJv3
             get => _admminCommand;
             set
             {
+                if (value == null) value = "";
+                else value = string.Join(",", Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries));
                 SetField(ref _admminCommand, value);
-
-                adminCommand = new Dictionary<CommandType, bool>();
-                var ss = Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
-                foreach (CommandType item in Enum.GetValues(typeof(CommandType))) adminCommand.Add(item, false);
-                foreach (var item in ss)
-                {
-                    var ct = GetCommandType(item);
-                    if (ct == CommandType.Null) continue;
-                    adminCommand[ct] = true;
-                }
             }
         }
         private string _admminCommand;
 
-        private Dictionary<CommandType, bool> adminCommand;
+        //private Dictionary<CommandType, bool> adminCommand;
 
+        private bool IsAdminCommand(CommandType commandType )
+        {
+            if (string.IsNullOrWhiteSpace(AdminCommand)) return false;
+            return AdminCommand.Contains(commandType.ToString());
+        }
 
 
         /// <summary>
@@ -264,7 +261,7 @@ namespace DGJv3
         /// <returns></returns>
         private bool NoCommandRight(CommandType commandType, DanmakuModel danmakuModel)
         {
-            return commandType == CommandType.Null || (adminCommand[commandType] && !danmakuModel.isAdmin);
+            return commandType == CommandType.Null || (IsAdminCommand(commandType) && !danmakuModel.isAdmin);
         }
 
         /// <summary>
