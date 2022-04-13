@@ -25,12 +25,6 @@ namespace DGJv3
         [JsonProperty("pple")]
         public bool IsPlaylistEnabled { get; set; } = true;
 
-        [JsonProperty("mpid")]
-        public string PrimaryModuleId { get; set; }
-
-        [JsonProperty("msid")]
-        public string SecondaryModuleId { get; set; }
-
         [JsonProperty("dmpt")]
         public double MaxPlayTime { get; set; } = 600;
 
@@ -60,6 +54,10 @@ namespace DGJv3
 
         [JsonProperty("vnext")]
         public int Vote4NextCount { get; set; } = 2;
+
+        [JsonProperty("mlst")]
+        public string[] UsingModules { get; set; } = new string[0];
+
 
         [JsonProperty("sbtp")]
         public string ScribanTemplate { get; set; } = "{{~ for 歌曲 in 播放列表 ~}}{{ if for.index ==1\n" +

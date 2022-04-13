@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace DGJv3
 {
@@ -11,12 +12,7 @@ namespace DGJv3
     {
         public SearchModule NullModule { get; private set; }
         public ObservableCollection<SearchModule> Modules { get; set; }
-        public SearchModule PrimaryModule { get => primaryModule; set => SetField(ref primaryModule, value); }
-        public SearchModule SecondaryModule { get => secondaryModule; set => SetField(ref secondaryModule, value); }
-
-        private SearchModule primaryModule;
-        private SearchModule secondaryModule;
-
+        public ObservableCollection<SearchModule> UsingModules { get; set; }
 
         internal SearchModules()
         {
@@ -31,8 +27,46 @@ namespace DGJv3
             AddModule(new ApiKuwo());
             AddModule(new ApiBiliBiliMusic());
 
-            PrimaryModule = Modules[1];
-            SecondaryModule = Modules[2];
+            UsingModules = new ObservableCollection<SearchModule>();
+
+        }
+
+        public SongInfo GetSongInfo(string keyword, int loop = 2)
+        {
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                int i = 0;
+                loop = (loop < 1) ? UsingModules.Count : Math.Min(UsingModules.Count, loop);
+                SongInfo songInfo;
+                while (i < loop)
+                {
+                    SearchModule searchModule = UsingModules[i];
+                    if(searchModule == null || searchModule == NullModule)
+                    {
+                        continue;
+                    }
+                    songInfo = searchModule.SafeSearch(keyword);
+                    if(songInfo != null)
+                    {
+                        return songInfo;
+                    }
+                    i++;
+                }             
+            }
+            return null;
+        }
+
+        public List<SongInfo> GetSongInfoList(string keyword)
+        {
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                SearchModule searchModule = UsingModules.FirstOrDefault(x => x.IsPlaylistSupported);
+                if (searchModule != null)
+                {
+                    return searchModule.SafeGetPlaylist(keyword);
+                }
+            }
+            return null;
         }
 
         public void AddModule(SearchModule m)

@@ -202,12 +202,16 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5" Grid.Row="2">
-                    <ComboBox ItemsSource="{Binding SearchModules.Modules}" Margin="5" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          SelectedValue="{Binding SearchModules.PrimaryModule}" DisplayMemberPath="ModuleName"
-                          materialDesign:HintAssist.Hint="首选歌曲搜索引擎"/>
-                    <ComboBox ItemsSource="{Binding SearchModules.Modules}" Margin="5,0" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          SelectedValue="{Binding SearchModules.SecondaryModule}" DisplayMemberPath="ModuleName"
-                          materialDesign:HintAssist.Hint="备用歌曲搜索引擎"/>
+                    <ListView x:Name="UsingModuleList" Grid.ColumnSpan="2"  Height="90"  VerticalAlignment="Top" ItemsSource="{Binding SearchModules.UsingModules}" DisplayMemberPath="ModuleName" AllowDrop="True">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="移除" Command="{Binding RemoveUsingModulesCommmand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+
+                    </ListView>
+
                 </StackPanel>
             </Grid>
 
@@ -268,7 +272,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Margin="20 0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Margin="20,0" VerticalAlignment="Center" Orientation="Horizontal">
                     <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding PlayPauseCommand}">
                         <Grid>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Play"
@@ -453,21 +457,55 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
-                    <!-- 保存按钮开始 -->
+                    <!-- 添加模块按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="PlusBox" ToolTip="添加模块"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <ListView ItemsSource="{Binding SearchModules.Modules}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350" >
+                                <ListView.View>
+                                    <GridView AllowsColumnReorder="False">
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="添加" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommmand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="已注册的模块">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding Path=ModuleName}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+
+                            </ListView>
+                        </Grid>
+                    </materialDesign:PopupBox>
+                    <!-- 添加模块按钮结束 -->
+                     <!-- 保存按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="120,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" MouseDown="ContentSaveSettings_MouseDown" ToolTip="手动备份原配置并保存当前配置"/>
                         </materialDesign:PopupBox.ToggleContent>
                     </materialDesign:PopupBox>
                     <!-- 保存按钮结束 -->
-                </StackPanel>
+               </StackPanel>
 
                 <!-- 播放器进度条 -->
                 <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0"
                         Maximum="{Binding TotalTime.TotalSeconds}" SmallChange="0.5" LargeChange="3" VerticalAlignment="Center"/>
 
             </Grid>
+
             <!-- 播放器 Grid 结束 -->
 
         </Grid>

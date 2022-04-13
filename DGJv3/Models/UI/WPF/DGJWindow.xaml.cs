@@ -48,6 +48,9 @@ namespace DGJv3
 
         public UniversalCommand ClearBlacklistCommand { get; set; }
 
+        public UniversalCommand RemoveUsingModulesCommmand { get; set; }
+
+        public UniversalCommand AddUsingModulesCommmand { get; set; }
         public bool IsLogRedirectDanmaku { get; set; }
 
         public int LogDanmakuLengthLimit { get; set; }
@@ -155,7 +158,7 @@ namespace DGJv3
                 }
             });
         }
-       
+
 
         public DGJWindow(DGJMain dGJMain)
         {
@@ -227,10 +230,29 @@ namespace DGJv3
                 }
             });
 
+
             ClearBlacklistCommand = new UniversalCommand((x) =>
             {
                 Blacklist.Clear();
             });
+
+            RemoveUsingModulesCommmand = new UniversalCommand((smobj) =>
+            {
+                if (smobj != null && smobj is SearchModule searchModule)
+                {
+                    SearchModules.UsingModules.Remove(searchModule);
+                }
+            });
+            AddUsingModulesCommmand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule) || searchModule == SearchModules.NullModule || SearchModules.UsingModules.Contains(searchModule))
+                {
+                    return;
+                }
+                SearchModules.UsingModules.Add(searchModule);
+            });
+
+
 
             InitializeComponent();
 
@@ -273,8 +295,19 @@ namespace DGJv3
             IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
-            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
-            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+
+            SearchModules.UsingModules.Clear();
+            foreach (var item in config.UsingModules)
+            {
+                var sm = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item);
+                if (sm == null || SearchModules.UsingModules.Contains(sm))
+                {
+                    continue;
+                }
+                SearchModules.UsingModules.Add(sm);
+            }
+
+
             Playlist.Clear();
             foreach (var item in config.Playlist)
             {
@@ -303,11 +336,9 @@ namespace DGJv3
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
             IsUserPrior = Player.IsUserPrior,
-            IsAllowCancelPlayingSong= DanmuHandler.IsAllowCancelPlayingSong,
+            IsAllowCancelPlayingSong = DanmuHandler.IsAllowCancelPlayingSong,
             Volume = Player.Volume,
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
-            PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
-            SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
             MaxPlayTime = Player.MaxPlayTime,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
@@ -318,13 +349,15 @@ namespace DGJv3
             Blacklist = Blacklist.ToArray(),
             IsLogRedirectDanmaku = IsLogRedirectDanmaku,
             LogDanmakuLengthLimit = LogDanmakuLengthLimit,
+            UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
         };
 
-        public void SaveConfig(bool backup=false)
+        public void SaveConfig(bool backup = false)
         {
-            if(ApplyConfigReady && backup)
+            if (ApplyConfigReady && backup)
             {
-              try {
+                try
+                {
                     File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
                 }
                 catch { }
@@ -364,27 +397,11 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongsTextBox.Text))
             {
-                var keyword = AddSongsTextBox.Text;
-                SongInfo songInfo = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule)
-                {
-                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
-                }
-
-                if (songInfo == null)
-                {
-                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
-                    {
-                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
-                    }
-                }
-
+                SongInfo songInfo = SearchModules.GetSongInfo(AddSongsTextBox.Text);
                 if (songInfo == null)
                 {
                     return;
                 }
-
                 DanmuHandler.AddSong(songInfo, Utilities.AnchorName);
             }
             AddSongsTextBox.Text = string.Empty;
@@ -402,27 +419,11 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongPlaylistTextBox.Text))
             {
-                var keyword = AddSongPlaylistTextBox.Text;
-                SongInfo songInfo = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule)
-                {
-                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
-                }
-
-                if (songInfo == null)
-                {
-                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
-                    {
-                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
-                    }
-                }
-
+                SongInfo songInfo = SearchModules.GetSongInfo(AddSongPlaylistTextBox.Text);
                 if (songInfo == null)
                 {
                     return;
                 }
-
                 Playlist.Add(songInfo);
             }
             AddSongPlaylistTextBox.Text = string.Empty;
@@ -440,15 +441,7 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddPlaylistTextBox.Text))
             {
-                var keyword = AddPlaylistTextBox.Text;
-                List<SongInfo> songInfoList = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
-                {
-                    songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
-                }
-
-                // 歌单只使用主搜索模块搜索
+                List<SongInfo> songInfoList =SearchModules.GetSongInfoList(AddPlaylistTextBox.Text);
 
                 if (songInfoList == null)
                 {
