@@ -372,8 +372,6 @@ namespace DGJv3
         /// </summary>
         internal void DeInit()
         {
-            SaveConfig();
-
             Downloader.CancelDownload();
             Player.Next();
             try
