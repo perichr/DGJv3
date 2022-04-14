@@ -205,6 +205,10 @@
                     <ListView x:Name="UsingModuleList" Grid.ColumnSpan="2"  Height="90"  VerticalAlignment="Top" ItemsSource="{Binding SearchModules.UsingModules}" DisplayMemberPath="ModuleName" AllowDrop="True">
                         <ListView.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="上移" Command="{Binding MoveUpUsingModuleCommmand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                                <MenuItem Header="下移" Command="{Binding MoveDownUsingModuleCommmand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                                 <MenuItem Header="移除" Command="{Binding RemoveUsingModulesCommmand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                             </ContextMenu>
@@ -292,8 +296,41 @@
                     <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
                     <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                    <!-- 添加模块按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="LeftAndAlignBottomEdges" Margin="30,0,4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="PlusBox" ToolTip="添加模块"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <ListView ItemsSource="{Binding SearchModules.Modules}" Grid.Row="1" MinHeight="200" MinWidth="100" MaxHeight="350" >
+                                <ListView.View>
+                                    <GridView AllowsColumnReorder="False">
+                                        <GridViewColumn Header="已注册的模块">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding Path=ModuleName}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="添加" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommmand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+
+                            </ListView>
+                        </Grid>
+                    </materialDesign:PopupBox>
+                    <!-- 添加模块按钮结束 -->
                     <!-- 设置开始 -->
-                    <materialDesign:PopupBox Margin="30,0,4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
+                    <materialDesign:PopupBox Margin="4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
                                              StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Settings" ToolTip="设置"/>
@@ -457,39 +494,6 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
-                    <!-- 添加模块按钮开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
-                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
-                        <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="PlusBox" ToolTip="添加模块"/>
-                        </materialDesign:PopupBox.ToggleContent>
-                        <Grid Margin="8">
-                            <ListView ItemsSource="{Binding SearchModules.Modules}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350" >
-                                <ListView.View>
-                                    <GridView AllowsColumnReorder="False">
-                                        <GridViewColumn Header="">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button Content="添加" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
-                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommmand}"
-                                                            CommandParameter="{Binding}"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="已注册的模块">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding Path=ModuleName}"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-
-                            </ListView>
-                        </Grid>
-                    </materialDesign:PopupBox>
-                    <!-- 添加模块按钮结束 -->
                      <!-- 保存按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="120,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">

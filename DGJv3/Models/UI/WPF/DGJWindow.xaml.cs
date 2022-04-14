@@ -51,6 +51,8 @@ namespace DGJv3
         public UniversalCommand RemoveUsingModulesCommmand { get; set; }
 
         public UniversalCommand AddUsingModulesCommmand { get; set; }
+        public UniversalCommand MoveUpUsingModuleCommmand { get; set; }
+        public UniversalCommand MoveDownUsingModuleCommmand { get; set; }
         public bool IsLogRedirectDanmaku { get; set; }
 
         public int LogDanmakuLengthLimit { get; set; }
@@ -245,11 +247,28 @@ namespace DGJv3
             });
             AddUsingModulesCommmand = new UniversalCommand((smobj) =>
             {
-                if (smobj == null || !(smobj is SearchModule searchModule) || searchModule == SearchModules.NullModule || SearchModules.UsingModules.Contains(searchModule))
+                if (smobj == null || !(smobj is SearchModule searchModule) || SearchModules.UsingModules.Contains(searchModule))
                 {
                     return;
                 }
                 SearchModules.UsingModules.Add(searchModule);
+            });
+
+            MoveUpUsingModuleCommmand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule))
+                {
+                    return;
+                }
+                SearchModules.MoveUsingModule(searchModule, true);
+            });
+            MoveDownUsingModuleCommmand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule))
+                {
+                    return;
+                }
+                SearchModules.MoveUsingModule(searchModule, false);
             });
 
 

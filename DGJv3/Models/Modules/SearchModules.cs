@@ -19,7 +19,6 @@ namespace DGJv3
             Modules = new ObservableCollection<SearchModule>();
 
             NullModule = new NullSearchModule();
-            AddModule(NullModule);
 
             AddModule(new ApiNetease());
             AddModule(new ApiTencent());
@@ -31,7 +30,25 @@ namespace DGJv3
 
         }
 
-        public SongInfo GetSongInfo(string keyword, int loop = 2)
+        public void MoveUsingModule(SearchModule searchModule, bool up)
+        {
+            if (searchModule == null)
+            {
+                return;
+            }
+            int index1 = UsingModules.IndexOf(searchModule);
+            int index2 = up ? index1 - 1 : index1 + 1;
+            try
+            {
+                var temp = UsingModules[index1];
+                UsingModules[index1] = UsingModules[index2];
+                UsingModules[index2] = temp;
+            }
+            catch { }
+
+        }
+
+        public SongInfo GetSongInfo(string keyword, int loop = 0)
         {
             if (!string.IsNullOrWhiteSpace(keyword))
             {
@@ -41,17 +58,17 @@ namespace DGJv3
                 while (i < loop)
                 {
                     SearchModule searchModule = UsingModules[i];
-                    if(searchModule == null || searchModule == NullModule)
+                    if (searchModule == null)
                     {
                         continue;
                     }
                     songInfo = searchModule.SafeSearch(keyword);
-                    if(songInfo != null)
+                    if (songInfo != null)
                     {
                         return songInfo;
                     }
                     i++;
-                }             
+                }
             }
             return null;
         }
@@ -78,8 +95,6 @@ namespace DGJv3
         {
             Log(log);
         }
-
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
