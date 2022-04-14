@@ -19,7 +19,7 @@ namespace DGJv3
         [Description("切歌（结束当前歌曲并播放下一首）")]
         Next,
         [Description("切歌（结束当前歌曲并播放之后指定序号的歌曲）")]
-        Next2,
+        Skip,
         [Description("暂停")]
         Pause,
         [Description("播放")]

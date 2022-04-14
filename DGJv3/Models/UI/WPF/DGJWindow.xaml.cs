@@ -69,10 +69,11 @@ namespace DGJv3
         }
 
         private static Queue<string> danmuCache = new Queue<string>();
+        private static string danmuCacheOne;
 
         private static DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
         {
-            Interval = TimeSpan.FromSeconds(1.1),
+            Interval = TimeSpan.FromSeconds(2),
             IsEnabled = true,
         };
 
@@ -83,14 +84,18 @@ namespace DGJv3
         /// <param name="e"></param>
         private void SendDanmuTimer_Tick(object sender, EventArgs e)
         {
+            if (!string.IsNullOrEmpty(danmuCacheOne))
+            {
+                SendDanmu(danmuCacheOne);
+                danmuCacheOne = null;
+            }
             if (danmuCache.Count == 0)
             {
                 senDanmuTimer.Stop();
                 return;
             };
             if (danmuCache.Count == 2) danmuCache.TrimExcess();
-            string text = danmuCache.Dequeue();
-            SendDanmu(text);
+            danmuCacheOne = danmuCache.Dequeue();
         }
 
         /// <summary>

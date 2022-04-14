@@ -49,22 +49,20 @@ namespace DGJv3
         /// </summary>
         public string AdminCommand
         {
-            get => _admminCommand;
+            get => string.Join(JOIN_STRING, _admminCommand);
             set
             {
                 if (value == null) value = "";
-                else value = string.Join(",", Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries));
-                SetField(ref _admminCommand, value);
+                else value = string.Join(JOIN_STRING, Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries));
+                SetField(ref _admminCommand, value.Split(SPLIT_CHAR));
             }
         }
-        private string _admminCommand;
+        private string[] _admminCommand;
 
-        //private Dictionary<CommandType, bool> adminCommand;
 
-        private bool IsAdminCommand(CommandType commandType )
+        private bool IsAdminCommand(CommandType commandType)
         {
-            if (string.IsNullOrWhiteSpace(AdminCommand)) return false;
-            return AdminCommand.Contains(commandType.ToString());
+            return _admminCommand.Contains(commandType.ToString());
         }
 
 
@@ -102,7 +100,7 @@ namespace DGJv3
                 return;
 
             string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
-            string rest = string.Join(" ", commands.Skip(1));
+            string rest = string.Join(JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
 
@@ -164,7 +162,7 @@ namespace DGJv3
                         });
                     }
                     return;
-                case CommandType.Next2:
+                case CommandType.Skip:
                     {
                         dispatcher.Invoke(() =>
                         {
@@ -241,7 +239,7 @@ namespace DGJv3
                 case "下一首":
                     return CommandType.Next;
                 case "切歌":
-                    return CommandType.Next2;
+                    return CommandType.Skip;
                 case "暂停":
                 case "暫停":
                     return CommandType.Pause;
@@ -283,7 +281,7 @@ namespace DGJv3
                     Log($"歌曲在黑名单中：{songInfo.Name}");
                     return;
                 }
-                Log($"点歌成功:{songInfo.Name}");
+                Log($"点歌成功:[{songInfo.Module.ModuleName}]{songInfo.Name}");
                 history.Write(songInfo, danmakuModel.UserName);
                 dispatcher.Invoke(callback: () =>
                 {
@@ -376,7 +374,8 @@ namespace DGJv3
             return Songs.Count < MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum);
         }
 
-        private static readonly char[] SPLIT_CHAR = { ' ' };
+        public static readonly char[] SPLIT_CHAR = { ' ' };
+        public static readonly string JOIN_STRING = " ";
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")

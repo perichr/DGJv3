@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DGJv3
 {
@@ -48,30 +49,31 @@ namespace DGJv3
 
         }
 
-        public SongInfo GetSongInfo(string keyword, int loop = 0)
+        public SongInfo GetSongInfo(string keyword)
         {
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                int i = 0;
-                loop = (loop < 1) ? UsingModules.Count : Math.Min(UsingModules.Count, loop);
-                SongInfo songInfo;
-                while (i < loop)
+                string[] tmp = keyword.Split(DanmuHandler.SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
+                if (tmp.Length > 1)
                 {
-                    SearchModule searchModule = UsingModules[i];
-                    if (searchModule == null)
+                    if (Regex.IsMatch(tmp[0], @"\d"))
                     {
-                        continue;
+                        int m = int.Parse(tmp[0]);
+                        if (m < UsingModules.Count)
+                        {
+                            return UsingModules[m].SafeSearch(string.Join(DanmuHandler.JOIN_STRING, tmp.Skip(1)));
+                        }
                     }
-                    songInfo = searchModule.SafeSearch(keyword);
-                    if (songInfo != null)
-                    {
-                        return songInfo;
-                    }
-                    i++;
+                }
+                foreach (SearchModule searchModule in UsingModules)
+                {
+                    SongInfo songInfo = searchModule.SafeSearch(keyword);
+                    if (songInfo != null) return songInfo;
                 }
             }
             return null;
         }
+
 
         public List<SongInfo> GetSongInfoList(string keyword)
         {
