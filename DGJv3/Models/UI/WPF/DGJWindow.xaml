@@ -293,8 +293,8 @@
                     /
                     <TextBlock Width="80" Text="{Binding TotalTimeString, Mode=OneWay}" TextAlignment="Left"/>
                 </TextBlock>
-                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
-                    <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
+                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,0,0,0"/>
+                    <Slider Style="{DynamicResource MaterialDesignSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
                     <!-- 添加模块按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="LeftAndAlignBottomEdges" Margin="30,0,4,0"
