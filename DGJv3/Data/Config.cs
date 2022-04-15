@@ -82,35 +82,36 @@ namespace DGJv3
         {
         }
 
-#pragma warning disable CS0168 // 声明了变量，但从未使用过
-        internal static Config Load(bool reset = false)
+        internal static Config Load()
         {
-            Config config = new Config();
-            if (!reset)
+            Config config = null;
+            try
             {
-                try
-                {
-                    var str = File.ReadAllText(Utilities.ConfigFilePath, Encoding.UTF8);
-                    config = JsonConvert.DeserializeObject<Config>(str);
-                }
-
-                catch (Exception ex)
-                {
-                }
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Utilities.ConfigFilePath, Encoding.UTF8));
+            }
+            catch
+            {
+            }
+            if (config?.Playlist == null)
+            {
+                config = new Config();
             }
             return config;
         }
 
         internal static void Write(Config config)
         {
-            try
+            if (config?.UsingModules != null)
             {
-                File.WriteAllText(Utilities.ConfigFilePath, JsonConvert.SerializeObject(config), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
+                try
+                {
+                    File.WriteAllText(Utilities.ConfigFilePath, JsonConvert.SerializeObject(config), Encoding.UTF8);
+                }
+                catch
+                {
+                }
+
             }
         }
-#pragma warning restore CS0168 // 声明了变量，但从未使用过
     }
 }

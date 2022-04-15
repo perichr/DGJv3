@@ -376,17 +376,13 @@ namespace DGJv3
             UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
         };
 
-        public void SaveConfig(bool backup = false)
+        public void SaveConfig()
         {
-            if (ApplyConfigReady && backup)
+            try
             {
-                try
-                {
-                    File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
-                }
-                catch { }
-
+                File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
             }
+            catch { }
             Config.Write(GatherConfig());
         }
 
@@ -396,6 +392,7 @@ namespace DGJv3
         /// </summary>
         internal void DeInit()
         {
+            SaveConfig();
             Downloader.CancelDownload();
             Player.Next();
             try
@@ -525,7 +522,7 @@ namespace DGJv3
 
         private void ContentSaveSettings_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            SaveConfig(true);
+            SaveConfig();
         }
     }
 }
