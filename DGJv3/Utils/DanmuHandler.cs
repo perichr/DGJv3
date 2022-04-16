@@ -314,12 +314,17 @@ namespace DGJv3
             //非用户点歌优先时跳过
             if (!Player.IsUserPrior) return;
 
-            //播放列表小于2条时跳过
-            if (Songs.Count < 2) return;
+            //空闲歌单曲目后置（删除后重新加入）
+            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser && s.Status!=SongStatus.Playing).ToArray();
+            if(pending.Length > 0)
+            {
+                foreach (var songItem in pending)
+                {
+                    RemoveSong(songItem);
+                    Songs.Add(songItem);
+                }
 
-            //删除播放列表全部空闲歌单曲目   
-            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser).ToArray();
-            foreach (var songItem in pending) RemoveSong(songItem);
+            }
         }
 
         /// <summary>
