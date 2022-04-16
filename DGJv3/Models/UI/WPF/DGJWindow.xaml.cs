@@ -330,7 +330,11 @@ namespace DGJv3
                 }
                 SearchModules.UsingModules.Add(sm);
             }
-
+            if(SearchModules.UsingModules.Count == 0)
+            {
+                SearchModules.UsingModules.Add(SearchModules.Modules[0]);
+                SearchModules.UsingModules.Add(SearchModules.Modules[1]);
+            }
 
             Playlist.Clear();
             foreach (var item in config.Playlist)
