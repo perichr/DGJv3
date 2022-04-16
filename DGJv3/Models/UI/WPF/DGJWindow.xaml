@@ -59,9 +59,11 @@
                 <ListView ItemsSource="{Binding Songs}">
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
+                            <MenuItem Header="移除" Command="{Binding RemoveSongCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                             <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                            <MenuItem Header="加入空闲歌单" Command="{Binding AddToPlayListCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
@@ -108,7 +110,7 @@
                     <ListView ItemsSource="{Binding Playlist}" Margin="-5">
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommmand}"
+                                <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                                 <MenuItem Header="清空全部" Command="{Binding ClearPlaylistCommand}"/>
                             </ContextMenu>
@@ -205,11 +207,11 @@
                     <ListView x:Name="UsingModuleList" Grid.ColumnSpan="2"  Height="90"  VerticalAlignment="Top" ItemsSource="{Binding SearchModules.UsingModules}" DisplayMemberPath="ModuleName" AllowDrop="True">
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="上移" Command="{Binding MoveUpUsingModuleCommmand}"
+                                <MenuItem Header="上移" Command="{Binding MoveUpUsingModuleCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                                <MenuItem Header="下移" Command="{Binding MoveDownUsingModuleCommmand}"
+                                <MenuItem Header="下移" Command="{Binding MoveDownUsingModuleCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                                <MenuItem Header="移除" Command="{Binding RemoveUsingModulesCommmand}"
+                                <MenuItem Header="移除" Command="{Binding RemoveUsingModulesCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
@@ -317,7 +319,7 @@
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Button Content="添加" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
-                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommmand}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommand}"
                                                             CommandParameter="{Binding}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
@@ -398,7 +400,7 @@
                                 <!--
                                 <ListView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="移除" Command="{Binding RemoveBlacklistInfoCommmand}"
+                                        <MenuItem Header="移除" Command="{Binding RemoveBlacklistInfoCommand}"
                                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="清空全部" Command="{Binding ClearBlacklistCommand}"/>
                                     </ContextMenu>
@@ -410,7 +412,7 @@
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Button Content="删除" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
-                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveBlacklistInfoCommmand}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveBlacklistInfoCommand}"
                                                             CommandParameter="{Binding}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>

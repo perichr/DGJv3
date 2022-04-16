@@ -36,23 +36,29 @@ namespace DGJv3
 
         public DanmuHandler DanmuHandler { get; set; }
 
-        public UniversalCommand RemoveSongCommmand { get; set; }
+        public UniversalCommand RemoveSongCommand { get; set; }
 
         public UniversalCommand RemoveAndBlacklistSongCommand { get; set; }
 
-        public UniversalCommand RemovePlaylistInfoCommmand { get; set; }
+        public UniversalCommand RemovePlaylistInfoCommand { get; set; }
 
         public UniversalCommand ClearPlaylistCommand { get; set; }
 
-        public UniversalCommand RemoveBlacklistInfoCommmand { get; set; }
+        public UniversalCommand RemoveBlacklistInfoCommand { get; set; }
 
         public UniversalCommand ClearBlacklistCommand { get; set; }
 
-        public UniversalCommand RemoveUsingModulesCommmand { get; set; }
+        public UniversalCommand RemoveUsingModulesCommand { get; set; }
 
-        public UniversalCommand AddUsingModulesCommmand { get; set; }
-        public UniversalCommand MoveUpUsingModuleCommmand { get; set; }
-        public UniversalCommand MoveDownUsingModuleCommmand { get; set; }
+        public UniversalCommand AddUsingModulesCommand { get; set; }
+
+        public UniversalCommand MoveUpUsingModuleCommand { get; set; }
+
+        public UniversalCommand MoveDownUsingModuleCommand { get; set; }
+
+        public UniversalCommand AddToPlayListCommand { get; set; }
+
+
         public bool IsLogRedirectDanmaku { get; set; }
 
         public int LogDanmakuLengthLimit { get; set; }
@@ -199,7 +205,7 @@ namespace DGJv3
             SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             DanmuHandler.LogEvent += (sender, e) => { Log("" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
 
-            RemoveSongCommmand = new UniversalCommand((songobj) =>
+            RemoveSongCommand = new UniversalCommand((songobj) =>
             {
                 if (songobj != null && songobj is SongItem songItem)
                 {
@@ -216,7 +222,7 @@ namespace DGJv3
                 }
             });
 
-            RemovePlaylistInfoCommmand = new UniversalCommand((songobj) =>
+            RemovePlaylistInfoCommand = new UniversalCommand((songobj) =>
             {
                 if (songobj != null && songobj is SongInfo songInfo)
                 {
@@ -229,7 +235,7 @@ namespace DGJv3
                 Playlist.Clear();
             });
 
-            RemoveBlacklistInfoCommmand = new UniversalCommand((blackobj) =>
+            RemoveBlacklistInfoCommand = new UniversalCommand((blackobj) =>
             {
                 if (blackobj != null && blackobj is BlackListItem blackListItem)
                 {
@@ -243,14 +249,14 @@ namespace DGJv3
                 Blacklist.Clear();
             });
 
-            RemoveUsingModulesCommmand = new UniversalCommand((smobj) =>
+            RemoveUsingModulesCommand = new UniversalCommand((smobj) =>
             {
                 if (smobj != null && smobj is SearchModule searchModule)
                 {
                     SearchModules.UsingModules.Remove(searchModule);
                 }
             });
-            AddUsingModulesCommmand = new UniversalCommand((smobj) =>
+            AddUsingModulesCommand = new UniversalCommand((smobj) =>
             {
                 if (smobj == null || !(smobj is SearchModule searchModule) || SearchModules.UsingModules.Contains(searchModule))
                 {
@@ -259,7 +265,7 @@ namespace DGJv3
                 SearchModules.UsingModules.Add(searchModule);
             });
 
-            MoveUpUsingModuleCommmand = new UniversalCommand((smobj) =>
+            MoveUpUsingModuleCommand = new UniversalCommand((smobj) =>
             {
                 if (smobj == null || !(smobj is SearchModule searchModule))
                 {
@@ -267,13 +273,21 @@ namespace DGJv3
                 }
                 SearchModules.MoveUsingModule(searchModule, true);
             });
-            MoveDownUsingModuleCommmand = new UniversalCommand((smobj) =>
+            MoveDownUsingModuleCommand = new UniversalCommand((smobj) =>
             {
                 if (smobj == null || !(smobj is SearchModule searchModule))
                 {
                     return;
                 }
                 SearchModules.MoveUsingModule(searchModule, false);
+            });
+
+            AddToPlayListCommand = new UniversalCommand((songobj) =>
+            {
+                if (songobj != null && songobj is SongItem songItem && songItem.UserName != Utilities.SparePlaylistUser)
+                {
+                    AddToPlayList(songItem.Info);
+                }
             });
 
 
@@ -286,6 +300,17 @@ namespace DGJv3
 
             senDanmuTimer.Tick += SendDanmuTimer_Tick;
 
+        }
+
+        void AddToPlayList(SongInfo songInfo)
+        {
+            if (songInfo != null)
+            {
+                if (Playlist.FirstOrDefault(x => (x.Id == songInfo.Id && x.ModuleId == songInfo.ModuleId)) == null)
+                {
+                    Playlist.Add(songInfo);
+                }
+            }
         }
 
         public void TryApplyConfig()
@@ -447,7 +472,7 @@ namespace DGJv3
                 {
                     return;
                 }
-                Playlist.Add(songInfo);
+                AddToPlayList(songInfo);
             }
             AddSongPlaylistTextBox.Text = string.Empty;
         }
