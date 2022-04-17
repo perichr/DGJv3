@@ -313,9 +313,9 @@ namespace DGJv3
             }
         }
 
-        public void TryApplyConfig()
+        public void TryApplyConfig(bool force = false)
         {
-            if (ApplyConfigReady)
+            if (!force && ApplyConfigReady)
                 return;
             ApplyConfig(Config.Load());
         }
@@ -405,13 +405,17 @@ namespace DGJv3
             UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
         };
 
-        public void SaveConfig()
+        public void SaveConfig(bool backup = false)
         {
-            try
+            if (backup)
             {
-                File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
+                try
+                {
+                    File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
+                }
+                catch { }
+
             }
-            catch { }
             Config.Write(GatherConfig());
         }
 
@@ -551,7 +555,7 @@ namespace DGJv3
 
         private void ContentSaveSettings_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            SaveConfig();
+            SaveConfig(true);
         }
     }
 }
