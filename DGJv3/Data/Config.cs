@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DGJv3
 {
@@ -82,20 +79,20 @@ namespace DGJv3
         {
         }
 
-        internal static Config Load()
+        internal static Config Load(string path = null)
         {
+            if (string.IsNullOrEmpty(path))
+                path = Utilities.ConfigFilePath;
             Config config = null;
             try
             {
-                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Utilities.ConfigFilePath, Encoding.UTF8));
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path, Encoding.UTF8));
             }
             catch
             {
             }
             if (config?.Playlist == null)
-            {
                 config = new Config();
-            }
             return config;
         }
 
@@ -112,6 +109,16 @@ namespace DGJv3
                 }
 
             }
+        }
+
+        public static string GetConfigPath(string key)
+        {
+            return Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + key + ".json");
+        }
+
+        public static string GetConfigPath(DateTime dt)
+        {
+            return GetConfigPath(dt.ToString("yyyyMMddHHmmss"));
         }
     }
 }

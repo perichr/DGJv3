@@ -397,15 +397,6 @@
                             </Grid.RowDefinitions>
                             <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">歌曲黑名单</TextBlock>
                             <ListView ItemsSource="{Binding Blacklist}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
-                                <!--
-                                <ListView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="移除" Command="{Binding RemoveBlacklistInfoCommand}"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                                        <MenuItem Header="清空全部" Command="{Binding ClearBlacklistCommand}"/>
-                                    </ContextMenu>
-                                </ListView.ContextMenu>
-                                -->
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="False">
                                         <GridViewColumn Header="">
@@ -497,11 +488,61 @@
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
                      <!-- 保存按钮开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="120,0,4,0"
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="120,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" MouseDown="ContentSaveSettings_MouseDown" ToolTip="手动备份原配置并保存当前配置"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" ToolTip="配置备份与重载"/>
                         </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">备份历史</TextBlock>
+                            <ListView ItemsSource="{Binding ConfigBackupList}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
+                                <ListView.View>
+                                    <GridView AllowsColumnReorder="False">
+                                         <GridViewColumn Header="备份关键字）">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="载入" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.LoadConfigCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="删除" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveConfigCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                   </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2">
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Command="{Binding BackupConfigCommand}">
+                                    备份后保存设置
+                                </Button>
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Command="{Binding LoadCurrentConfigCommand}">
+                                    重载保存的设置
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
                     </materialDesign:PopupBox>
                     <!-- 保存按钮结束 -->
                </StackPanel>

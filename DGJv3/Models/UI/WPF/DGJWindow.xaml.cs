@@ -26,6 +26,8 @@ namespace DGJv3
 
         public ObservableCollection<BlackListItem> Blacklist { get; set; }
 
+        public ObservableCollection<string> ConfigBackupList { get; set; }
+
         public Player Player { get; set; }
 
         public Downloader Downloader { get; set; }
@@ -57,6 +59,16 @@ namespace DGJv3
         public UniversalCommand MoveDownUsingModuleCommand { get; set; }
 
         public UniversalCommand AddToPlayListCommand { get; set; }
+
+        public UniversalCommand BackupConfigCommand { get; set; }
+
+        public UniversalCommand LoadCurrentConfigCommand { get; set; }
+
+        public UniversalCommand LoadConfigCommand { get; set; }
+
+        public UniversalCommand RemoveConfigCommand { get; set; }
+
+
 
 
         public bool IsLogRedirectDanmaku { get; set; }
@@ -192,6 +204,7 @@ namespace DGJv3
             Songs = new ObservableCollection<SongItem>();
             Playlist = new ObservableCollection<SongInfo>();
             Blacklist = new ObservableCollection<BlackListItem>();
+            ConfigBackupList = new ObservableCollection<string>();
 
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
@@ -290,6 +303,39 @@ namespace DGJv3
                 }
             });
 
+            BackupConfigCommand = new UniversalCommand((x) =>
+            {
+                SaveConfig(true);
+                TryGetConfigBackupLst();
+            });
+
+            LoadCurrentConfigCommand = new UniversalCommand((x) =>
+            {
+                TryApplyConfig(null,true);
+            });
+
+            RemoveConfigCommand = new UniversalCommand((obj) =>
+            {
+                if (obj != null && obj is string str)
+                {
+                    Log(str);
+                    Log(Config.GetConfigPath(str));
+                    try
+                    {
+                        File.Delete(Config.GetConfigPath(str));
+                    }
+                    catch { }
+                    TryGetConfigBackupLst();
+                }
+            });
+
+            LoadConfigCommand = new UniversalCommand((obj) =>
+             {
+                 if (obj != null && obj is string str)
+                 {
+                     TryApplyConfig(Config.GetConfigPath(str), true);
+                 }
+             });
 
 
             InitializeComponent();
@@ -299,6 +345,9 @@ namespace DGJv3
             PluginMain.Disconnected += (sender, e) => { ApiBaseModule.RoomId = 0; };
 
             senDanmuTimer.Tick += SendDanmuTimer_Tick;
+
+
+            TryGetConfigBackupLst();
 
         }
 
@@ -313,13 +362,27 @@ namespace DGJv3
             }
         }
 
-        public void TryApplyConfig(bool force = false)
+        public void TryApplyConfig(string path = null, bool force = false)
         {
             if (!force && ApplyConfigReady)
                 return;
-            ApplyConfig(Config.Load());
+            ApplyConfig(Config.Load(path));
         }
 
+        public void TryGetConfigBackupLst()
+        {
+            ConfigBackupList.Clear();
+
+            string[] list = Directory.GetFiles(Utilities.ConfigBackupDirectoryPath, "config.??????????????.json");
+            if (list.Length > 0)
+            {
+                Array.Sort(list);
+                foreach (string str in list)
+                {
+                    ConfigBackupList.Add(Path.GetFileNameWithoutExtension(str).Substring(7));
+                }
+            }
+        }
         /// <summary>
         /// 应用设置
         /// </summary>
@@ -411,7 +474,7 @@ namespace DGJv3
             {
                 try
                 {
-                    File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
+                    File.Copy(Utilities.ConfigFilePath, Config.GetConfigPath( File.GetLastWriteTime(Utilities.ConfigFilePath)), true);
                 }
                 catch { }
 
@@ -553,9 +616,6 @@ namespace DGJv3
         }
 
 
-        private void ContentSaveSettings_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            SaveConfig(true);
-        }
+ 
     }
 }
