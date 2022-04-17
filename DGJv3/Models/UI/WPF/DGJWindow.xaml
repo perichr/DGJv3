@@ -499,11 +499,20 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">备份历史</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">备份清单</TextBlock>
                             <ListView ItemsSource="{Binding ConfigBackupList}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="False">
-                                         <GridViewColumn Header="备份关键字）">
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="删除" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveConfigCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="关键字）">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding}"/>
@@ -519,26 +528,17 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button Content="删除" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveConfigCommand}"
-                                                            CommandParameter="{Binding}"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
                                    </GridView>
                                 </ListView.View>
                             </ListView>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2">
                                 <Button HorizontalAlignment="Center" VerticalAlignment="Center"
                                     Command="{Binding BackupConfigCommand}">
-                                    备份后保存设置
+                                    手动保存设置并备份
                                 </Button>
                                 <Button HorizontalAlignment="Center" VerticalAlignment="Center"
                                     Command="{Binding LoadCurrentConfigCommand}">
-                                    重载保存的设置
+                                    重载最新设置
                                 </Button>
                             </StackPanel>
                         </Grid>

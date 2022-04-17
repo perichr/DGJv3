@@ -96,18 +96,19 @@ namespace DGJv3
             return config;
         }
 
-        internal static void Write(Config config)
+        internal static void Write(Config config, bool backup = false)
         {
             if (config?.UsingModules != null)
             {
                 try
                 {
                     File.WriteAllText(Utilities.ConfigFilePath, JsonConvert.SerializeObject(config), Encoding.UTF8);
+                    if (backup)
+                        File.Copy(Utilities.ConfigFilePath, Config.GetConfigPath(File.GetLastWriteTime(Utilities.ConfigFilePath)), true);
                 }
                 catch
                 {
                 }
-
             }
         }
 

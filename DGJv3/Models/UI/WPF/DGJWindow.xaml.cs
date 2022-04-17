@@ -470,18 +470,8 @@ namespace DGJv3
 
         public void SaveConfig(bool backup = false)
         {
-            if (backup)
-            {
-                try
-                {
-                    File.Copy(Utilities.ConfigFilePath, Config.GetConfigPath( File.GetLastWriteTime(Utilities.ConfigFilePath)), true);
-                }
-                catch { }
-
-            }
-            Config.Write(GatherConfig());
+            Config.Write(GatherConfig(), backup);
         }
-
 
         /// <summary>
         /// 弹幕姬退出事件
