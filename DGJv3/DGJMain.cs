@@ -26,9 +26,9 @@ namespace DGJv3
 
             PluginName = "点歌姬";
             PluginVer = BuildInfo.Version;
-            PluginDesc = "使用弹幕点播歌曲";
-            PluginAuth = "Genteure";
-            PluginCont = "dgj3@genteure.com";
+            PluginDesc = "使用弹幕点播歌曲（原作者已弃坑，此为第三方维护版本）";
+            PluginAuth = "Genteure (原作者) / ：P（维护）";
+            PluginCont = "i@perichr.org";
 
             try
             {

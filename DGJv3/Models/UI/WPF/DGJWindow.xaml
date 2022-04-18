@@ -59,9 +59,11 @@
                 <ListView ItemsSource="{Binding Songs}">
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="移除" Command="{Binding RemoveSongCommmand}"
+                            <MenuItem Header="移除" Command="{Binding RemoveSongCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                             <MenuItem Header="移除并将歌曲ID加入黑名单" Command="{Binding RemoveAndBlacklistSongCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                            <MenuItem Header="加入空闲歌单" Command="{Binding AddToPlayListCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
@@ -108,7 +110,7 @@
                     <ListView ItemsSource="{Binding Playlist}" Margin="-5">
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommmand}"
+                                <MenuItem Header="移除" Command="{Binding RemovePlaylistInfoCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                                 <MenuItem Header="清空全部" Command="{Binding ClearPlaylistCommand}"/>
                             </ContextMenu>
@@ -202,12 +204,20 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5" Grid.Row="2">
-                    <ComboBox ItemsSource="{Binding SearchModules.Modules}" Margin="5" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          SelectedValue="{Binding SearchModules.PrimaryModule}" DisplayMemberPath="ModuleName"
-                          materialDesign:HintAssist.Hint="首选歌曲搜索引擎"/>
-                    <ComboBox ItemsSource="{Binding SearchModules.Modules}" Margin="5,0" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          SelectedValue="{Binding SearchModules.SecondaryModule}" DisplayMemberPath="ModuleName"
-                          materialDesign:HintAssist.Hint="备用歌曲搜索引擎"/>
+                    <ListView x:Name="UsingModuleList" Grid.ColumnSpan="2"  Height="90"  VerticalAlignment="Top" ItemsSource="{Binding SearchModules.UsingModules}" DisplayMemberPath="ModuleName" AllowDrop="True">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="上移" Command="{Binding MoveUpUsingModuleCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                                <MenuItem Header="下移" Command="{Binding MoveDownUsingModuleCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                                <MenuItem Header="移除" Command="{Binding RemoveUsingModulesCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+
+                    </ListView>
+
                 </StackPanel>
             </Grid>
 
@@ -268,7 +278,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Margin="20 0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Margin="20,0" VerticalAlignment="Center" Orientation="Horizontal">
                     <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Command="{Binding PlayPauseCommand}">
                         <Grid>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Play"
@@ -285,11 +295,44 @@
                     /
                     <TextBlock Width="80" Text="{Binding TotalTimeString, Mode=OneWay}" TextAlignment="Left"/>
                 </TextBlock>
-                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,10,0,0"/>
-                    <Slider Style="{StaticResource MaterialDesignDiscreteSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
+                    <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,0,0,0"/>
+                    <Slider Style="{DynamicResource MaterialDesignSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                    <!-- 添加模块按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="LeftAndAlignBottomEdges" Margin="30,0,4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="PlusBox" ToolTip="添加模块"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <ListView ItemsSource="{Binding SearchModules.Modules}" Grid.Row="1" MinHeight="200" MinWidth="100" MaxHeight="350" >
+                                <ListView.View>
+                                    <GridView AllowsColumnReorder="False">
+                                        <GridViewColumn Header="已注册的模块">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding Path=ModuleName}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="添加" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.AddUsingModulesCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+
+                            </ListView>
+                        </Grid>
+                    </materialDesign:PopupBox>
+                    <!-- 添加模块按钮结束 -->
                     <!-- 设置开始 -->
-                    <materialDesign:PopupBox Margin="30,0,4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
+                    <materialDesign:PopupBox Margin="4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
                                              StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="Settings" ToolTip="设置"/>
@@ -354,22 +397,13 @@
                             </Grid.RowDefinitions>
                             <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">歌曲黑名单</TextBlock>
                             <ListView ItemsSource="{Binding Blacklist}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
-                                <!--
-                                <ListView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="移除" Command="{Binding RemoveBlacklistInfoCommmand}"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                                        <MenuItem Header="清空全部" Command="{Binding ClearBlacklistCommand}"/>
-                                    </ContextMenu>
-                                </ListView.ContextMenu>
-                                -->
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="False">
                                         <GridViewColumn Header="">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <Button Content="删除" Style="{StaticResource MaterialDesignFlatButton}" Margin="0"
-                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveBlacklistInfoCommmand}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveBlacklistInfoCommand}"
                                                             CommandParameter="{Binding}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
@@ -453,21 +487,72 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
-                    <!-- 保存按钮开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
+                     <!-- 保存按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="120,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" MouseDown="ContentSaveSettings_MouseDown" ToolTip="手动备份原配置并保存当前配置"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" ToolTip="配置备份与重载"/>
                         </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">备份清单</TextBlock>
+                            <ListView ItemsSource="{Binding ConfigBackupList}" Grid.Row="1" MinHeight="200" MinWidth="300" MaxHeight="350">
+                                <ListView.View>
+                                    <GridView AllowsColumnReorder="False">
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="删除" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.RemoveConfigCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="关键字）">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="载入" Margin="0"  Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{Binding ElementName=DGJRootWindow,Path=DataContext.LoadConfigCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                   </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2">
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Command="{Binding BackupConfigCommand}">
+                                    手动保存设置并备份
+                                </Button>
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Command="{Binding LoadCurrentConfigCommand}">
+                                    重载最新设置
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
                     </materialDesign:PopupBox>
                     <!-- 保存按钮结束 -->
-                </StackPanel>
+               </StackPanel>
 
                 <!-- 播放器进度条 -->
                 <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0"
                         Maximum="{Binding TotalTime.TotalSeconds}" SmallChange="0.5" LargeChange="3" VerticalAlignment="Center"/>
 
             </Grid>
+
             <!-- 播放器 Grid 结束 -->
 
         </Grid>

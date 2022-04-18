@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DGJv3
 {
@@ -24,12 +21,6 @@ namespace DGJv3
 
         [JsonProperty("pple")]
         public bool IsPlaylistEnabled { get; set; } = true;
-
-        [JsonProperty("mpid")]
-        public string PrimaryModuleId { get; set; }
-
-        [JsonProperty("msid")]
-        public string SecondaryModuleId { get; set; }
 
         [JsonProperty("dmpt")]
         public double MaxPlayTime { get; set; } = 600;
@@ -61,6 +52,10 @@ namespace DGJv3
         [JsonProperty("vnext")]
         public int Vote4NextCount { get; set; } = 2;
 
+        [JsonProperty("mlst")]
+        public string[] UsingModules { get; set; } = new string[0];
+
+
         [JsonProperty("sbtp")]
         public string ScribanTemplate { get; set; } = "{{~ for 歌曲 in 播放列表 ~}}{{ if for.index ==1\n" +
             "break\n" +
@@ -84,35 +79,47 @@ namespace DGJv3
         {
         }
 
-#pragma warning disable CS0168 // 声明了变量，但从未使用过
-        internal static Config Load(bool reset = false)
+        internal static Config Load(string path = null)
         {
-            Config config = new Config();
-            if (!reset)
+            if (string.IsNullOrEmpty(path))
+                path = Utilities.ConfigFilePath;
+            Config config = null;
+            try
             {
-                try
-                {
-                    var str = File.ReadAllText(Utilities.ConfigFilePath, Encoding.UTF8);
-                    config = JsonConvert.DeserializeObject<Config>(str);
-                }
-
-                catch (Exception ex)
-                {
-                }
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path, Encoding.UTF8));
             }
+            catch
+            {
+            }
+            if (config?.Playlist == null)
+                config = new Config();
             return config;
         }
 
-        internal static void Write(Config config)
+        internal static void Write(Config config, bool backup = false)
         {
-            try
+            if (config?.UsingModules != null)
             {
-                File.WriteAllText(Utilities.ConfigFilePath, JsonConvert.SerializeObject(config), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
+                try
+                {
+                    File.WriteAllText(Utilities.ConfigFilePath, JsonConvert.SerializeObject(config), Encoding.UTF8);
+                    if (backup)
+                        File.Copy(Utilities.ConfigFilePath, Config.GetConfigPath(File.GetLastWriteTime(Utilities.ConfigFilePath)), true);
+                }
+                catch
+                {
+                }
             }
         }
-#pragma warning restore CS0168 // 声明了变量，但从未使用过
+
+        public static string GetConfigPath(string key)
+        {
+            return Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + key + ".json");
+        }
+
+        public static string GetConfigPath(DateTime dt)
+        {
+            return GetConfigPath(dt.ToString("yyyyMMddHHmmss"));
+        }
     }
 }

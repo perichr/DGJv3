@@ -26,6 +26,8 @@ namespace DGJv3
 
         public ObservableCollection<BlackListItem> Blacklist { get; set; }
 
+        public ObservableCollection<string> ConfigBackupList { get; set; }
+
         public Player Player { get; set; }
 
         public Downloader Downloader { get; set; }
@@ -36,17 +38,38 @@ namespace DGJv3
 
         public DanmuHandler DanmuHandler { get; set; }
 
-        public UniversalCommand RemoveSongCommmand { get; set; }
+        public UniversalCommand RemoveSongCommand { get; set; }
 
         public UniversalCommand RemoveAndBlacklistSongCommand { get; set; }
 
-        public UniversalCommand RemovePlaylistInfoCommmand { get; set; }
+        public UniversalCommand RemovePlaylistInfoCommand { get; set; }
 
         public UniversalCommand ClearPlaylistCommand { get; set; }
 
-        public UniversalCommand RemoveBlacklistInfoCommmand { get; set; }
+        public UniversalCommand RemoveBlacklistInfoCommand { get; set; }
 
         public UniversalCommand ClearBlacklistCommand { get; set; }
+
+        public UniversalCommand RemoveUsingModulesCommand { get; set; }
+
+        public UniversalCommand AddUsingModulesCommand { get; set; }
+
+        public UniversalCommand MoveUpUsingModuleCommand { get; set; }
+
+        public UniversalCommand MoveDownUsingModuleCommand { get; set; }
+
+        public UniversalCommand AddToPlayListCommand { get; set; }
+
+        public UniversalCommand BackupConfigCommand { get; set; }
+
+        public UniversalCommand LoadCurrentConfigCommand { get; set; }
+
+        public UniversalCommand LoadConfigCommand { get; set; }
+
+        public UniversalCommand RemoveConfigCommand { get; set; }
+
+
+
 
         public bool IsLogRedirectDanmaku { get; set; }
 
@@ -64,10 +87,11 @@ namespace DGJv3
         }
 
         private static Queue<string> danmuCache = new Queue<string>();
+        private static string danmuCacheOne;
 
         private static DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
         {
-            Interval = TimeSpan.FromSeconds(1.1),
+            Interval = TimeSpan.FromSeconds(2),
             IsEnabled = true,
         };
 
@@ -78,14 +102,18 @@ namespace DGJv3
         /// <param name="e"></param>
         private void SendDanmuTimer_Tick(object sender, EventArgs e)
         {
+            if (!string.IsNullOrEmpty(danmuCacheOne))
+            {
+                SendDanmu(danmuCacheOne);
+                danmuCacheOne = null;
+            }
             if (danmuCache.Count == 0)
             {
                 senDanmuTimer.Stop();
                 return;
             };
             if (danmuCache.Count == 2) danmuCache.TrimExcess();
-            string text = danmuCache.Dequeue();
-            SendDanmu(text);
+            danmuCacheOne = danmuCache.Dequeue();
         }
 
         /// <summary>
@@ -155,7 +183,7 @@ namespace DGJv3
                 }
             });
         }
-       
+
 
         public DGJWindow(DGJMain dGJMain)
         {
@@ -176,6 +204,7 @@ namespace DGJv3
             Songs = new ObservableCollection<SongItem>();
             Playlist = new ObservableCollection<SongInfo>();
             Blacklist = new ObservableCollection<BlackListItem>();
+            ConfigBackupList = new ObservableCollection<string>();
 
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
@@ -189,7 +218,7 @@ namespace DGJv3
             SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
             DanmuHandler.LogEvent += (sender, e) => { Log("" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
 
-            RemoveSongCommmand = new UniversalCommand((songobj) =>
+            RemoveSongCommand = new UniversalCommand((songobj) =>
             {
                 if (songobj != null && songobj is SongItem songItem)
                 {
@@ -206,7 +235,7 @@ namespace DGJv3
                 }
             });
 
-            RemovePlaylistInfoCommmand = new UniversalCommand((songobj) =>
+            RemovePlaylistInfoCommand = new UniversalCommand((songobj) =>
             {
                 if (songobj != null && songobj is SongInfo songInfo)
                 {
@@ -219,7 +248,7 @@ namespace DGJv3
                 Playlist.Clear();
             });
 
-            RemoveBlacklistInfoCommmand = new UniversalCommand((blackobj) =>
+            RemoveBlacklistInfoCommand = new UniversalCommand((blackobj) =>
             {
                 if (blackobj != null && blackobj is BlackListItem blackListItem)
                 {
@@ -227,10 +256,87 @@ namespace DGJv3
                 }
             });
 
+
             ClearBlacklistCommand = new UniversalCommand((x) =>
             {
                 Blacklist.Clear();
             });
+
+            RemoveUsingModulesCommand = new UniversalCommand((smobj) =>
+            {
+                if (smobj != null && smobj is SearchModule searchModule)
+                {
+                    SearchModules.UsingModules.Remove(searchModule);
+                }
+            });
+            AddUsingModulesCommand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule) || SearchModules.UsingModules.Contains(searchModule))
+                {
+                    return;
+                }
+                SearchModules.UsingModules.Add(searchModule);
+            });
+
+            MoveUpUsingModuleCommand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule))
+                {
+                    return;
+                }
+                SearchModules.MoveUsingModule(searchModule, true);
+            });
+            MoveDownUsingModuleCommand = new UniversalCommand((smobj) =>
+            {
+                if (smobj == null || !(smobj is SearchModule searchModule))
+                {
+                    return;
+                }
+                SearchModules.MoveUsingModule(searchModule, false);
+            });
+
+            AddToPlayListCommand = new UniversalCommand((songobj) =>
+            {
+                if (songobj != null && songobj is SongItem songItem && songItem.UserName != Utilities.SparePlaylistUser)
+                {
+                    AddToPlayList(songItem.Info);
+                }
+            });
+
+            BackupConfigCommand = new UniversalCommand((x) =>
+            {
+                SaveConfig(true);
+                TryGetConfigBackupLst();
+            });
+
+            LoadCurrentConfigCommand = new UniversalCommand((x) =>
+            {
+                TryApplyConfig(null,true);
+            });
+
+            RemoveConfigCommand = new UniversalCommand((obj) =>
+            {
+                if (obj != null && obj is string str)
+                {
+                    Log(str);
+                    Log(Config.GetConfigPath(str));
+                    try
+                    {
+                        File.Delete(Config.GetConfigPath(str));
+                    }
+                    catch { }
+                    TryGetConfigBackupLst();
+                }
+            });
+
+            LoadConfigCommand = new UniversalCommand((obj) =>
+             {
+                 if (obj != null && obj is string str)
+                 {
+                     TryApplyConfig(Config.GetConfigPath(str), true);
+                 }
+             });
+
 
             InitializeComponent();
 
@@ -240,15 +346,43 @@ namespace DGJv3
 
             senDanmuTimer.Tick += SendDanmuTimer_Tick;
 
+
+            TryGetConfigBackupLst();
+
         }
 
-        public void TryApplyConfig()
+        void AddToPlayList(SongInfo songInfo)
         {
-            if (ApplyConfigReady)
-                return;
-            ApplyConfig(Config.Load());
+            if (songInfo != null)
+            {
+                if (Playlist.FirstOrDefault(x => (x.Id == songInfo.Id && x.ModuleId == songInfo.ModuleId)) == null)
+                {
+                    Playlist.Add(songInfo);
+                }
+            }
         }
 
+        public void TryApplyConfig(string path = null, bool force = false)
+        {
+            if (!force && ApplyConfigReady)
+                return;
+            ApplyConfig(Config.Load(path));
+        }
+
+        public void TryGetConfigBackupLst()
+        {
+            ConfigBackupList.Clear();
+
+            string[] list = Directory.GetFiles(Utilities.ConfigBackupDirectoryPath, "config.??????????????.json");
+            if (list.Length > 0)
+            {
+                Array.Sort(list);
+                foreach (string str in list)
+                {
+                    ConfigBackupList.Add(Path.GetFileNameWithoutExtension(str).Substring(7));
+                }
+            }
+        }
         /// <summary>
         /// 应用设置
         /// </summary>
@@ -273,8 +407,23 @@ namespace DGJv3
             IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
             LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
 
-            SearchModules.PrimaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.PrimaryModuleId) ?? SearchModules.NullModule;
-            SearchModules.SecondaryModule = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == config.SecondaryModuleId) ?? SearchModules.NullModule;
+
+            SearchModules.UsingModules.Clear();
+            foreach (var item in config.UsingModules)
+            {
+                var sm = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item);
+                if (sm == null || SearchModules.UsingModules.Contains(sm))
+                {
+                    continue;
+                }
+                SearchModules.UsingModules.Add(sm);
+            }
+            if(SearchModules.UsingModules.Count == 0)
+            {
+                SearchModules.UsingModules.Add(SearchModules.Modules[0]);
+                SearchModules.UsingModules.Add(SearchModules.Modules[1]);
+            }
+
             Playlist.Clear();
             foreach (var item in config.Playlist)
             {
@@ -303,11 +452,9 @@ namespace DGJv3
             DirectSoundDevice = Player.DirectSoundDevice,
             WaveoutEventDevice = Player.WaveoutEventDevice,
             IsUserPrior = Player.IsUserPrior,
-            IsAllowCancelPlayingSong= DanmuHandler.IsAllowCancelPlayingSong,
+            IsAllowCancelPlayingSong = DanmuHandler.IsAllowCancelPlayingSong,
             Volume = Player.Volume,
             IsPlaylistEnabled = Player.IsPlaylistEnabled,
-            PrimaryModuleId = SearchModules.PrimaryModule.UniqueId,
-            SecondaryModuleId = SearchModules.SecondaryModule.UniqueId,
             MaxPlayTime = Player.MaxPlayTime,
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
@@ -318,21 +465,13 @@ namespace DGJv3
             Blacklist = Blacklist.ToArray(),
             IsLogRedirectDanmaku = IsLogRedirectDanmaku,
             LogDanmakuLengthLimit = LogDanmakuLengthLimit,
+            UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
         };
 
-        public void SaveConfig(bool backup=false)
+        public void SaveConfig(bool backup = false)
         {
-            if(ApplyConfigReady && backup)
-            {
-              try {
-                    File.Copy(Utilities.ConfigFilePath, Path.Combine(Utilities.ConfigBackupDirectoryPath, "config." + File.GetLastWriteTime(Utilities.ConfigFilePath).ToString("yyyyMMddHHmmss") + ".json"), true);
-                }
-                catch { }
-
-            }
-            Config.Write(GatherConfig());
+            Config.Write(GatherConfig(), backup);
         }
-
 
         /// <summary>
         /// 弹幕姬退出事件
@@ -340,7 +479,6 @@ namespace DGJv3
         internal void DeInit()
         {
             SaveConfig();
-
             Downloader.CancelDownload();
             Player.Next();
             try
@@ -364,27 +502,11 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongsTextBox.Text))
             {
-                var keyword = AddSongsTextBox.Text;
-                SongInfo songInfo = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule)
-                {
-                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
-                }
-
-                if (songInfo == null)
-                {
-                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
-                    {
-                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
-                    }
-                }
-
+                SongInfo songInfo = SearchModules.GetSongInfo(AddSongsTextBox.Text);
                 if (songInfo == null)
                 {
                     return;
                 }
-
                 DanmuHandler.AddSong(songInfo, Utilities.AnchorName);
             }
             AddSongsTextBox.Text = string.Empty;
@@ -402,28 +524,12 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddSongPlaylistTextBox.Text))
             {
-                var keyword = AddSongPlaylistTextBox.Text;
-                SongInfo songInfo = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule)
-                {
-                    songInfo = SearchModules.PrimaryModule.SafeSearch(keyword);
-                }
-
-                if (songInfo == null)
-                {
-                    if (SearchModules.SecondaryModule != SearchModules.NullModule)
-                    {
-                        songInfo = SearchModules.SecondaryModule.SafeSearch(keyword);
-                    }
-                }
-
+                SongInfo songInfo = SearchModules.GetSongInfo(AddSongPlaylistTextBox.Text);
                 if (songInfo == null)
                 {
                     return;
                 }
-
-                Playlist.Add(songInfo);
+                AddToPlayList(songInfo);
             }
             AddSongPlaylistTextBox.Text = string.Empty;
         }
@@ -440,15 +546,7 @@ namespace DGJv3
         {
             if (eventArgs.Parameter.Equals(true) && !string.IsNullOrWhiteSpace(AddPlaylistTextBox.Text))
             {
-                var keyword = AddPlaylistTextBox.Text;
-                List<SongInfo> songInfoList = null;
-
-                if (SearchModules.PrimaryModule != SearchModules.NullModule && SearchModules.PrimaryModule.IsPlaylistSupported)
-                {
-                    songInfoList = SearchModules.PrimaryModule.SafeGetPlaylist(keyword);
-                }
-
-                // 歌单只使用主搜索模块搜索
+                List<SongInfo> songInfoList =SearchModules.GetSongInfoList(AddPlaylistTextBox.Text);
 
                 if (songInfoList == null)
                 {
@@ -508,9 +606,6 @@ namespace DGJv3
         }
 
 
-        private void ContentSaveSettings_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            SaveConfig(true);
-        }
+ 
     }
 }
