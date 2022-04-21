@@ -53,16 +53,22 @@ namespace DGJv3
             set
             {
                 if (value == null) value = "";
-                else value = string.Join(JOIN_STRING, Regex.Replace(value, @"[\s,，;；]", new string(SPLIT_CHAR)).Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries));
-                SetField(ref _admminCommand, value.Split(SPLIT_CHAR));
+                else
+                {
+                    Regex regClean = new Regex(@"[\s,，;；]{1,}", RegexOptions.IgnoreCase);
+                    value = regClean.Replace(value, JOIN_STRING).Trim();
+                }
+                SetField(ref _admminCommand, value);
+                _adminCommandType = (from str in value.Split(JOIN_STRING.ToCharArray()) select GetCommandType(str)).ToArray();
             }
         }
-        private string[] _admminCommand;
+        private string _admminCommand;
 
+        private CommandType[] _adminCommandType;
 
         private bool IsAdminCommand(CommandType commandType)
         {
-            return _admminCommand.Contains(commandType.ToString());
+            return _adminCommandType.Contains(commandType);
         }
 
 
@@ -99,7 +105,7 @@ namespace DGJv3
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
-            string[] commands = danmakuModel.CommentText.Split(SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
+            string[] commands = danmakuModel.CommentText.Split(JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             string rest = string.Join(JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
@@ -378,7 +384,6 @@ namespace DGJv3
             return Songs.Count < MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum);
         }
 
-        public static readonly char[] SPLIT_CHAR = { ' ' };
         public static readonly string JOIN_STRING = " ";
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -53,7 +53,7 @@ namespace DGJv3
         {
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                string[] tmp = keyword.Split(DanmuHandler.SPLIT_CHAR, StringSplitOptions.RemoveEmptyEntries);
+                string[] tmp = keyword.Split(DanmuHandler.JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 if (tmp.Length > 1)
                 {
                     if (Regex.IsMatch(tmp[0], @"\d"))
