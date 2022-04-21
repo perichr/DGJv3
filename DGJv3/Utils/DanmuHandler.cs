@@ -315,15 +315,14 @@ namespace DGJv3
             if (!Player.IsUserPrior) return;
 
             //空闲歌单曲目后置（删除后重新加入）
-            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser && s.Status!=SongStatus.Playing).ToArray();
-            if(pending.Length > 0)
+            var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser && s.Status != SongStatus.Playing).ToArray();
+            if (pending.Length > 0)
             {
                 foreach (var songItem in pending)
                 {
-                    RemoveSong(songItem);
+                    Songs.Remove(songItem);
                     Songs.Add(songItem);
                 }
-
             }
         }
 
@@ -362,7 +361,7 @@ namespace DGJv3
         /// </summary>
         public void AfterUnloadSong()
         {
-            TrySortSongs();
+            //TrySortSongs();
             CLearVote4NextCache();
         }
 
