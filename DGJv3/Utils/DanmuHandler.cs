@@ -287,7 +287,7 @@ namespace DGJv3
                     Log($"歌曲在黑名单中：{songInfo.Name}");
                     return;
                 }
-                Log($"点歌成功:[{songInfo.Module.ModuleName}]{songInfo.Name}");
+                Log($"点歌成功:{songInfo.Name}");
                 history.Write(songInfo, danmakuModel.UserName);
                 dispatcher.Invoke(callback: () =>
                 {

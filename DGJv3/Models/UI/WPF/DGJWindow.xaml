@@ -512,7 +512,7 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="关键字）">
+                                        <GridViewColumn Header="备份关键字">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock TextAlignment="Center" Margin="0,8" Text="{Binding}"/>

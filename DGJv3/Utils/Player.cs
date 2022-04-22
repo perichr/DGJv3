@@ -313,7 +313,7 @@ namespace DGJv3
                     Volume = Volume
                 };
 
-                wavePlayer.PlaybackStopped += (sender, e) => UnloadSong();
+                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(Utilities.SkipKeyWord +  "播放出错！", e.Exception); };
 
                 wavePlayer.Init(sampleChannel);
                 wavePlayer.Play();
@@ -325,7 +325,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                Log($"下载出错，可能为VIP/无版权/网络波动。“{songItem.SongName}”（{songItem.ModuleName}）", ex);
+                Log($"下载出错，可能为VIP/无版权/网络波动。“{songItem.SongName}”", ex);
                 UnloadSong();
             }
         }
