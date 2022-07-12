@@ -60,7 +60,7 @@ namespace DGJv3
             {
                 result = await HttpPostAsync("https://api.live.bilibili.com/msg/send", parameters, 15, null, cookie, null);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 DGJMain.SELF.Log(e.Message);
                 result = null;
@@ -80,7 +80,7 @@ namespace DGJv3
             request.Method = "POST";
             request.AutomaticDecompression = (DecompressionMethods.GZip | DecompressionMethods.Deflate);
             request.ContentType = "application/x-www-form-urlencoded";
-            request.UserAgent = userAgent ?? ("DGJ/" + new Regex(@"[\u4e00-\u9fa5]").Replace((BuildInfo.Version),"")+"(patched by perichr)");
+            request.UserAgent = userAgent ?? ("DGJ/" + new Regex(@"[\u4e00-\u9fa5]").Replace((BuildInfo.Version), "") + "(patched by perichr)");
             if (timeout != 0)
             {
                 request.Timeout = timeout * 1000;
@@ -143,7 +143,39 @@ namespace DGJv3
             return result;
         }
 
+        internal static readonly string SkipKeyWord = "ﷺ";
+        internal static readonly string[] keywords = new string[] {
+                "网易云",
+                "咪咕"
+            };
+        internal static readonly string[] replacekeywords = (from key in keywords select ReplaceKeyword(key)).ToArray();
+        static public void FilterMessage(ref string text)
+        {
+            if (text.EndsWith(SkipKeyWord))
+            {
+                text = string.Empty;
+                return;
+            }
+            //手动过滤错误信息，下次再整理。
+            text = Regex.Replace(text, @"(?s)(?i)(An exception|\(Exception|\(ex:).*", "");//删除一般错误代码详情
+            text = Regex.Replace(text, @"(?s)(?i)(失败了喵).*", "$1！");//删除本地网易云喵块的错误代码详情
 
 
+            for (int i = 0; i < keywords.Length; i++)
+            {
+                text = Regex.Replace(text, keywords[i], replacekeywords[i]);
+            }
+        }
+
+        static public string LogNoDamu(string text)
+        {
+            return text + SkipKeyWord;
+        }
+
+        static public string ReplaceKeyword(string key)
+        {
+            var value = ShouZiMu.GetFirstPinyin(key);
+            return (value == key) ? string.Empty.PadLeft(value.Length, '*') : value;
+        }
     }
 }

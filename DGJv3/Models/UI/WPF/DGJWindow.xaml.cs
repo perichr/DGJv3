@@ -124,15 +124,8 @@ namespace DGJv3
         private void SendMessage(string text)
         {
             if (!PluginMain.RoomId.HasValue) return;
+            SendDanmaku.FilterMessage(ref text);
             if (string.IsNullOrWhiteSpace(text)) return;
-            if (text.StartsWith(Utilities.SkipKeyWord)) return;
-
-            //手动过滤错误信息，下次再整理。
-            text = Regex.Replace(text, @"(?s)(?i)(An exception|\(Exception|\(ex:).*", "");
-            text = Regex.Replace(text, @"(?s)(?i)(失败了喵).*", "$1！");
-            text = Regex.Replace(text, @"网易云", "WYY");
-            text = Regex.Replace(text, @"咪咕", "MG");
-
             if (!senDanmuTimer.IsEnabled) senDanmuTimer.Start();
             int max = 4;
             int times = 0;
@@ -222,11 +215,11 @@ namespace DGJv3
             DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
             Writer = new Writer(Songs, Playlist, Player, DanmuHandler);
 
-            Player.LogEvent += (sender, e) => { Log("播放:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Downloader.LogEvent += (sender, e) => { Log("下载:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Writer.LogEvent += (sender, e) => { Log("文本:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            DanmuHandler.LogEvent += (sender, e) => { Log("" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Player.LogEvent += (sender, e) => { Log("播放:" + e.ToString()); };
+            Downloader.LogEvent += (sender, e) => { Log("下载:" + e.ToString()); };
+            Writer.LogEvent += (sender, e) => { Log("文本:" + e.ToString()); };
+            SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.ToString()); };
+            DanmuHandler.LogEvent += (sender, e) => { Log("" + e.ToString()); };
 
             RemoveSongCommand = new UniversalCommand((songobj) =>
             {

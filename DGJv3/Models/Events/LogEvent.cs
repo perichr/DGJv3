@@ -8,5 +8,10 @@ namespace DGJv3
     {
         public string Message { get; set; }
         public Exception Exception { get; set; }
+
+        public override string ToString()
+        {
+            return this.Message + (this.Exception == null ? string.Empty : $"(ex:{this.Exception.Message})");
+        }
     }
 }

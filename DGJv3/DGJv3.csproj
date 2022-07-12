@@ -140,6 +140,7 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Models\Enums\SongStatus.cs" />
     <Compile Include="Models\UI\Converter\SongStatusStringConverter.cs" />
+    <Compile Include="Utils\ShouZiMu.cs" />
     <Compile Include="Utils\UniversalCommand.cs" />
     <Compile Include="Utils\Utilities.cs" />
     <Compile Include="Utils\VersionChecker.cs" />

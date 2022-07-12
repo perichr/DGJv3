@@ -313,7 +313,7 @@ namespace DGJv3
                     Volume = Volume
                 };
 
-                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(Utilities.SkipKeyWord +  "播放出错！", e.Exception); };
+                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(SendDanmaku.LogNoDamu("播放出错！") , e.Exception); };
 
                 wavePlayer.Init(sampleChannel);
                 wavePlayer.Play();
