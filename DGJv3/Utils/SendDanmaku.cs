@@ -151,7 +151,7 @@ namespace DGJv3
         internal static readonly string[] replacekeywords = (from key in keywords select ReplaceKeyword(key)).ToArray();
         static public void FilterMessage(ref string text)
         {
-            if (text.EndsWith(SkipKeyWord))
+            if (text.Contains(SkipKeyWord))
             {
                 text = string.Empty;
                 return;
@@ -167,10 +167,15 @@ namespace DGJv3
             }
         }
 
-        static public string LogNoDamu(string text)
+        static public string LogWithDamu(string text, bool damu = true)
         {
-            return text + SkipKeyWord;
+            return damu ? text : text + SkipKeyWord;
         }
+        static public string LogWithDamu(string text, SongItem songItem)
+        {
+            return LogWithDamu(text, songItem?.UserName != Utilities.SparePlaylistUser);
+        }
+
 
         static public string ReplaceKeyword(string key)
         {

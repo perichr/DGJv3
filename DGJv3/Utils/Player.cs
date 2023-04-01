@@ -313,7 +313,7 @@ namespace DGJv3
                     Volume = Volume
                 };
 
-                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(SendDanmaku.LogNoDamu("播放出错！") , e.Exception); };
+                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(SendDanmaku.LogWithDamu("播放出错！", false), e.Exception); };
 
                 wavePlayer.Init(sampleChannel);
                 wavePlayer.Play();
@@ -325,7 +325,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                Log($"下载出错，可能为VIP/无版权/网络波动。“{songItem.SongName}”", ex);
+                Log(SendDanmaku.LogWithDamu($"下载出错，可能无版权/网络波动。“{songItem.SongName}”", songItem), ex);
                 UnloadSong();
             }
         }
