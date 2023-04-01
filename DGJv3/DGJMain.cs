@@ -41,9 +41,10 @@ namespace DGJv3
             }
             catch (Exception) { }
             window = new DGJWindow(this);
-            versionChecker = new VersionChecker("DGJv3");
             SELF = this;
-            Task.Run(() =>
+            /*
+            versionChecker = new VersionChecker("DGJv3");
+           Task.Run(() =>
             {
                 if (versionChecker.FetchInfo())
                 {
@@ -62,6 +63,7 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
+            */
         }
 
         public override void Admin()
