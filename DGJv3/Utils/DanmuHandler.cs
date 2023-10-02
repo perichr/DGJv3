@@ -78,7 +78,7 @@ namespace DGJv3
         public int Vote4NextCount { get => _vote4NextCount < 1 ? 1 : _vote4NextCount; set => SetField(ref _vote4NextCount, value); }
         private int _vote4NextCount;
 
-        private ICollection<int> vote4NextUserCache = new List<int>();
+        private ICollection<long> vote4NextUserCache = new List<long>();
 
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
@@ -123,7 +123,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));
+                            SongItem songItem = Songs.LastOrDefault(x => x.IsAddedByUser(danmakuModel) && (IsAllowCancelPlayingSong || (!x.IsPlaying)));
                             RemoveSong(songItem);
                         });
                     }
@@ -159,12 +159,12 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            if (danmakuModel.isAdmin)
+                            if (danmakuModel.isAdmin ||  Player.CurrentSong.IsAddedByUser(danmakuModel))
                             {
                                 Player.Next();
                                 return;
                             }
-                            Vote4Next(danmakuModel.UserID);
+                            Vote4Next(danmakuModel.UserID_long);
                         });
                     }
                     return;
@@ -336,7 +336,7 @@ namespace DGJv3
         /// 投票切歌
         /// </summary>
         /// <param name="userId"></param>
-        private void Vote4Next(int userId)
+        private void Vote4Next(long userId)
         {
             if (vote4NextUserCache.Contains(userId))
             {
