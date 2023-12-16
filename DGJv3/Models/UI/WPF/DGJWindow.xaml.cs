@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace DGJv3
 {
@@ -81,11 +82,26 @@ namespace DGJv3
         public void Log(string text)
         {
             PluginMain.Log(text);
+            WriteLog(text);
             if (IsLogRedirectDanmaku)
             {
                 SendMessage(text);
             }
         }
+        private static Queue<string> _log = new Queue<string>();
+        private void WriteLog(string text)
+        {
+            SendDanmaku.FilterMessage(ref text, false);
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            if (_log.Count == 20) //临时指定20个指令。后续再作优化，
+            {
+                _log.Dequeue();
+            }
+            _log.Enqueue(DateTime.Now.ToString("[MM/dd hh:mm:ss]") + text);
+            File.WriteAllText(Utilities.LogOutputFilePath, string.Join<string>(Environment.NewLine, _log.ToArray().Reverse()), Encoding.UTF8);
+        }
+
 
         private static Queue<string> danmuCache = new Queue<string>();
         private static string danmuCacheOne;

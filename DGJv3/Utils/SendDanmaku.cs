@@ -149,7 +149,7 @@ namespace DGJv3
                 "咪咕"
             };
         internal static readonly string[] replacekeywords = (from key in keywords select ReplaceKeyword(key)).ToArray();
-        static public void FilterMessage(ref string text)
+        static public void FilterMessage(ref string text, bool filterType = true)
         {
             if (text.Contains(SkipKeyWord))
             {
@@ -160,7 +160,7 @@ namespace DGJv3
             text = Regex.Replace(text, @"(?s)(?i)(An exception|\(Exception|\(ex:).*", "");//删除一般错误代码详情
             text = Regex.Replace(text, @"(?s)(?i)(失败了喵).*", "$1！");//删除本地网易云喵块的错误代码详情
 
-
+            if (!filterType) return;
             for (int i = 0; i < keywords.Length; i++)
             {
                 text = Regex.Replace(text, keywords[i], replacekeywords[i]);
