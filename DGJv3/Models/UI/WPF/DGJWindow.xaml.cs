@@ -88,7 +88,7 @@ namespace DGJv3
                 SendMessage(text);
             }
         }
-        private static Queue<string> _log = new Queue<string>();
+        private static readonly Queue<string> _log = new Queue<string>();
         private void WriteLog(string text)
         {
             SendDanmaku.FilterMessage(ref text, false);
@@ -103,10 +103,10 @@ namespace DGJv3
         }
 
 
-        private static Queue<string> danmuCache = new Queue<string>();
+        private static readonly Queue<string> danmuCache = new Queue<string>();
         private static string danmuCacheOne;
 
-        private static DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
+        private static readonly DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
         {
             Interval = TimeSpan.FromSeconds(2),
             IsEnabled = true,
@@ -419,6 +419,7 @@ namespace DGJv3
             DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
             DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
             DanmuHandler.AdminCommand = config.AdminCommand;
+            DanmuHandler.AdminList = config.AdminList;
             DanmuHandler.Vote4NextCount = config.Vote4NextCount;
             Writer.ScribanTemplate = config.ScribanTemplate;
             IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
@@ -476,6 +477,7 @@ namespace DGJv3
             MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
             MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
             AdminCommand = DanmuHandler.AdminCommand,
+            AdminList = DanmuHandler.AdminList,
             Vote4NextCount = DanmuHandler.Vote4NextCount,
             ScribanTemplate = Writer.ScribanTemplate,
             Playlist = Playlist.ToArray(),
@@ -591,10 +593,10 @@ namespace DGJv3
             if (eventArgs.Parameter.Equals(true)
                 && !string.IsNullOrWhiteSpace(AddBlacklistTextBox.Text)
                 && AddBlacklistComboBox.SelectedValue != null
-                && AddBlacklistComboBox.SelectedValue is BlackListType)
+                && AddBlacklistComboBox.SelectedValue is BlackListType type1)
             {
                 var keyword = AddBlacklistTextBox.Text;
-                var type = (BlackListType)AddBlacklistComboBox.SelectedValue;
+                var type = type1;
 
                 Blacklist.Add(new BlackListItem(type, keyword));
             }

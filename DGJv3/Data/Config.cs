@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace DGJv3
@@ -55,6 +56,8 @@ namespace DGJv3
         [JsonProperty("mlst")]
         public string[] UsingModules { get; set; } = new string[0];
 
+        [JsonProperty("alst")]
+        public string AdminList { get; set; } = "";
 
         [JsonProperty("sbtp")]
         public string ScribanTemplate { get; set; } = "{{~ for 歌曲 in 播放列表 ~}}{{ if for.index ==1\n" +
@@ -83,16 +86,23 @@ namespace DGJv3
         {
             if (string.IsNullOrEmpty(path))
                 path = Utilities.ConfigFilePath;
-            Config config = null;
+            Config config ;
+            Config empty = new Config();
             try
             {
                 config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path, Encoding.UTF8));
+                PropertyInfo[] pis = typeof(Config).GetProperties(BindingFlags.Public);
+                foreach (PropertyInfo pi in pis)
+                {
+                    if (pi.GetValue(config) == null)
+                        pi.SetValue(config, pi.GetValue(empty));
+                }
             }
             catch
             {
+                config = empty;
             }
-            if (config?.Playlist == null)
-                config = new Config();
+
             return config;
         }
 

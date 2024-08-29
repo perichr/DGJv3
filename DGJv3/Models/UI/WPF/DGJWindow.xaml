@@ -374,11 +374,14 @@
                                     Text="{Binding LogDanmakuLengthLimit,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="弹幕长度限制" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding DanmuHandler.AdminCommand,UpdateSourceTrigger=PropertyChanged,Delay=200}"
-                                    materialDesign:HintAssist.Hint="需要房管权限的指令清单（空格分隔）" materialDesign:HintAssist.IsFloating="True"/>
-                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     Text="{Binding DanmuHandler.Vote4NextCount,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="弹幕投票切换至下一首的需求人数" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding DanmuHandler.AdminCommand,UpdateSourceTrigger=PropertyChanged,Delay=1000}"
+                                    materialDesign:HintAssist.Hint="需要房管权限的指令清单（空格分隔）" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignTextAreaTextBox}"
+                                    Text="{Binding DanmuHandler.AdminList,UpdateSourceTrigger=PropertyChanged,Delay=1000}"
+                                    materialDesign:HintAssist.Hint="手动输入房管名单（每行一人）" AcceptsReturn="True" materialDesign:HintAssist.IsFloating="True"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace DGJv3
 {
@@ -49,7 +50,7 @@ namespace DGJv3
         /// </summary>
         public string AdminCommand
         {
-            get => string.Join(JOIN_STRING, _admminCommand);
+            get => _admminCommand;
             set
             {
                 if (value == null) value = "";
@@ -71,6 +72,22 @@ namespace DGJv3
             return _adminCommandType.Contains(commandType);
         }
 
+        private bool IsAdminUser(DanmakuModel model)
+        {
+            return _adminList2.Contains(model.UserName);
+        }
+
+        private string _adminList;
+        private string[] _adminList2;
+        public string AdminList
+        {
+            get=> _adminList;
+            set
+            {
+                _adminList2 = value.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                SetField(ref _adminList, String.Join(Environment.NewLine, _adminList2));
+            }
+        }
 
         /// <summary>
         /// 投票切歌的人数
@@ -78,7 +95,7 @@ namespace DGJv3
         public int Vote4NextCount { get => _vote4NextCount < 1 ? 1 : _vote4NextCount; set => SetField(ref _vote4NextCount, value); }
         private int _vote4NextCount;
 
-        private ICollection<long> vote4NextUserCache = new List<long>();
+        private ICollection<string> vote4NextUserCache = new List<string>();
 
         internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
@@ -102,6 +119,7 @@ namespace DGJv3
         /// <param name="danmakuModel"></param>
         internal void ProcessDanmu(DanmakuModel danmakuModel)
         {
+            Log(JsonConvert.SerializeObject(danmakuModel));
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
@@ -159,12 +177,12 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            if (danmakuModel.isAdmin ||  Player.CurrentSong.IsAddedByUser(danmakuModel))
+                            if (IsAdminUser(danmakuModel) ||  Player.CurrentSong.IsAddedByUser(danmakuModel))
                             {
                                 Player.Next();
                                 return;
                             }
-                            Vote4Next(danmakuModel.UserID_long);
+                            Vote4Next(danmakuModel.UserName);
                         });
                     }
                     return;
@@ -265,7 +283,7 @@ namespace DGJv3
         /// <returns></returns>
         private bool NoCommandRight(CommandType commandType, DanmakuModel danmakuModel)
         {
-            return commandType == CommandType.Null || (IsAdminCommand(commandType) && !danmakuModel.isAdmin);
+            return commandType == CommandType.Null || (IsAdminCommand(commandType) && !IsAdminUser(danmakuModel));
         }
 
         /// <summary>
@@ -336,21 +354,20 @@ namespace DGJv3
         /// 投票切歌
         /// </summary>
         /// <param name="userId"></param>
-        private void Vote4Next(long userId)
+        private void Vote4Next(string name)
         {
-            if (vote4NextUserCache.Contains(userId))
+            if (!vote4NextUserCache.Contains(name))
             {
-                return;
+                vote4NextUserCache.Add(name);
             }
-            vote4NextUserCache.Add(userId);
-            if (vote4NextUserCache.Count >= Vote4NextCount)
+            if (vote4NextUserCache.Count < Vote4NextCount)
             {
-                Player.Next();
-                Log("投票通过，切歌至下一首！");
+                Log($"切歌投票：{vote4NextUserCache.Count}/{Vote4NextCount}");
             }
             else
             {
-                Log($"切歌投票：{vote4NextUserCache.Count}/{Vote4NextCount}");
+                Player.Next();
+                Log("投票通过，切歌至下一首！");
             }
         }
         /// <summary>
@@ -409,10 +426,7 @@ namespace DGJv3
 
         private void RemoveSong(SongItem songItem)
         {
-            if (songItem != null)
-            {
-                songItem.Remove(Songs, Downloader, Player);
-            }
+            songItem?.Remove(Songs, Downloader, Player);
         }
     }
 }
