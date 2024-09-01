@@ -40,6 +40,7 @@ namespace DGJv3
                 Directory.CreateDirectory(Utilities.ConfigBackupDirectoryPath);
             }
             catch (Exception) { }
+            Config.Load();
             window = new DGJWindow(this);
             SELF = this;
             /*
@@ -68,13 +69,13 @@ namespace DGJv3
 
         public override void Admin()
         {
-            window.TryApplyConfig();
+            window.ApplyConfig();
             window.Show();
             window.Activate();
         }
         public override void Start()
         {
-            window.TryApplyConfig();
+            window.ApplyConfig();
             base.Start();
         }
 

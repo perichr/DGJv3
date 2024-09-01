@@ -16,7 +16,7 @@ namespace DGJv3
         AddCurent,
         [Description("返回歌曲平台和ID")]
         Info,
-        [Description("切歌（结束当前歌曲并播放下一首）")]
+        [Description("下一首（结束当前歌曲并播放下一首）")]
         Next,
         [Description("切歌（结束当前歌曲并播放之后指定序号的歌曲）")]
         Skip,

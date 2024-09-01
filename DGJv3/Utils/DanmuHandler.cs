@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DGJv3
 {
@@ -28,29 +29,11 @@ namespace DGJv3
         private History history { get; set; }
 
         /// <summary>
-        /// 最多点歌数量
-        /// </summary>
-        public uint MaxTotalSongNum { get => _maxTotalSongCount; set => SetField(ref _maxTotalSongCount, value); }
-        private uint _maxTotalSongCount;
-
-        /// <summary>
-        /// 每个人最多点歌数量
-        /// </summary>
-        public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
-        private uint _maxPersonSongNum;
-
-        /// <summary>
-        /// 允许取消正在播放的歌曲
-        /// </summary>
-        public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
-        private bool _isAllowCancelPlayingSong;
-
-        /// <summary>
         /// 需要房管权限的指令清单
         /// </summary>
         public string AdminCommand
         {
-            get => _admminCommand;
+            get => Config.Current.AdminCommand;
             set
             {
                 if (value == null) value = "";
@@ -59,41 +42,39 @@ namespace DGJv3
                     Regex regClean = new Regex(@"[\s,，;；]{1,}", RegexOptions.IgnoreCase);
                     value = regClean.Replace(value, JOIN_STRING).Trim();
                 }
-                SetField(ref _admminCommand, value);
-                _adminCommandType = (from str in value.Split(JOIN_STRING.ToCharArray()) select GetCommandType(str)).ToArray();
+                Config.Current.AdminCommand = value;
+                SetAdminCommandList();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdminCommand)));
             }
         }
-        private string _admminCommand;
-
         private CommandType[] _adminCommandType;
 
+        private void SetAdminCommandList()
+        {
+            _adminCommandType = (from str in AdminCommand.Split(JOIN_STRING.ToCharArray()) select GetCommandType(str)).ToArray();
+        }
         private bool IsAdminCommand(CommandType commandType)
         {
+            if (_adminCommandType == null) SetAdminCommandList();
             return _adminCommandType.Contains(commandType);
+        }
+
+        private string[] _adminList;
+        public string AdminList
+        {
+            get => Config.Current.AdminList;
+            set
+            {
+                _adminList = value.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                Config.Current.AdminList = String.Join(Environment.NewLine, _adminList);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdminList)));
+            }
         }
 
         private bool IsAdminUser(DanmakuModel model)
         {
-            return _adminList2.Contains(model.UserName);
+            return _adminList.Contains(model.UserName);
         }
-
-        private string _adminList;
-        private string[] _adminList2;
-        public string AdminList
-        {
-            get=> _adminList;
-            set
-            {
-                _adminList2 = value.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                SetField(ref _adminList, String.Join(Environment.NewLine, _adminList2));
-            }
-        }
-
-        /// <summary>
-        /// 投票切歌的人数
-        /// </summary>
-        public int Vote4NextCount { get => _vote4NextCount < 1 ? 1 : _vote4NextCount; set => SetField(ref _vote4NextCount, value); }
-        private int _vote4NextCount;
 
         private ICollection<string> vote4NextUserCache = new List<string>();
 
@@ -119,7 +100,6 @@ namespace DGJv3
         /// <param name="danmakuModel"></param>
         internal void ProcessDanmu(DanmakuModel danmakuModel)
         {
-            Log(JsonConvert.SerializeObject(danmakuModel));
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
@@ -141,7 +121,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.IsAddedByUser(danmakuModel) && (IsAllowCancelPlayingSong || (!x.IsPlaying)));
+                            SongItem songItem = Songs.LastOrDefault(x => x.IsAddedByUser(danmakuModel) && (Config.Current.IsAllowCancelPlayingSong || (!x.IsPlaying)));
                             RemoveSong(songItem);
                         });
                     }
@@ -177,7 +157,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            if (IsAdminUser(danmakuModel) ||  Player.CurrentSong.IsAddedByUser(danmakuModel))
+                            if (IsAdminUser(danmakuModel) || Player.CurrentSong.IsAddedByUser(danmakuModel))
                             {
                                 Player.Next();
                                 return;
@@ -336,7 +316,7 @@ namespace DGJv3
         public void TrySortSongs()
         {
             //非用户点歌优先时跳过
-            if (!Player.IsUserPrior) return;
+            if (!Config.Current.IsUserPrior) return;
 
             //空闲歌单曲目后置（删除后重新加入）
             var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser && s.Status != SongStatus.Playing).ToArray();
@@ -360,9 +340,9 @@ namespace DGJv3
             {
                 vote4NextUserCache.Add(name);
             }
-            if (vote4NextUserCache.Count < Vote4NextCount)
+            if (vote4NextUserCache.Count < Config.Current.Vote4NextCount)
             {
-                Log($"切歌投票：{vote4NextUserCache.Count}/{Vote4NextCount}");
+                Log($"切歌投票：{vote4NextUserCache.Count}/{Config.Current.Vote4NextCount}");
             }
             else
             {
@@ -398,7 +378,7 @@ namespace DGJv3
         /// <returns></returns>
         private bool CanAddSong(string username)
         {
-            return Songs.Count < MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum);
+            return Songs.Count < Config.Current.MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < Config.Current.MaxPersonSongNum);
         }
 
         public static readonly string JOIN_STRING = " ";

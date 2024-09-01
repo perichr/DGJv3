@@ -30,6 +30,8 @@ namespace DGJv3
 
         public ObservableCollection<string> ConfigBackupList { get; set; }
 
+        public Config Config {  get; set; }
+
         public Player Player { get; set; }
 
         public Downloader Downloader { get; set; }
@@ -77,7 +79,6 @@ namespace DGJv3
 
         public int LogDanmakuLengthLimit { get; set; }
 
-        private bool ApplyConfigReady = false;
 
         public void Log(string text)
         {
@@ -224,6 +225,7 @@ namespace DGJv3
             Playlist = new ObservableCollection<SongInfo>();
             Blacklist = new ObservableCollection<BlackListItem>();
             ConfigBackupList = new ObservableCollection<string>();
+            Config = Config.Current;
 
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
@@ -330,7 +332,7 @@ namespace DGJv3
 
             LoadCurrentConfigCommand = new UniversalCommand((x) =>
             {
-                TryApplyConfig(null,true);
+                TryApplyConfig(null);
             });
 
             RemoveConfigCommand = new UniversalCommand((obj) =>
@@ -350,7 +352,7 @@ namespace DGJv3
              {
                  if (obj != null && obj is string str)
                  {
-                     TryApplyConfig(Config.GetConfigPath(str), true);
+                     TryApplyConfig(Config.GetConfigPath(str));
                  }
              });
 
@@ -379,11 +381,10 @@ namespace DGJv3
             }
         }
 
-        public void TryApplyConfig(string path = null, bool force = false)
+        public void TryApplyConfig(string path = null)
         {
-            if (!force && ApplyConfigReady)
-                return;
-            ApplyConfig(Config.Load(path));
+            Config.Load(path);
+            ApplyConfig();
         }
 
         public void TryGetConfigBackupLst()
@@ -403,31 +404,13 @@ namespace DGJv3
         /// <summary>
         /// 应用设置
         /// </summary>
-        /// <param name="config"></param>
-        private void ApplyConfig(Config config)
+        public void ApplyConfig()
         {
             LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
-
-            Player.PlayerType = config.PlayerType;
-            Player.DirectSoundDevice = config.DirectSoundDevice;
-            Player.WaveoutEventDevice = config.WaveoutEventDevice;
-            Player.Volume = config.Volume;
-            Player.IsUserPrior = config.IsUserPrior;
-            Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
-            Player.MaxPlayTime = config.MaxPlayTime;
-            DanmuHandler.IsAllowCancelPlayingSong = config.IsAllowCancelPlayingSong;
-            DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
-            DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
-            DanmuHandler.AdminCommand = config.AdminCommand;
-            DanmuHandler.AdminList = config.AdminList;
-            DanmuHandler.Vote4NextCount = config.Vote4NextCount;
-            Writer.ScribanTemplate = config.ScribanTemplate;
-            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
-            LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
-
+            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && Config.Current.IsLogRedirectDanmaku;
 
             SearchModules.UsingModules.Clear();
-            foreach (var item in config.UsingModules)
+            foreach (var item in Config.Current.UsingModules)
             {
                 var sm = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item);
                 if (sm == null || SearchModules.UsingModules.Contains(sm))
@@ -443,7 +426,7 @@ namespace DGJv3
             }
 
             Playlist.Clear();
-            foreach (var item in config.Playlist)
+            foreach (var item in Config.Current.Playlist)
             {
                 item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
                 if (item.Module != null)
@@ -453,43 +436,27 @@ namespace DGJv3
             }
 
             Blacklist.Clear();
-            foreach (var item in config.Blacklist)
+            foreach (var item in Config.Current.Blacklist)
             {
                 Blacklist.Add(item);
             }
-            ApplyConfigReady = true;
         }
 
         /// <summary>
         /// 收集设置
         /// </summary>
         /// <returns></returns>
-        private Config GatherConfig() => new Config()
+        private void GatherConfig()
         {
-            PlayerType = Player.PlayerType,
-            DirectSoundDevice = Player.DirectSoundDevice,
-            WaveoutEventDevice = Player.WaveoutEventDevice,
-            IsUserPrior = Player.IsUserPrior,
-            IsAllowCancelPlayingSong = DanmuHandler.IsAllowCancelPlayingSong,
-            Volume = Player.Volume,
-            IsPlaylistEnabled = Player.IsPlaylistEnabled,
-            MaxPlayTime = Player.MaxPlayTime,
-            MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
-            MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
-            AdminCommand = DanmuHandler.AdminCommand,
-            AdminList = DanmuHandler.AdminList,
-            Vote4NextCount = DanmuHandler.Vote4NextCount,
-            ScribanTemplate = Writer.ScribanTemplate,
-            Playlist = Playlist.ToArray(),
-            Blacklist = Blacklist.ToArray(),
-            IsLogRedirectDanmaku = IsLogRedirectDanmaku,
-            LogDanmakuLengthLimit = LogDanmakuLengthLimit,
-            UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
-        };
+            Config.Current.Playlist = Playlist.ToArray();
+            Config.Current.Blacklist = Blacklist.ToArray();
+            Config.Current.UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray();
+        }
 
         public void SaveConfig(bool backup = false)
         {
-            Config.Write(GatherConfig(), backup);
+            GatherConfig();
+            Config.Write(null, backup);
         }
 
         /// <summary>

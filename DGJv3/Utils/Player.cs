@@ -37,6 +37,9 @@ namespace DGJv3
         public UniversalCommand PlayPauseCommand { get; private set; }
         public UniversalCommand NextCommand { get; private set; }
 
+
+        /*
+
         /// <summary>
         /// 播放器类型
         /// </summary>
@@ -66,6 +69,34 @@ namespace DGJv3
         /// </summary>
         public double MaxPlayTime { get => _maxPlayTime < 60 ? 60 : _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
         private double _maxPlayTime;
+
+        /// <summary>
+        /// 是否使用空闲歌单
+        /// </summary>
+        public bool IsPlaylistEnabled { get => _isPlaylistEnabled; set => SetField(ref _isPlaylistEnabled, value); }
+        private bool _isPlaylistEnabled;
+
+        */
+
+
+        /// <summary>
+        /// 播放器音量
+        /// </summary>
+        public float Volume
+        {
+            get => Config.Current.Volume;
+            set
+            {
+                Config.Current.Volume = value;
+                if (sampleChannel != null)
+                {
+                    sampleChannel.Volume = value;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Volume)));
+            }
+        }
+
+
 
         /// <summary>
         /// 当前播放时间
@@ -147,22 +178,6 @@ namespace DGJv3
             }
         }
 
-        /// <summary>
-        /// 播放器音量
-        /// </summary>
-        public float Volume
-        {
-            get => _volume;
-            set
-            {
-                if (sampleChannel != null)
-                {
-                    sampleChannel.Volume = value;
-                }
-                SetField(ref _volume, value, nameof(Volume));
-            }
-        }
-        private float _volume = 1f;
 
         /// <summary>
         /// 当前歌词
@@ -174,12 +189,6 @@ namespace DGJv3
         /// 下一句歌词       
         /// </summary>
         public string UpcomingLyric { get => upcomingLyric; set => SetField(ref upcomingLyric, value); }
-
-        /// <summary>
-        /// 是否使用空闲歌单
-        /// </summary>
-        public bool IsPlaylistEnabled { get => _isPlaylistEnabled; set => SetField(ref _isPlaylistEnabled, value); }
-        private bool _isPlaylistEnabled;
 
         private string upcomingLyric;
 
@@ -263,7 +272,7 @@ namespace DGJv3
 
             FillSongsWithSparePlaylist();
 
-            if (MaxPlayTime <= CurrentTimeDouble)
+            if (Config.Current.MaxPlayTime <= CurrentTimeDouble)
             {
                 Next();
             }
@@ -271,7 +280,7 @@ namespace DGJv3
 
         private void FillSongsWithSparePlaylist()
         {
-            if (Songs.Count < 2 && IsPlaylistEnabled && Playlist.Count > 0)
+            if (Songs.Count < 2 && Config.Current.IsPlaylistEnabled && Playlist.Count > 0)
             {
                 int index = -1;
                 int time = 0;
@@ -393,12 +402,12 @@ namespace DGJv3
         /// <returns></returns>
         private IWavePlayer CreateIWavePlayer()
         {
-            switch (PlayerType)
+            switch (Config.Current.PlayerType)
             {
                 case PlayerType.WaveOutEvent:
-                    return new WaveOutEvent() { DeviceNumber = WaveoutEventDevice };
+                    return new WaveOutEvent() { DeviceNumber = Config.Current.WaveoutEventDevice };
                 case PlayerType.DirectSound:
-                    return new DirectSoundOut(DirectSoundDevice);
+                    return new DirectSoundOut(Config.Current.DirectSoundDevice);
                 default:
                     return null;
             }
@@ -444,10 +453,7 @@ namespace DGJv3
         /// </summary>
         public void Next()
         {
-            if (wavePlayer != null)
-            {
-                wavePlayer.Stop();
-            }
+            wavePlayer?.Stop();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

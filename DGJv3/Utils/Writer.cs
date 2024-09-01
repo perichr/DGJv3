@@ -24,10 +24,17 @@ namespace DGJv3
 
         private Template template = null;
 
-        public string ScribanTemplate { get => scribanTemplate; set => SetField(ref scribanTemplate, value); }
-        public string Result { get => result; set => SetField(ref result, value); }
+        public string ScribanTemplate
+        {
+            get => Config.Current.ScribanTemplate;
+            set
+            {
+                Config.Current.ScribanTemplate = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScribanTemplate)));
+            }
+        }
 
-        private string scribanTemplate;
+        public string Result { get => result; set => SetField(ref result, value); }
         private string result;
 
         internal Writer(ObservableCollection<SongItem> songs, ObservableCollection<SongInfo> playlist, Player player, DanmuHandler danmuHandler)
@@ -36,7 +43,7 @@ namespace DGJv3
             Playlist = playlist;
             Player = player;
             DanmuHandler = danmuHandler;
-
+            CheckTemplate();
             PropertyChanged += Writer_PropertyChanged;
 
             Player.LyricEvent += Player_LyricEvent;
@@ -47,6 +54,25 @@ namespace DGJv3
             };
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
+        }
+
+        private void CheckTemplate()
+        {
+            var localtemplate = Template.Parse(ScribanTemplate);
+            if (localtemplate.HasErrors)
+            {
+                Result = "模板有语法错误" + Environment.NewLine + string.Join(Environment.NewLine, localtemplate.Messages);
+                try
+                {
+                    File.WriteAllText(Utilities.ScribanOutputFilePath, Result);
+                }
+                catch (Exception) { }
+            }
+            else
+            {
+                template = localtemplate;
+            }
+
         }
 
         private void Player_LyricEvent(object sender, LyricChangedEventArgs e)
@@ -62,20 +88,7 @@ namespace DGJv3
         {
             if (e.PropertyName == nameof(ScribanTemplate))
             {
-                var localtemplate = Template.Parse(ScribanTemplate);
-                if (localtemplate.HasErrors)
-                {
-                    Result = "模板有语法错误" + Environment.NewLine + string.Join(Environment.NewLine, localtemplate.Messages);
-                    try
-                    {
-                        File.WriteAllText(Utilities.ScribanOutputFilePath, Result);
-                    }
-                    catch (Exception) { }
-                }
-                else
-                {
-                    template = localtemplate;
-                }
+                CheckTemplate();
             }
         }
 
@@ -104,8 +117,8 @@ namespace DGJv3
                 歌曲数量 = Songs.Count,
                 当前播放时间 = Player.CurrentTimeString,
                 当前总时间 = Player.TotalTimeString,
-                总共最大点歌数量 = DanmuHandler.MaxTotalSongNum,
-                单人最大点歌数量 = DanmuHandler.MaxPersonSongNum,
+                总共最大点歌数量 = Config.Current.MaxTotalSongNum,
+                单人最大点歌数量 = Config.Current.MaxPersonSongNum,
             }) ?? string.Empty;
 
             if (localresult != string.Empty)
