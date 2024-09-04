@@ -298,6 +298,7 @@
                     <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,0,0,0"/>
                     <Slider Style="{DynamicResource MaterialDesignSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                    
                     <!-- 添加模块按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="LeftAndAlignBottomEdges" Margin="30,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
@@ -508,7 +509,7 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
-                     <!-- 保存按钮开始 -->
+                    <!-- 保存按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
@@ -566,7 +567,45 @@
 
                     </materialDesign:PopupBox>
                     <!-- 保存按钮结束 -->
-               </StackPanel>
+                    <!-- 手工弹幕开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" ToolTip="手工测试弹幕" Kind="Forum"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">测试指令</TextBlock>
+                            <StackPanel Orientation="Vertical"  Margin="10,0"  Grid.Row="1">
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuName,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用用户名" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuMedalName,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用头衔" materialDesign:HintAssist.IsFloating="True"/>
+                                <StackPanel Margin="5" Orientation="Horizontal">
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding TestDanmakuMedalStatus}"/>
+                                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">是否佩戴头衔</TextBlock>
+                                </StackPanel>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuMedalLevel,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用头衔等级" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuText,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用弹幕内容" materialDesign:HintAssist.IsFloating="True"/>
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding TestDanmaku}">
+                                    测试
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                    </materialDesign:PopupBox>
+
+                    <!-- 手工弹幕结束 -->
+                </StackPanel>
 
                 <!-- 播放器进度条 -->
                 <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0"

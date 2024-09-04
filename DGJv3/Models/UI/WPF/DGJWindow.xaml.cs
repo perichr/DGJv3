@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using System.Windows;
 using System.Text.RegularExpressions;
 using System.Text;
+using BilibiliDM_PluginFramework;
 
 namespace DGJv3
 {
@@ -71,9 +72,14 @@ namespace DGJv3
         public UniversalCommand LoadConfigCommand { get; set; }
 
         public UniversalCommand RemoveConfigCommand { get; set; }
+        public UniversalCommand TestDanmaku{ get; set; }
 
 
-
+        public string TestDanmakuName { get; set; } = "测试用用户名";
+        public string TestDanmakuText { get; set; } = "";
+        public string TestDanmakuMedalName { get; set; } = "测试用头衔";
+        public int TestDanmakuMedalLevel { get; set; } = 10;
+        public bool TestDanmakuMedalStatus { get; set; } = false;
 
         public bool IsLogRedirectDanmaku { get; set; }
 
@@ -356,6 +362,13 @@ namespace DGJv3
                  }
              });
 
+            TestDanmaku = new UniversalCommand((obj) =>
+            {
+                int roomid = PluginMain.RoomId==null?0:(int)PluginMain.RoomId;
+                string json = $"{{\"data\":{{\"emoji_img_url\":\"\",\"fans_medal_level\":{TestDanmakuMedalLevel},\"fans_medal_name\":\"{TestDanmakuMedalName}\",\"fans_medal_wearing_status\":{TestDanmakuMedalStatus.ToString().ToLower()},\"guard_level\":0,\"msg\":\"{TestDanmakuText}\",\"timestamp\":{DateTime.Now.Ticks},\"uid\":0,\"uname\":\"{TestDanmakuName}\",\"uface\":\"\",\"dm_type\":0,\"open_id\":\"\",\"msg_id\":\"\",\"room_id\":{roomid}}},\"cmd\":\"LIVE_OPEN_PLATFORM_DM\"}}";
+                DanmakuModel model = new DanmakuModel(json, 2);
+                DanmuHandler.ProcessDanmu(model);
+            });
 
             InitializeComponent();
 

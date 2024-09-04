@@ -73,6 +73,7 @@ namespace DGJv3
 
         private bool IsAdminUser(DanmakuModel model)
         {
+            if (_adminList == null) AdminList = AdminList;
             return _adminList.Contains(model.UserName);
         }
 
@@ -107,6 +108,7 @@ namespace DGJv3
             string rest = string.Join(JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
+
 
             if (NoCommandRight(commandType, danmakuModel)) return;
 
