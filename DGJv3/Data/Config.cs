@@ -6,6 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace DGJv3
 {
@@ -99,12 +101,6 @@ namespace DGJv3
         private int _logDanmakuLengthLimit = 20;
 
         /// <summary>
-        /// 房管权限指令
-        /// </summary>
-        [JsonProperty("acmd")]
-        public string AdminCommand { get; set; } = "切歌 暂停 播放 音量";
-
-        /// <summary>
         /// 下一首需要投票人数
         /// </summary>
         [JsonProperty("vnext")]
@@ -112,10 +108,42 @@ namespace DGJv3
         private int _vote4NextCount = 2;    
 
         /// <summary>
+        /// 房管权限指令
+        /// </summary>
+        [JsonProperty("acmd")]
+        public string AdminCommand
+        {
+            get => _adminCommand;
+            set
+            {
+                if (value == null) value = "";
+                else
+                {
+                    Regex regClean = new Regex(@"[\s,，;；]{1,}", RegexOptions.IgnoreCase);
+                    value = regClean.Replace(value, Utilities.JOIN_STRING).Trim();
+                }
+                SetField(ref _adminCommand, value);
+            }
+        }
+        private string _adminCommand = "切歌 暂停 播放 音量";
+
+
+
+        /// <summary>
         /// 手动房管清单
         /// </summary>
         [JsonProperty("alst")]
-        public string AdminList { get; set; } = "";
+        public string AdminList
+        {
+            get => _adminList;
+            set
+            {
+                value = String.Join(Environment.NewLine, value.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                SetField(ref _adminList, value);
+            }
+        }
+        private string _adminList = "";
+
 
         /// <summary>
         /// 曲池信息模板
@@ -153,6 +181,13 @@ namespace DGJv3
         /// </summary>
         [JsonProperty("plst")]
         public SongInfo[] Playlist { get; set; } = new SongInfo[0];
+
+
+
+
+
+
+
 
 
         public Config()

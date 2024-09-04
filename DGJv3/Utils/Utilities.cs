@@ -57,5 +57,8 @@ namespace DGJv3
 
         internal static readonly string LogOutputFilePath = Path.Combine(DataDirectoryPath, "最近指令反馈.txt");
 
+        public static readonly string JOIN_STRING = " ";
+
+
     }
 }

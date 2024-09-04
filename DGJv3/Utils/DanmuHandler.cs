@@ -28,54 +28,7 @@ namespace DGJv3
         private Dispatcher dispatcher;
         private History history { get; set; }
 
-        /// <summary>
-        /// 需要房管权限的指令清单
-        /// </summary>
-        public string AdminCommand
-        {
-            get => Config.Current.AdminCommand;
-            set
-            {
-                if (value == null) value = "";
-                else
-                {
-                    Regex regClean = new Regex(@"[\s,，;；]{1,}", RegexOptions.IgnoreCase);
-                    value = regClean.Replace(value, JOIN_STRING).Trim();
-                }
-                Config.Current.AdminCommand = value;
-                SetAdminCommandList();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdminCommand)));
-            }
-        }
-        private CommandType[] _adminCommandType;
 
-        private void SetAdminCommandList()
-        {
-            _adminCommandType = (from str in AdminCommand.Split(JOIN_STRING.ToCharArray()) select GetCommandType(str)).ToArray();
-        }
-        private bool IsAdminCommand(CommandType commandType)
-        {
-            if (_adminCommandType == null) SetAdminCommandList();
-            return _adminCommandType.Contains(commandType);
-        }
-
-        private string[] _adminList;
-        public string AdminList
-        {
-            get => Config.Current.AdminList;
-            set
-            {
-                _adminList = value.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                Config.Current.AdminList = String.Join(Environment.NewLine, _adminList);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AdminList)));
-            }
-        }
-
-        private bool IsAdminUser(DanmakuModel model)
-        {
-            if (_adminList == null) AdminList = AdminList;
-            return _adminList.Contains(model.UserName);
-        }
 
         private ICollection<string> vote4NextUserCache = new List<string>();
 
@@ -104,8 +57,8 @@ namespace DGJv3
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
-            string[] commands = danmakuModel.CommentText.Split(JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            string rest = string.Join(JOIN_STRING, commands.Skip(1));
+            string[] commands = danmakuModel.CommentText.Split(Utilities. JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string rest = string.Join(Utilities. JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
 
@@ -226,31 +179,41 @@ namespace DGJv3
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        private CommandType GetCommandType(string key)
+        public static CommandType GetCommandType(string key)
         {
             switch (key)
             {
+                case "Add":
                 case "点歌":
                 case "點歌":
                     return CommandType.Add;
+                case "Cancel":
                 case "取消點歌":
                 case "取消点歌":
                     return CommandType.Cancel;
+                case "AddLast":
                 case "上一首":
                     return CommandType.AddLast;
+                case "AddCurent":
                 case "重播":
                     return CommandType.AddCurent;
+                case "Info":
                 case "信息":
                     return CommandType.Info;
+                case "Next":
                 case "下一首":
                     return CommandType.Next;
+                case "Skip":
                 case "切歌":
                     return CommandType.Skip;
+                case "Pause":
                 case "暂停":
                 case "暫停":
                     return CommandType.Pause;
+                case "Play":
                 case "播放":
                     return CommandType.Play;
+                case "Volume":
                 case "音量":
                     return CommandType.Volume;
             }
@@ -267,6 +230,17 @@ namespace DGJv3
         {
             return commandType == CommandType.Null || (IsAdminCommand(commandType) && !IsAdminUser(danmakuModel));
         }
+
+        public bool IsAdminCommand(CommandType commandType)
+        {
+            return (from str in Config.Current.AdminCommand.Split(Utilities.JOIN_STRING.ToCharArray()) select GetCommandType(str)).Contains(commandType);
+        }
+
+        private bool IsAdminUser(DanmakuModel model)
+        {
+            return Config.Current.AdminList.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Contains(model.UserName);
+        }
+
 
         /// <summary>
         /// 通过弹幕点歌
@@ -383,7 +357,6 @@ namespace DGJv3
             return Songs.Count < Config.Current.MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < Config.Current.MaxPersonSongNum);
         }
 
-        public static readonly string JOIN_STRING = " ";
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
