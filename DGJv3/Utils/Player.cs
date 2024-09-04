@@ -38,47 +38,6 @@ namespace DGJv3
         public UniversalCommand NextCommand { get; private set; }
 
 
-        /*
-
-        /// <summary>
-        /// 播放器类型
-        /// </summary>
-        public PlayerType PlayerType { get => _playerType; set => SetField(ref _playerType, value); }
-        private PlayerType _playerType;
-
-        /// <summary>
-        /// DirectSound 设备
-        /// </summary>
-        public Guid DirectSoundDevice { get => _directSoundDevice; set => SetField(ref _directSoundDevice, value); }
-        private Guid _directSoundDevice;
-
-        /// <summary>
-        /// WaveoutEvent 设备
-        /// </summary>
-        public int WaveoutEventDevice { get => _waveoutEventDevice; set => SetField(ref _waveoutEventDevice, value); }
-        private int _waveoutEventDevice;
-
-        /// <summary>
-        /// 用户点歌优先
-        /// </summary>
-        public bool IsUserPrior { get => _isUserPrior; set => SetField(ref _isUserPrior, value); }
-        private bool _isUserPrior = false;
-
-        /// <summary>
-        /// 单曲最大播放时长
-        /// </summary>
-        public double MaxPlayTime { get => _maxPlayTime < 60 ? 60 : _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
-        private double _maxPlayTime;
-
-        /// <summary>
-        /// 是否使用空闲歌单
-        /// </summary>
-        public bool IsPlaylistEnabled { get => _isPlaylistEnabled; set => SetField(ref _isPlaylistEnabled, value); }
-        private bool _isPlaylistEnabled;
-
-        */
-
-
         /// <summary>
         /// 播放器音量
         /// </summary>
@@ -95,8 +54,6 @@ namespace DGJv3
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Volume)));
             }
         }
-
-
 
         /// <summary>
         /// 当前播放时间
@@ -177,7 +134,6 @@ namespace DGJv3
                 }
             }
         }
-
 
         /// <summary>
         /// 当前歌词

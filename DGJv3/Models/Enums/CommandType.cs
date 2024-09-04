@@ -25,6 +25,10 @@ namespace DGJv3
         [Description("播放")]
         Play,
         [Description("调整音量")]
-        Volume
+        Volume,
+        [Description("将当前歌曲添加至空闲歌单")]
+        ListAdd,
+        [Description("从空闲歌单删除当前歌曲")]
+        ListDel
     }
 }

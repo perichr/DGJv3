@@ -236,7 +236,7 @@ namespace DGJv3
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
-            DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
+            DanmuHandler = new DanmuHandler(Songs, Player, Playlist, Downloader, SearchModules, Blacklist);
             Writer = new Writer(Songs, Playlist, Player, DanmuHandler);
 
             Player.LogEvent += (sender, e) => { Log("播放:" + e.ToString()); };
@@ -282,7 +282,6 @@ namespace DGJv3
                     Blacklist.Remove(blackListItem);
                 }
             });
-
 
             ClearBlacklistCommand = new UniversalCommand((x) =>
             {

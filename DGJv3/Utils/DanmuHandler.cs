@@ -17,6 +17,8 @@ namespace DGJv3
     {
         private ObservableCollection<SongItem> Songs;
 
+        private ObservableCollection<SongInfo> Playlist;
+
         private ObservableCollection<BlackListItem> Blacklist;
 
         private Player Player;
@@ -32,12 +34,13 @@ namespace DGJv3
 
         private ICollection<string> vote4NextUserCache = new List<string>();
 
-        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
+        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, ObservableCollection<SongInfo> playlist,Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
             Songs = songs;
             Player = player;
             Player.DanmuHandler = this;
+            Playlist = playlist;
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
@@ -57,8 +60,8 @@ namespace DGJv3
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
-            string[] commands = danmakuModel.CommentText.Split(Utilities. JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            string rest = string.Join(Utilities. JOIN_STRING, commands.Skip(1));
+            string[] commands = danmakuModel.CommentText.Split(Utilities.JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string rest = string.Join(Utilities.JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
 
@@ -169,6 +172,18 @@ namespace DGJv3
                         }
                     }
                     return;
+                case CommandType.ListAdd:
+                    if (Player.CurrentSong.UserName != Utilities.SparePlaylistUser)
+                    {
+                        Playlist.Add(Player.CurrentSong.Info);
+                    }
+                    return;
+                case CommandType.ListDel:
+                    if (Player.CurrentSong.UserName == Utilities.SparePlaylistUser)
+                    {
+                        Playlist.Remove(Player.CurrentSong.Info);
+                    }
+                    return;
                 default:
                     break;
             }
@@ -216,6 +231,12 @@ namespace DGJv3
                 case "Volume":
                 case "音量":
                     return CommandType.Volume;
+                case "ListAdd":
+                case "添加":
+                    return CommandType.ListAdd;
+                case "ListADel":
+                case "删除":
+                    return CommandType.ListDel;
             }
             return CommandType.Null;
         }
