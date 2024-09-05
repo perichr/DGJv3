@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BilibiliDM_PluginFramework;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -94,6 +95,20 @@ namespace DGJv3
         {
             return Info.GetInfo(key);
         }
+
+        public bool IsAddedByUser(string userName)
+        {
+            return UserName == userName;
+        }
+        public bool IsAddedByUser(DanmakuModel danmakuModel)
+        {
+            return IsAddedByUser(danmakuModel.UserName);
+        }
+        public bool IsPlaying
+        {
+            get => Status == SongStatus.Playing;
+        }
+
         /// <summary>
         /// 歌曲状态
         /// </summary>

@@ -53,7 +53,7 @@ namespace DGJv3
         {
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                string[] tmp = keyword.Split(DanmuHandler.JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                string[] tmp = keyword.Split(Utilities.JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 if (tmp.Length > 1)
                 {
                     if (Regex.IsMatch(tmp[0], @"\d"))
@@ -61,7 +61,7 @@ namespace DGJv3
                         int m = int.Parse(tmp[0]);
                         if (m < UsingModules.Count)
                         {
-                            return UsingModules[m].SafeSearch(string.Join(DanmuHandler.JOIN_STRING, tmp.Skip(1)));
+                            return UsingModules[m].SafeSearch(string.Join(Utilities.JOIN_STRING, tmp.Skip(1)));
                         }
                     }
                 }

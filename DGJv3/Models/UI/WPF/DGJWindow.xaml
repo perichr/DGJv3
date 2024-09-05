@@ -222,7 +222,7 @@
             </Grid>
 
             <!-- 播放设备开始 -->
-            <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding Player}">
+            <Grid Grid.Row="1" Grid.Column="0" DataContext="{Binding Config}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
@@ -298,6 +298,7 @@
                     <materialDesign:PackIcon x:Name="PackIconVolumeHigh" Width="24" Height="24" Kind="VolumeHigh" VerticalAlignment="Center" Margin="15,0,0,0"/>
                     <Slider Style="{DynamicResource MaterialDesignSlider}" Value="{Binding Volume,Converter={StaticResource PlayerVolumeConverter}}"
                         Width="150" Orientation="Horizontal" Minimum="0" Maximum="100" VerticalAlignment="Center"/>
+                    
                     <!-- 添加模块按钮开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="LeftAndAlignBottomEdges" Margin="30,0,4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
@@ -331,30 +332,30 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 添加模块按钮结束 -->
-                    <!-- 设置开始 -->
+                    <!-- 一般设置开始 -->
                     <materialDesign:PopupBox Margin="4,0" DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}"
                                              StaysOpen="True" PlacementMode="TopAndAlignCentres">
                         <materialDesign:PopupBox.ToggleContent>
-                            <materialDesign:PackIcon Width="24" Height="24" Kind="Settings" ToolTip="设置"/>
+                            <materialDesign:PackIcon Width="24" Height="24" Kind="Settings" ToolTip="一般设置"/>
                         </materialDesign:PopupBox.ToggleContent>
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">设置</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">一般设置</TextBlock>
 
                             <StackPanel Margin="5,0" Orientation="Vertical" Grid.Row="1">
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Player.IsPlaylistEnabled}"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Config.IsPlaylistEnabled}"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">没有点歌时从列表随机播放</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Player.IsUserPrior}"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Config.IsUserPrior}"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">用户点歌优先于空闲歌单播放</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding DanmuHandler.IsAllowCancelPlayingSong}"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Config.IsAllowCancelPlayingSong}"/>
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">允许取消正在播放的歌曲</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
@@ -362,27 +363,48 @@
                                     <TextBlock TextAlignment="Center" VerticalAlignment="Center">点歌反馈发送到弹幕（需要登录中心）</TextBlock>
                                 </StackPanel>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding Player.MaxPlayTime,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    Text="{Binding Config.MaxPlayTime,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="单曲最大播放时长（秒）" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding DanmuHandler.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    Text="{Binding Config.MaxTotalSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="总共最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding DanmuHandler.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    Text="{Binding Config.MaxPersonSongNum,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="单人最大点歌数量" materialDesign:HintAssist.IsFloating="True"/>
                                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding LogDanmakuLengthLimit,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    Text="{Binding Config.LogDanmakuLengthLimit,UpdateSourceTrigger=PropertyChanged,Delay=200}"
                                     materialDesign:HintAssist.Hint="弹幕长度限制" materialDesign:HintAssist.IsFloating="True"/>
-                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding DanmuHandler.AdminCommand,UpdateSourceTrigger=PropertyChanged,Delay=200}"
-                                    materialDesign:HintAssist.Hint="需要房管权限的指令清单（空格分隔）" materialDesign:HintAssist.IsFloating="True"/>
-                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                    Text="{Binding DanmuHandler.Vote4NextCount,UpdateSourceTrigger=PropertyChanged,Delay=200}"
-                                    materialDesign:HintAssist.Hint="弹幕投票切换至下一首的需求人数" materialDesign:HintAssist.IsFloating="True"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:PopupBox>
-                    <!-- 设置结束 -->
+                    <!-- 一般设置结束 -->
+                    <!-- 指令设置开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" ToolTip="指令设置" Kind="Wrench"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">指令设置</TextBlock>
+                            <StackPanel Margin="5,0" Orientation="Vertical" Grid.Row="1">
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding Config.Vote4NextCount,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="弹幕投票切换至下一首的需求人数" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding Config.AdminCommand,UpdateSourceTrigger=PropertyChanged,Delay=1000}"
+                                    materialDesign:HintAssist.Hint="房管指令(默认：切歌 暂停 播放 音量)" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignTextAreaTextBox}"
+                                    Text="{Binding Config.AdminList,UpdateSourceTrigger=PropertyChanged,Delay=1000}"
+                                    materialDesign:HintAssist.Hint="房管名单（每行一人）" AcceptsReturn="True" materialDesign:HintAssist.IsFloating="True"/>                             
+                            </StackPanel>
+                        </Grid>
+
+                    </materialDesign:PopupBox>
+                    <!-- 指令设置结束 -->
                     <!-- 歌曲黑名单开始 -->
                     <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignCentres" Margin="4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
@@ -487,8 +509,8 @@
                         </Grid>
                     </materialDesign:PopupBox>
                     <!-- 文本输出结束 -->
-                     <!-- 保存按钮开始 -->
-                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="120,0,4,0"
+                    <!-- 保存按钮开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="4,0"
                                              DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
                         <materialDesign:PopupBox.ToggleContent>
                             <materialDesign:PackIcon Width="24" Height="24" Kind="ContentSaveSettings" ToolTip="配置备份与重载"/>
@@ -545,7 +567,45 @@
 
                     </materialDesign:PopupBox>
                     <!-- 保存按钮结束 -->
-               </StackPanel>
+                    <!-- 手工弹幕开始 -->
+                    <materialDesign:PopupBox StaysOpen="True" PlacementMode="TopAndAlignRightEdges" Margin="4,0"
+                                             DataContext="{Binding ElementName=DGJRootWindow,Path=DataContext}">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <materialDesign:PackIcon Width="24" Height="24" ToolTip="手工测试弹幕" Kind="Forum"/>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="8,0,8,8">测试指令</TextBlock>
+                            <StackPanel Orientation="Vertical"  Margin="10,0"  Grid.Row="1">
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuName,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用用户名" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuMedalName,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用头衔" materialDesign:HintAssist.IsFloating="True"/>
+                                <StackPanel Margin="5" Orientation="Horizontal">
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding TestDanmakuMedalStatus}"/>
+                                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">是否佩戴头衔</TextBlock>
+                                </StackPanel>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuMedalLevel,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用头衔等级" materialDesign:HintAssist.IsFloating="True"/>
+                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Text="{Binding TestDanmakuText,UpdateSourceTrigger=PropertyChanged,Delay=200}"
+                                    materialDesign:HintAssist.Hint="测试用弹幕内容" materialDesign:HintAssist.IsFloating="True"/>
+                                <Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding TestDanmaku}">
+                                    测试
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+
+                    </materialDesign:PopupBox>
+
+                    <!-- 手工弹幕结束 -->
+                </StackPanel>
 
                 <!-- 播放器进度条 -->
                 <Slider Margin="15,0" Grid.Row="1" Value="{Binding CurrentTimeDouble}" Minimum="0"

@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
 using System.Text.RegularExpressions;
+using System.Text;
+using BilibiliDM_PluginFramework;
 
 namespace DGJv3
 {
@@ -28,6 +30,8 @@ namespace DGJv3
         public ObservableCollection<BlackListItem> Blacklist { get; set; }
 
         public ObservableCollection<string> ConfigBackupList { get; set; }
+
+        public Config Config {  get; set; }
 
         public Player Player { get; set; }
 
@@ -68,29 +72,48 @@ namespace DGJv3
         public UniversalCommand LoadConfigCommand { get; set; }
 
         public UniversalCommand RemoveConfigCommand { get; set; }
+        public UniversalCommand TestDanmaku{ get; set; }
 
 
-
+        public string TestDanmakuName { get; set; } = "测试用用户名";
+        public string TestDanmakuText { get; set; } = "";
+        public string TestDanmakuMedalName { get; set; } = "测试用头衔";
+        public int TestDanmakuMedalLevel { get; set; } = 10;
+        public bool TestDanmakuMedalStatus { get; set; } = false;
 
         public bool IsLogRedirectDanmaku { get; set; }
 
         public int LogDanmakuLengthLimit { get; set; }
 
-        private bool ApplyConfigReady = false;
 
         public void Log(string text)
         {
             PluginMain.Log(text);
+            WriteLog(text);
             if (IsLogRedirectDanmaku)
             {
                 SendMessage(text);
             }
         }
+        private static readonly Queue<string> _log = new Queue<string>();
+        private void WriteLog(string text)
+        {
+            SendDanmaku.FilterMessage(ref text, false);
+            if (string.IsNullOrWhiteSpace(text)) return;
 
-        private static Queue<string> danmuCache = new Queue<string>();
+            if (_log.Count == 20) //临时指定20个指令。后续再作优化，
+            {
+                _log.Dequeue();
+            }
+            _log.Enqueue(DateTime.Now.ToString("[MM/dd hh:mm:ss]") + text);
+            File.WriteAllText(Utilities.LogOutputFilePath, string.Join<string>(Environment.NewLine, _log.ToArray().Reverse()), Encoding.UTF8);
+        }
+
+
+        private static readonly Queue<string> danmuCache = new Queue<string>();
         private static string danmuCacheOne;
 
-        private static DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
+        private static readonly DispatcherTimer senDanmuTimer = new DispatcherTimer(DispatcherPriority.Normal)
         {
             Interval = TimeSpan.FromSeconds(2),
             IsEnabled = true,
@@ -124,15 +147,8 @@ namespace DGJv3
         private void SendMessage(string text)
         {
             if (!PluginMain.RoomId.HasValue) return;
+            SendDanmaku.FilterMessage(ref text);
             if (string.IsNullOrWhiteSpace(text)) return;
-            if (text.StartsWith(Utilities.SkipKeyWord)) return;
-
-            //手动过滤错误信息，下次再整理。
-            text = Regex.Replace(text, @"(?s)(?i)(An exception|\(Exception|\(ex:).*", "");
-            text = Regex.Replace(text, @"(?s)(?i)(失败了喵).*", "$1！");
-            text = Regex.Replace(text, @"网易云", "WYY");
-            text = Regex.Replace(text, @"咪咕", "MG");
-
             if (!senDanmuTimer.IsEnabled) senDanmuTimer.Start();
             int max = 4;
             int times = 0;
@@ -215,18 +231,19 @@ namespace DGJv3
             Playlist = new ObservableCollection<SongInfo>();
             Blacklist = new ObservableCollection<BlackListItem>();
             ConfigBackupList = new ObservableCollection<string>();
+            Config = Config.Current;
 
             Player = new Player(Songs, Playlist);
             Downloader = new Downloader(Songs);
             SearchModules = new SearchModules();
-            DanmuHandler = new DanmuHandler(Songs, Player, Downloader, SearchModules, Blacklist);
+            DanmuHandler = new DanmuHandler(Songs, Player, Playlist, Downloader, SearchModules, Blacklist);
             Writer = new Writer(Songs, Playlist, Player, DanmuHandler);
 
-            Player.LogEvent += (sender, e) => { Log("播放:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Downloader.LogEvent += (sender, e) => { Log("下载:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            Writer.LogEvent += (sender, e) => { Log("文本:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
-            DanmuHandler.LogEvent += (sender, e) => { Log("" + e.Message + (e.Exception == null ? string.Empty : e.Exception.Message)); };
+            Player.LogEvent += (sender, e) => { Log("播放:" + e.ToString()); };
+            Downloader.LogEvent += (sender, e) => { Log("下载:" + e.ToString()); };
+            Writer.LogEvent += (sender, e) => { Log("文本:" + e.ToString()); };
+            SearchModules.LogEvent += (sender, e) => { Log("搜索:" + e.ToString()); };
+            DanmuHandler.LogEvent += (sender, e) => { Log("" + e.ToString()); };
 
             RemoveSongCommand = new UniversalCommand((songobj) =>
             {
@@ -265,7 +282,6 @@ namespace DGJv3
                     Blacklist.Remove(blackListItem);
                 }
             });
-
 
             ClearBlacklistCommand = new UniversalCommand((x) =>
             {
@@ -321,7 +337,7 @@ namespace DGJv3
 
             LoadCurrentConfigCommand = new UniversalCommand((x) =>
             {
-                TryApplyConfig(null,true);
+                TryApplyConfig(null);
             });
 
             RemoveConfigCommand = new UniversalCommand((obj) =>
@@ -341,10 +357,17 @@ namespace DGJv3
              {
                  if (obj != null && obj is string str)
                  {
-                     TryApplyConfig(Config.GetConfigPath(str), true);
+                     TryApplyConfig(Config.GetConfigPath(str));
                  }
              });
 
+            TestDanmaku = new UniversalCommand((obj) =>
+            {
+                int roomid = PluginMain.RoomId==null?0:(int)PluginMain.RoomId;
+                string json = $"{{\"data\":{{\"emoji_img_url\":\"\",\"fans_medal_level\":{TestDanmakuMedalLevel},\"fans_medal_name\":\"{TestDanmakuMedalName}\",\"fans_medal_wearing_status\":{TestDanmakuMedalStatus.ToString().ToLower()},\"guard_level\":0,\"msg\":\"{TestDanmakuText}\",\"timestamp\":{DateTime.Now.Ticks},\"uid\":0,\"uname\":\"{TestDanmakuName}\",\"uface\":\"\",\"dm_type\":0,\"open_id\":\"\",\"msg_id\":\"\",\"room_id\":{roomid}}},\"cmd\":\"LIVE_OPEN_PLATFORM_DM\"}}";
+                DanmakuModel model = new DanmakuModel(json, 2);
+                DanmuHandler.ProcessDanmu(model);
+            });
 
             InitializeComponent();
 
@@ -370,11 +393,10 @@ namespace DGJv3
             }
         }
 
-        public void TryApplyConfig(string path = null, bool force = false)
+        public void TryApplyConfig(string path = null)
         {
-            if (!force && ApplyConfigReady)
-                return;
-            ApplyConfig(Config.Load(path));
+            Config.Load(path);
+            ApplyConfig();
         }
 
         public void TryGetConfigBackupLst()
@@ -394,30 +416,13 @@ namespace DGJv3
         /// <summary>
         /// 应用设置
         /// </summary>
-        /// <param name="config"></param>
-        private void ApplyConfig(Config config)
+        public void ApplyConfig()
         {
             LogRedirectToggleButton.IsEnabled = LoginCenterAPIWarpper.CheckLoginCenter();
-
-            Player.PlayerType = config.PlayerType;
-            Player.DirectSoundDevice = config.DirectSoundDevice;
-            Player.WaveoutEventDevice = config.WaveoutEventDevice;
-            Player.Volume = config.Volume;
-            Player.IsUserPrior = config.IsUserPrior;
-            Player.IsPlaylistEnabled = config.IsPlaylistEnabled;
-            Player.MaxPlayTime = config.MaxPlayTime;
-            DanmuHandler.IsAllowCancelPlayingSong = config.IsAllowCancelPlayingSong;
-            DanmuHandler.MaxTotalSongNum = config.MaxTotalSongNum;
-            DanmuHandler.MaxPersonSongNum = config.MaxPersonSongNum;
-            DanmuHandler.AdminCommand = config.AdminCommand;
-            DanmuHandler.Vote4NextCount = config.Vote4NextCount;
-            Writer.ScribanTemplate = config.ScribanTemplate;
-            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && config.IsLogRedirectDanmaku;
-            LogDanmakuLengthLimit = config.LogDanmakuLengthLimit;
-
+            IsLogRedirectDanmaku = LogRedirectToggleButton.IsEnabled && Config.Current.IsLogRedirectDanmaku;
 
             SearchModules.UsingModules.Clear();
-            foreach (var item in config.UsingModules)
+            foreach (var item in Config.Current.UsingModules)
             {
                 var sm = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item);
                 if (sm == null || SearchModules.UsingModules.Contains(sm))
@@ -433,7 +438,7 @@ namespace DGJv3
             }
 
             Playlist.Clear();
-            foreach (var item in config.Playlist)
+            foreach (var item in Config.Current.Playlist)
             {
                 item.Module = SearchModules.Modules.FirstOrDefault(x => x.UniqueId == item.ModuleId);
                 if (item.Module != null)
@@ -443,42 +448,27 @@ namespace DGJv3
             }
 
             Blacklist.Clear();
-            foreach (var item in config.Blacklist)
+            foreach (var item in Config.Current.Blacklist)
             {
                 Blacklist.Add(item);
             }
-            ApplyConfigReady = true;
         }
 
         /// <summary>
         /// 收集设置
         /// </summary>
         /// <returns></returns>
-        private Config GatherConfig() => new Config()
+        private void GatherConfig()
         {
-            PlayerType = Player.PlayerType,
-            DirectSoundDevice = Player.DirectSoundDevice,
-            WaveoutEventDevice = Player.WaveoutEventDevice,
-            IsUserPrior = Player.IsUserPrior,
-            IsAllowCancelPlayingSong = DanmuHandler.IsAllowCancelPlayingSong,
-            Volume = Player.Volume,
-            IsPlaylistEnabled = Player.IsPlaylistEnabled,
-            MaxPlayTime = Player.MaxPlayTime,
-            MaxPersonSongNum = DanmuHandler.MaxPersonSongNum,
-            MaxTotalSongNum = DanmuHandler.MaxTotalSongNum,
-            AdminCommand = DanmuHandler.AdminCommand,
-            Vote4NextCount = DanmuHandler.Vote4NextCount,
-            ScribanTemplate = Writer.ScribanTemplate,
-            Playlist = Playlist.ToArray(),
-            Blacklist = Blacklist.ToArray(),
-            IsLogRedirectDanmaku = IsLogRedirectDanmaku,
-            LogDanmakuLengthLimit = LogDanmakuLengthLimit,
-            UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray(),
-        };
+            Config.Current.Playlist = Playlist.ToArray();
+            Config.Current.Blacklist = Blacklist.ToArray();
+            Config.Current.UsingModules = (from sm in SearchModules.UsingModules select sm.UniqueId).ToArray();
+        }
 
         public void SaveConfig(bool backup = false)
         {
-            Config.Write(GatherConfig(), backup);
+            GatherConfig();
+            Config.Write(null, backup);
         }
 
         /// <summary>
@@ -582,10 +572,10 @@ namespace DGJv3
             if (eventArgs.Parameter.Equals(true)
                 && !string.IsNullOrWhiteSpace(AddBlacklistTextBox.Text)
                 && AddBlacklistComboBox.SelectedValue != null
-                && AddBlacklistComboBox.SelectedValue is BlackListType)
+                && AddBlacklistComboBox.SelectedValue is BlackListType type1)
             {
                 var keyword = AddBlacklistTextBox.Text;
-                var type = (BlackListType)AddBlacklistComboBox.SelectedValue;
+                var type = type1;
 
                 Blacklist.Add(new BlackListItem(type, keyword));
             }

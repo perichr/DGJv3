@@ -8,12 +8,16 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DGJv3
 {
     class DanmuHandler : INotifyPropertyChanged
     {
         private ObservableCollection<SongItem> Songs;
+
+        private ObservableCollection<SongInfo> Playlist;
 
         private ObservableCollection<BlackListItem> Blacklist;
 
@@ -26,66 +30,17 @@ namespace DGJv3
         private Dispatcher dispatcher;
         private History history { get; set; }
 
-        /// <summary>
-        /// 最多点歌数量
-        /// </summary>
-        public uint MaxTotalSongNum { get => _maxTotalSongCount; set => SetField(ref _maxTotalSongCount, value); }
-        private uint _maxTotalSongCount;
-
-        /// <summary>
-        /// 每个人最多点歌数量
-        /// </summary>
-        public uint MaxPersonSongNum { get => _maxPersonSongNum; set => SetField(ref _maxPersonSongNum, value); }
-        private uint _maxPersonSongNum;
-
-        /// <summary>
-        /// 允许取消正在播放的歌曲
-        /// </summary>
-        public bool IsAllowCancelPlayingSong { get => _isAllowCancelPlayingSong; set => SetField(ref _isAllowCancelPlayingSong, value); }
-        private bool _isAllowCancelPlayingSong;
-
-        /// <summary>
-        /// 需要房管权限的指令清单
-        /// </summary>
-        public string AdminCommand
-        {
-            get => string.Join(JOIN_STRING, _admminCommand);
-            set
-            {
-                if (value == null) value = "";
-                else
-                {
-                    Regex regClean = new Regex(@"[\s,，;；]{1,}", RegexOptions.IgnoreCase);
-                    value = regClean.Replace(value, JOIN_STRING).Trim();
-                }
-                SetField(ref _admminCommand, value);
-                _adminCommandType = (from str in value.Split(JOIN_STRING.ToCharArray()) select GetCommandType(str)).ToArray();
-            }
-        }
-        private string _admminCommand;
-
-        private CommandType[] _adminCommandType;
-
-        private bool IsAdminCommand(CommandType commandType)
-        {
-            return _adminCommandType.Contains(commandType);
-        }
 
 
-        /// <summary>
-        /// 投票切歌的人数
-        /// </summary>
-        public int Vote4NextCount { get => _vote4NextCount < 1 ? 1 : _vote4NextCount; set => SetField(ref _vote4NextCount, value); }
-        private int _vote4NextCount;
+        private ICollection<string> vote4NextUserCache = new List<string>();
 
-        private ICollection<int> vote4NextUserCache = new List<int>();
-
-        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
+        internal DanmuHandler(ObservableCollection<SongItem> songs, Player player, ObservableCollection<SongInfo> playlist,Downloader downloader, SearchModules searchModules, ObservableCollection<BlackListItem> blacklist)
         {
             dispatcher = Dispatcher.CurrentDispatcher;
             Songs = songs;
             Player = player;
             Player.DanmuHandler = this;
+            Playlist = playlist;
             Downloader = downloader;
             SearchModules = searchModules;
             Blacklist = blacklist;
@@ -105,10 +60,11 @@ namespace DGJv3
             if (danmakuModel.MsgType != MsgTypeEnum.Comment || string.IsNullOrWhiteSpace(danmakuModel.CommentText))
                 return;
 
-            string[] commands = danmakuModel.CommentText.Split(JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            string rest = string.Join(JOIN_STRING, commands.Skip(1));
+            string[] commands = danmakuModel.CommentText.Split(Utilities.JOIN_STRING.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string rest = string.Join(Utilities.JOIN_STRING, commands.Skip(1));
 
             CommandType commandType = GetCommandType(commands[0]);
+
 
             if (NoCommandRight(commandType, danmakuModel)) return;
 
@@ -123,7 +79,7 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            SongItem songItem = Songs.LastOrDefault(x => x.UserName == danmakuModel.UserName && (IsAllowCancelPlayingSong || x.Status != SongStatus.Playing));
+                            SongItem songItem = Songs.LastOrDefault(x => x.IsAddedByUser(danmakuModel) && (Config.Current.IsAllowCancelPlayingSong || (!x.IsPlaying)));
                             RemoveSong(songItem);
                         });
                     }
@@ -159,12 +115,12 @@ namespace DGJv3
                     {
                         dispatcher.Invoke(() =>
                         {
-                            if (danmakuModel.isAdmin)
+                            if (IsAdminUser(danmakuModel) || Player.CurrentSong.IsAddedByUser(danmakuModel))
                             {
                                 Player.Next();
                                 return;
                             }
-                            Vote4Next(danmakuModel.UserID);
+                            Vote4Next(danmakuModel.UserName);
                         });
                     }
                     return;
@@ -216,6 +172,18 @@ namespace DGJv3
                         }
                     }
                     return;
+                case CommandType.ListAdd:
+                    if (Player.CurrentSong.UserName != Utilities.SparePlaylistUser)
+                    {
+                        Playlist.Add(Player.CurrentSong.Info);
+                    }
+                    return;
+                case CommandType.ListDel:
+                    if (Player.CurrentSong.UserName == Utilities.SparePlaylistUser)
+                    {
+                        Playlist.Remove(Player.CurrentSong.Info);
+                    }
+                    return;
                 default:
                     break;
             }
@@ -226,33 +194,49 @@ namespace DGJv3
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        private CommandType GetCommandType(string key)
+        public static CommandType GetCommandType(string key)
         {
             switch (key)
             {
+                case "Add":
                 case "点歌":
                 case "點歌":
                     return CommandType.Add;
+                case "Cancel":
                 case "取消點歌":
                 case "取消点歌":
                     return CommandType.Cancel;
+                case "AddLast":
                 case "上一首":
                     return CommandType.AddLast;
+                case "AddCurent":
                 case "重播":
                     return CommandType.AddCurent;
+                case "Info":
                 case "信息":
                     return CommandType.Info;
+                case "Next":
                 case "下一首":
                     return CommandType.Next;
+                case "Skip":
                 case "切歌":
                     return CommandType.Skip;
+                case "Pause":
                 case "暂停":
                 case "暫停":
                     return CommandType.Pause;
+                case "Play":
                 case "播放":
                     return CommandType.Play;
+                case "Volume":
                 case "音量":
                     return CommandType.Volume;
+                case "ListAdd":
+                case "添加":
+                    return CommandType.ListAdd;
+                case "ListADel":
+                case "删除":
+                    return CommandType.ListDel;
             }
             return CommandType.Null;
         }
@@ -265,8 +249,19 @@ namespace DGJv3
         /// <returns></returns>
         private bool NoCommandRight(CommandType commandType, DanmakuModel danmakuModel)
         {
-            return commandType == CommandType.Null || (IsAdminCommand(commandType) && !danmakuModel.isAdmin);
+            return commandType == CommandType.Null || (IsAdminCommand(commandType) && !IsAdminUser(danmakuModel));
         }
+
+        public bool IsAdminCommand(CommandType commandType)
+        {
+            return (from str in Config.Current.AdminCommand.Split(Utilities.JOIN_STRING.ToCharArray()) select GetCommandType(str)).Contains(commandType);
+        }
+
+        private bool IsAdminUser(DanmakuModel model)
+        {
+            return Config.Current.AdminList.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Contains(model.UserName);
+        }
+
 
         /// <summary>
         /// 通过弹幕点歌
@@ -318,7 +313,7 @@ namespace DGJv3
         public void TrySortSongs()
         {
             //非用户点歌优先时跳过
-            if (!Player.IsUserPrior) return;
+            if (!Config.Current.IsUserPrior) return;
 
             //空闲歌单曲目后置（删除后重新加入）
             var pending = Songs.Where(s => s.UserName == Utilities.SparePlaylistUser && s.Status != SongStatus.Playing).ToArray();
@@ -336,21 +331,20 @@ namespace DGJv3
         /// 投票切歌
         /// </summary>
         /// <param name="userId"></param>
-        private void Vote4Next(int userId)
+        private void Vote4Next(string name)
         {
-            if (vote4NextUserCache.Contains(userId))
+            if (!vote4NextUserCache.Contains(name))
             {
-                return;
+                vote4NextUserCache.Add(name);
             }
-            vote4NextUserCache.Add(userId);
-            if (vote4NextUserCache.Count >= Vote4NextCount)
+            if (vote4NextUserCache.Count < Config.Current.Vote4NextCount)
             {
-                Player.Next();
-                Log("投票通过，切歌至下一首！");
+                Log($"切歌投票：{vote4NextUserCache.Count}/{Config.Current.Vote4NextCount}");
             }
             else
             {
-                Log($"切歌投票：{vote4NextUserCache.Count}/{Vote4NextCount}");
+                Player.Next();
+                Log("投票通过，切歌至下一首！");
             }
         }
         /// <summary>
@@ -381,10 +375,9 @@ namespace DGJv3
         /// <returns></returns>
         private bool CanAddSong(string username)
         {
-            return Songs.Count < MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < MaxPersonSongNum);
+            return Songs.Count < Config.Current.MaxTotalSongNum && (Songs.Where(x => x.UserName == username).Count() < Config.Current.MaxPersonSongNum);
         }
 
-        public static readonly string JOIN_STRING = " ";
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
@@ -409,10 +402,7 @@ namespace DGJv3
 
         private void RemoveSong(SongItem songItem)
         {
-            if (songItem != null)
-            {
-                songItem.Remove(Songs, Downloader, Player);
-            }
+            songItem?.Remove(Songs, Downloader, Player);
         }
     }
 }

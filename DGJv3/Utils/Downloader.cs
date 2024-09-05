@@ -175,7 +175,7 @@ namespace DGJv3
                     webClient = null;
 
                     dispatcher.Invoke(() => Songs.Remove(currentSong));
-                    Log("启动下载错误 " + currentSong.SongName, ex);
+                    Log(SendDanmaku.LogWithDamu($"启动下载错误 {currentSong.SongName}", currentSong), ex);
                     currentSong = null;
                 }
             }
@@ -211,7 +211,7 @@ namespace DGJv3
             else
             {
                 dispatcher.Invoke(() => Songs.Remove(currentSong));
-                Log("下载错误 " + currentSong.SongName, e.Error);
+                Log(SendDanmaku.LogWithDamu($"下载错误 {currentSong.SongName}", currentSong), e.Error);
             }
 
             DownloadSpeed = 0;

@@ -6,386 +6,527 @@
     <members>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginName">
             <summary>
-            插件名稱
+                插件名稱
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginAuth">
             <summary>
-            插件作者
+                插件作者
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginCont">
             <summary>
-            插件作者聯繫方式
+                插件作者聯繫方式
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginVer">
             <summary>
-            插件版本號
+                插件版本號
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PluginDesc">
             <summary>
-            插件描述
+                插件描述
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.PlubinDesc">
             <summary>
-            插件描述, 已過期, 請使用PluginDesc
+                插件描述, 已過期, 請使用PluginDesc
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.Status">
             <summary>
-            插件狀態
+                插件狀態
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DMPlugin.RoomId">
             <summary>
-            當前連接中的房間
+                當前連接中的房間
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DMPlugin.DebugMode">
+            <summary>
+                弹幕姬是否是以Debug模式启动的
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.Start">
             <summary>
-            啟用插件方法 請重寫此方法
+                啟用插件方法 請重寫此方法
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.Stop">
             <summary>
-            禁用插件方法 請重寫此方法
+                禁用插件方法 請重寫此方法
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.Admin">
             <summary>
-            管理插件方法 請重寫此方法
+                管理插件方法 請重寫此方法
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.Inited">
             <summary>
-            此方法在所有插件加载完毕后调用
+                此方法在所有插件加载完毕后调用
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.DeInit">
             <summary>
-            反初始化方法, 在弹幕姬主程序退出时调用, 若有需要请重写,
+                反初始化方法, 在弹幕姬主程序退出时调用, 若有需要请重写,
             </summary>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.Log(System.String)">
             <summary>
-            打日志
+                打日志
             </summary>
             <param name="text"></param>
         </member>
-        <member name="P:BilibiliDM_PluginFramework.DMPlugin.DebugMode">
-            <summary>
-            弹幕姬是否是以Debug模式启动的
-            </summary>
-        </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.AddDM(System.String,System.Boolean)">
             <summary>
-            打彈幕
+                打彈幕
             </summary>
             <param name="text"></param>
             <param name="fullscreen"></param>
         </member>
         <member name="M:BilibiliDM_PluginFramework.DMPlugin.SendSSPMsg(System.String)">
             <summary>
-            发送伪春菜脚本, 前提是用户有打开伪春菜并允许弹幕姬和伪春菜联动(默认允许)
+                发送伪春菜脚本, 前提是用户有打开伪春菜并允许弹幕姬和伪春菜联动(默认允许)
             </summary>
             <param name="text">Sakura Script脚本</param>
         </member>
         <member name="T:BilibiliDM_PluginFramework.MsgTypeEnum">
             <summary>
-            消息类型
+                消息类型
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment">
             <summary>
-            彈幕
+                彈幕
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend">
             <summary>
-            禮物
+                禮物
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftTop">
             <summary>
-            禮物排名
+                禮物排名
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome">
             <summary>
-            歡迎老爷
+                歡迎老爷
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveStart">
             <summary>
-            直播開始
+                直播開始
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveEnd">
             <summary>
-            直播結束
+                直播結束
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Unknown">
             <summary>
-            其他
+                其他
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard">
             <summary>
-            欢迎船员
+                欢迎船员
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy">
             <summary>
-            购买船票（上船）
+                购买船票（上船）
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.SuperChat">
             <summary>
-            SC
+                SC
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact">
             <summary>
-            观众互动信息
+                观众互动信息
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.Warning">
             <summary>
-            超管警告
+                超管警告
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.MsgTypeEnum.WatchedChange">
             <summary>
-            观看人数, 可能是人次? 
+                观看人数, 可能是人次?
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.InteractTypeEnum">
             <summary>
-            观众互动内容
+                观众互动内容
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.Enter">
             <summary>
-            进入
+                进入
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.Follow">
             <summary>
-            关注
+                关注
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.Share">
             <summary>
-            分享直播间
+                分享直播间
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.SpecialFollow">
             <summary>
-            特别关注
+                特别关注
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.MutualFollow">
             <summary>
-            互相关注
+                互相关注
+            </summary>
+        </member>
+        <member name="F:BilibiliDM_PluginFramework.InteractTypeEnum.Like">
+            <summary>
+            點讚
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.MsgType">
             <summary>
-            消息類型
+                消息類型
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.CommentText">
             <summary>
-            彈幕內容
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            </list></para>
+                彈幕內容
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.CommentUser">
             <summary>
-            彈幕用戶
+                彈幕用戶
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserName">
             <summary>
-            消息触发者用户名
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact"/></item>
-            </list></para>
+                消息触发者用户名
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserID">
             <summary>
-            消息触发者用户ID
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact"/></item>
-            </list></para>
+                消息触发者用户ID, 弃用
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact" />
+                        </item>
+                    </list>
+                </para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserID_long">
+            <summary>
+                消息触发者用户ID
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact" />
+                        </item>
+                    </list>
+                </para>
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserID_str">
+            <summary>
+                消息触发者用户ID
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Interact" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.UserGuardLevel">
             <summary>
-            用户舰队等级
-            <para>0 为非船员 1 为总督 2 为提督 3 为舰长</para>
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
-            </list></para>
+                用户舰队等级
+                <para>0 为非船员 1 为总督 2 为提督 3 为舰长</para>
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.WelcomeGuard" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftUser">
             <summary>
-            禮物用戶
+                禮物用戶
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftName">
             <summary>
-            禮物名稱
+                禮物名稱
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftNum">
             <summary>
-            禮物數量
+                禮物數量
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftCount">
             <summary>
-            礼物数量
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/></item>
-            </list></para>
-            <para>此字段也用于标识上船 <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy"/> 的数量（月数）</para>
+                礼物数量
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" />
+                        </item>
+                    </list>
+                </para>
+                <para>此字段也用于标识上船 <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GuardBuy" /> 的数量（月数）</para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.Giftrcost">
             <summary>
-            当前房间的礼物积分（Room Cost）
-            因以前出现过不传递rcost的礼物，并且用处不大，所以弃用
+                当前房间的礼物积分（Room Cost）
+                因以前出现过不传递rcost的礼物，并且用处不大，所以弃用
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.GiftRanking">
             <summary>
-            禮物排行
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftTop"/></item>
-            </list></para>
+                禮物排行
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftTop" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.isAdmin">
             <summary>
-            该用户是否为房管（包括主播）
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend"/></item>
-            </list></para>
+                该用户是否为房管（包括主播）
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.GiftSend" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.isVIP">
             <summary>
-            是否VIP用戶(老爺)
-            <para>此项有值的消息类型：<list type="bullet">
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment"/></item>
-            <item><see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome"/></item>
-            </list></para>
+                是否VIP用戶(老爺)
+                <para>
+                    此项有值的消息类型：
+                    <list type="bullet">
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Comment" />
+                        </item>
+                        <item>
+                            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.Welcome" />
+                        </item>
+                    </list>
+                </para>
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.roomID">
             <summary>
-            <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveStart"/>,<see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveEnd"/> 事件对应的房间号
+                <see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveStart" />,<see cref="F:BilibiliDM_PluginFramework.MsgTypeEnum.LiveEnd" /> 事件对应的房间号
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.RawData">
             <summary>
-            原始数据, 高级开发用
+                原始数据, 高级开发用
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.JSON_Version">
             <summary>
-            内部用, JSON数据版本号 通常应该是2
+                内部用, JSON数据版本号 通常应该是2
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.Price">
             <summary>
-            SC的金额, 如果以后有礼物金额也可以放进去
+                SC的金额, 如果以后有礼物金额也可以放进去
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.SCKeepTime">
             <summary>
-            SC保留时间
+                SC保留时间
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.WatchedCount">
             <summary>
-            观看人数 可能是人次?
+                观看人数 可能是人次?
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.DanmakuModel.RawDataJToken">
             <summary>
-            原始数据, 高级开发用, 如果需要用原始的JSON数据, 建议使用这个而不是用RawData
+                原始数据, 高级开发用, 如果需要用原始的JSON数据, 建议使用这个而不是用RawData
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.GiftRank.UserName">
             <summary>
-            用戶名
+                用戶名
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.GiftRank.coin">
             <summary>
-            花銷
+                花銷
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.GiftRank.uid">
             <summary>
-            UID
+                UID 弃用
+            </summary>
+        </member>
+        <member name="P:BilibiliDM_PluginFramework.GiftRank.uid_str">
+            <summary>
+                UID
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.CanBeNullAttribute">
             <summary>
-            Indicates that the value of the marked element could be <c>null</c> sometimes,
-            so checking for <c>null</c> is required before its usage.
+                Indicates that the value of the marked element could be <c>null</c> sometimes,
+                so checking for <c>null</c> is required before its usage.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [CanBeNull] object Test() => null;
             
             void UseTest() {
               var p = Test();
               var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.NotNullAttribute">
             <summary>
-            Indicates that the value of the marked element can never be <c>null</c>.
+                Indicates that the value of the marked element can never be <c>null</c>.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [NotNull] object Foo() {
               return null; // Warning: Possible 'null' assignment
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ItemNotNullAttribute">
             <summary>
-            Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
-            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
-            or of the Lazy.Value property can never be null.
+                Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
+                and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+                or of the Lazy.Value property can never be null.
             </summary>
-            <example><code>
+            <example>
+                <code>
             public void Foo([ItemNotNull]List&lt;string&gt; books)
             {
               foreach (var book in books) {
@@ -393,15 +534,17 @@
                  Console.WriteLine(book.ToUpper());
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ItemCanBeNullAttribute">
             <summary>
-            Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
-            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
-            or of the Lazy.Value property can be null.
+                Can be applied to symbols of types derived from IEnumerable as well as to symbols of Task
+                and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+                or of the Lazy.Value property can be null.
             </summary>
-            <example><code>
+            <example>
+                <code>
             public void Foo([ItemCanBeNull]List&lt;string&gt; books)
             {
               foreach (var book in books)
@@ -410,201 +553,246 @@
                 Console.WriteLine(book.ToUpper());
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.StringFormatMethodAttribute">
             <summary>
-            Indicates that the marked method builds string by the format pattern and (optional) arguments.
-            The parameter, which contains the format string, should be given in constructor. The format string
-            should be in <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object[])"/>-like form.
+                Indicates that the marked method builds string by the format pattern and (optional) arguments.
+                The parameter, which contains the format string, should be given in constructor. The format string
+                should be in <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object[])" />-like form.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [StringFormatMethod("message")]
             void ShowError(string message, params object[] args) { /* do something */ }
             
             void Foo() {
               ShowError("Failed: {0}"); // Warning: Non-existing argument in format string
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="M:BilibiliDM_PluginFramework.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
             <param name="formatParameterName">
-            Specifies which parameter of an annotated method should be treated as the format string
+                Specifies which parameter of an annotated method should be treated as the format string
             </param>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ValueProviderAttribute">
-             <summary>
-             Use this annotation to specify a type that contains static or const fields
-             with values for the annotated property/field/parameter.
-             The specified type will be used to improve completion suggestions.
-             </summary>
-             <example><code>
-             namespace TestNamespace
-             {
-               public class Constants
-               {
-                 public static int INT_CONST = 1;
-                 public const string STRING_CONST = "1";
-               }
+            <summary>
+                Use this annotation to specify a type that contains static or const fields
+                with values for the annotated property/field/parameter.
+                The specified type will be used to improve completion suggestions.
+            </summary>
+            <example>
+                <code>
+            namespace TestNamespace
+            {
+              public class Constants
+              {
+                public static int INT_CONST = 1;
+                public const string STRING_CONST = "1";
+              }
             
-               public class Class1
-               {
-                 [ValueProvider("TestNamespace.Constants")] public int myField;
-                 public void Foo([ValueProvider("TestNamespace.Constants")] string str) { }
+              public class Class1
+              {
+                [ValueProvider("TestNamespace.Constants")] public int myField;
+                public void Foo([ValueProvider("TestNamespace.Constants")] string str) { }
             
-                 public void Test()
-                 {
-                   Foo(/*try completion here*/);//
-                   myField = /*try completion here*/
-                 }
-               }
-             }
-             </code></example>
+                public void Test()
+                {
+                  Foo(/*try completion here*/);//
+                  myField = /*try completion here*/
+                }
+              }
+            }
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ValueRangeAttribute">
             <summary>
-            Indicates that the integral value falls into the specified interval.
-            It's allowed to specify multiple non-intersecting intervals.
-            Values of interval boundaries are inclusive.
+                Indicates that the integral value falls into the specified interval.
+                It's allowed to specify multiple non-intersecting intervals.
+                Values of interval boundaries are inclusive.
             </summary>
-            <example><code>
+            <example>
+                <code>
             void Foo([ValueRange(0, 100)] int value) {
               if (value == -1) { // Warning: Expression is always 'false'
                 ...
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.NonNegativeValueAttribute">
             <summary>
-            Indicates that the integral value never falls below zero.
+                Indicates that the integral value never falls below zero.
             </summary>
-            <example><code>
+            <example>
+                <code>
             void Foo([NonNegativeValue] int value) {
               if (value == -1) { // Warning: Expression is always 'false'
                 ...
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.InvokerParameterNameAttribute">
             <summary>
-            Indicates that the function argument should be a string literal and match one
-            of the parameters of the caller function. For example, ReSharper annotates
-            the parameter of <see cref="T:System.ArgumentNullException"/>.
+                Indicates that the function argument should be a string literal and match one
+                of the parameters of the caller function. For example, ReSharper annotates
+                the parameter of <see cref="T:System.ArgumentNullException" />.
             </summary>
-            <example><code>
+            <example>
+                <code>
             void Foo(string param) {
               if (param == null)
                 throw new ArgumentNullException("par"); // Warning: Cannot resolve symbol
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.NotifyPropertyChangedInvocatorAttribute">
-             <summary>
-             Indicates that the method is contained in a type that implements
-             <c>System.ComponentModel.INotifyPropertyChanged</c> interface and this method
-             is used to notify that some property value changed.
-             </summary>
-             <remarks>
-             The method should be non-static and conform to one of the supported signatures:
-             <list>
-             <item><c>NotifyChanged(string)</c></item>
-             <item><c>NotifyChanged(params string[])</c></item>
-             <item><c>NotifyChanged{T}(Expression{Func{T}})</c></item>
-             <item><c>NotifyChanged{T,U}(Expression{Func{T,U}})</c></item>
-             <item><c>SetProperty{T}(ref T, T, string)</c></item>
-             </list>
-             </remarks>
-             <example><code>
-             public class Foo : INotifyPropertyChanged {
-               public event PropertyChangedEventHandler PropertyChanged;
-             
-               [NotifyPropertyChangedInvocator]
-               protected virtual void NotifyChanged(string propertyName) { ... }
+            <summary>
+                Indicates that the method is contained in a type that implements
+                <c>System.ComponentModel.INotifyPropertyChanged</c> interface and this method
+                is used to notify that some property value changed.
+            </summary>
+            <remarks>
+                The method should be non-static and conform to one of the supported signatures:
+                <list>
+                    <item>
+                        <c>NotifyChanged(string)</c>
+                    </item>
+                    <item>
+                        <c>NotifyChanged(params string[])</c>
+                    </item>
+                    <item>
+                        <c>NotifyChanged{T}(Expression{Func{T}})</c>
+                    </item>
+                    <item>
+                        <c>NotifyChanged{T,U}(Expression{Func{T,U}})</c>
+                    </item>
+                    <item>
+                        <c>SetProperty{T}(ref T, T, string)</c>
+                    </item>
+                </list>
+            </remarks>
+            <example>
+                <code>
+            public class Foo : INotifyPropertyChanged {
+              public event PropertyChangedEventHandler PropertyChanged;
             
-               string _name;
-             
-               public string Name {
-                 get { return _name; }
-                 set { _name = value; NotifyChanged("LastName"); /* Warning */ }
-               }
-             }
-             </code>
-             Examples of generated notifications:
-             <list>
-             <item><c>NotifyChanged("Property")</c></item>
-             <item><c>NotifyChanged(() =&gt; Property)</c></item>
-             <item><c>NotifyChanged((VM x) =&gt; x.Property)</c></item>
-             <item><c>SetProperty(ref myField, value, "Property")</c></item>
-             </list>
-             </example>
+              [NotifyPropertyChangedInvocator]
+              protected virtual void NotifyChanged(string propertyName) { ... }
+            
+              string _name;
+            
+              public string Name {
+                get { return _name; }
+                set { _name = value; NotifyChanged("LastName"); /* Warning */ }
+              }
+            }
+            </code>
+                Examples of generated notifications:
+                <list>
+                    <item>
+                        <c>NotifyChanged("Property")</c>
+                    </item>
+                    <item>
+                        <c>NotifyChanged(() =&gt; Property)</c>
+                    </item>
+                    <item>
+                        <c>NotifyChanged((VM x) =&gt; x.Property)</c>
+                    </item>
+                    <item>
+                        <c>SetProperty(ref myField, value, "Property")</c>
+                    </item>
+                </list>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ContractAnnotationAttribute">
             <summary>
-            Describes dependency between method input and output.
+                Describes dependency between method input and output.
             </summary>
             <syntax>
-            <p>Function Definition Table syntax:</p>
-            <list>
-            <item>FDT      ::= FDTRow [;FDTRow]*</item>
-            <item>FDTRow   ::= Input =&gt; Output | Output &lt;= Input</item>
-            <item>Input    ::= ParameterName: Value [, Input]*</item>
-            <item>Output   ::= [ParameterName: Value]* {halt|stop|void|nothing|Value}</item>
-            <item>Value    ::= true | false | null | notnull | canbenull</item>
-            </list>
-            If the method has a single input parameter, its name could be omitted.<br/>
-            Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same) for the method output
-            means that the method doesn't return normally (throws or terminates the process).<br/>
-            Value <c>canbenull</c> is only applicable for output parameters.<br/>
-            You can use multiple <c>[ContractAnnotation]</c> for each FDT row, or use single attribute
-            with rows separated by semicolon. There is no notion of order rows, all rows are checked
-            for applicability and applied per each program state tracked by the analysis engine.<br/>
+                <p>Function Definition Table syntax:</p>
+                <list>
+                    <item>FDT      ::= FDTRow [;FDTRow]*</item>
+                    <item>FDTRow   ::= Input =&gt; Output | Output &lt;= Input</item>
+                    <item>Input    ::= ParameterName: Value [, Input]*</item>
+                    <item>Output   ::= [ParameterName: Value]* {halt|stop|void|nothing|Value}</item>
+                    <item>Value    ::= true | false | null | notnull | canbenull</item>
+                </list>
+                If the method has a single input parameter, its name could be omitted.<br />
+                Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same) for the method output
+                means that the method doesn't return normally (throws or terminates the process).<br />
+                Value <c>canbenull</c> is only applicable for output parameters.<br />
+                You can use multiple <c>[ContractAnnotation]</c> for each FDT row, or use single attribute
+                with rows separated by semicolon. There is no notion of order rows, all rows are checked
+                for applicability and applied per each program state tracked by the analysis engine.<br />
             </syntax>
-            <examples><list>
-            <item><code>
+            <examples>
+                <list>
+                    <item>
+                        <code>
             [ContractAnnotation("=&gt; halt")]
             public void TerminationMethod()
-            </code></item>
-            <item><code>
+            </code>
+                    </item>
+                    <item>
+                        <code>
             [ContractAnnotation("null &lt;= param:null")] // reverse condition syntax
             public string GetName(string surname)
-            </code></item>
-            <item><code>
+            </code>
+                    </item>
+                    <item>
+                        <code>
             [ContractAnnotation("s:null =&gt; true")]
             public bool IsNullOrEmpty(string s) // string.IsNullOrEmpty()
-            </code></item>
-            <item><code>
+            </code>
+                    </item>
+                    <item>
+                        <code>
             // A method that returns null if the parameter is null,
             // and not null if the parameter is not null
             [ContractAnnotation("null =&gt; null; notnull =&gt; notnull")]
             public object Transform(object data)
-            </code></item>
-            <item><code>
+            </code>
+                    </item>
+                    <item>
+                        <code>
             [ContractAnnotation("=&gt; true, result: notnull; =&gt; false, result: null")]
             public bool TryParse(string s, out Person result)
-            </code></item>
-            </list></examples>
+            </code>
+                    </item>
+                </list>
+            </examples>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.LocalizationRequiredAttribute">
             <summary>
-            Indicates whether the marked element should be localized.
+                Indicates whether the marked element should be localized.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [LocalizationRequiredAttribute(true)]
             class Foo {
               string str = "my string"; // Warning: Localizable string
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.CannotApplyEqualityOperatorAttribute">
             <summary>
-            Indicates that the value of the marked type (or its derivatives)
-            cannot be compared using '==' or '!=' operators and <c>Equals()</c>
-            should be used instead. However, using '==' or '!=' for comparison
-            with <c>null</c> is always permitted.
+                Indicates that the value of the marked type (or its derivatives)
+                cannot be compared using '==' or '!=' operators and <c>Equals()</c>
+                should be used instead. However, using '==' or '!=' for comparison
+                with <c>null</c> is always permitted.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [CannotApplyEqualityOperator]
             class NoEquality { }
             
@@ -617,39 +805,44 @@
                 }
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.BaseTypeRequiredAttribute">
             <summary>
-            When applied to a target attribute, specifies a requirement for any type marked
-            with the target attribute to implement or inherit specific type or types.
+                When applied to a target attribute, specifies a requirement for any type marked
+                with the target attribute to implement or inherit specific type or types.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [BaseTypeRequired(typeof(IComponent)] // Specify requirement
             class ComponentAttribute : Attribute { }
             
             [Component] // ComponentAttribute requires implementing IComponent interface
             class MyComponent : IComponent { }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute">
             <summary>
-            Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
-            so this symbol will not be reported as unused (as well as by other usage inspections).
+                Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
+                so this symbol will not be reported as unused (as well as by other usage inspections).
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.MeansImplicitUseAttribute">
             <summary>
-            Can be applied to attributes, type parameters, and parameters of a type assignable from <see cref="T:System.Type"/> .
-            When applied to an attribute, the decorated attribute behaves the same as <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute"/>.
-            When applied to a type parameter or to a parameter of type <see cref="T:System.Type"/>,  indicates that the corresponding type
-            is used implicitly.
+                Can be applied to attributes, type parameters, and parameters of a type assignable from <see cref="T:System.Type" />
+                .
+                When applied to an attribute, the decorated attribute behaves the same as <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute" />.
+                When applied to a type parameter or to a parameter of type <see cref="T:System.Type" />,  indicates that the
+                corresponding type
+                is used implicitly.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ImplicitUseKindFlags">
             <summary>
-            Specify the details of implicitly used symbol when it is marked
-            with <see cref="T:BilibiliDM_PluginFramework.Annotations.MeansImplicitUseAttribute"/> or <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute"/>.
+                Specify the details of implicitly used symbol when it is marked
+                with <see cref="T:BilibiliDM_PluginFramework.Annotations.MeansImplicitUseAttribute" /> or <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute" />.
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.ImplicitUseKindFlags.Access">
@@ -660,8 +853,8 @@
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature">
             <summary>
-            Indicates implicit instantiation of a type with fixed constructor signature.
-            That means any unused constructor parameters won't be reported as such.
+                Indicates implicit instantiation of a type with fixed constructor signature.
+                That means any unused constructor parameters won't be reported as such.
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature">
@@ -669,8 +862,8 @@
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ImplicitUseTargetFlags">
             <summary>
-            Specify what is considered to be used implicitly when marked
-            with <see cref="T:BilibiliDM_PluginFramework.Annotations.MeansImplicitUseAttribute"/> or <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute"/>.
+                Specify what is considered to be used implicitly when marked
+                with <see cref="T:BilibiliDM_PluginFramework.Annotations.MeansImplicitUseAttribute" /> or <see cref="T:BilibiliDM_PluginFramework.Annotations.UsedImplicitlyAttribute" />.
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.ImplicitUseTargetFlags.Members">
@@ -684,50 +877,53 @@
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.PublicAPIAttribute">
             <summary>
-            This attribute is intended to mark publicly available API
-            which should not be removed and so is treated as used.
+                This attribute is intended to mark publicly available API
+                which should not be removed and so is treated as used.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.InstantHandleAttribute">
             <summary>
-            Tells code analysis engine if the parameter is completely handled when the invoked method is on stack.
-            If the parameter is a delegate, indicates that delegate is executed while the method is executed.
-            If the parameter is an enumerable, indicates that it is enumerated while the method is executed.
+                Tells code analysis engine if the parameter is completely handled when the invoked method is on stack.
+                If the parameter is a delegate, indicates that delegate is executed while the method is executed.
+                If the parameter is an enumerable, indicates that it is enumerated while the method is executed.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.PureAttribute">
             <summary>
-            Indicates that a method does not make any observable state changes.
-            The same as <c>System.Diagnostics.Contracts.PureAttribute</c>.
+                Indicates that a method does not make any observable state changes.
+                The same as <c>System.Diagnostics.Contracts.PureAttribute</c>.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [Pure] int Multiply(int x, int y) => x * y;
             
             void M() {
               Multiply(123, 42); // Warning: Return value of pure method is not used
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.MustUseReturnValueAttribute">
             <summary>
-            Indicates that the return value of the method invocation must be used.
+                Indicates that the return value of the method invocation must be used.
             </summary>
             <remarks>
-            Methods decorated with this attribute (in contrast to pure methods) might change state,
-            but make no sense without using their return value. <br/>
-            Similarly to <see cref="T:BilibiliDM_PluginFramework.Annotations.PureAttribute"/>, this attribute
-            will help detecting usages of the method when the return value in not used.
-            Additionally, you can optionally specify a custom message, which will be used when showing warnings, e.g.
-            <code>[MustUseReturnValue("Use the return value to...")]</code>.
+                Methods decorated with this attribute (in contrast to pure methods) might change state,
+                but make no sense without using their return value. <br />
+                Similarly to <see cref="T:BilibiliDM_PluginFramework.Annotations.PureAttribute" />, this attribute
+                will help detecting usages of the method when the return value in not used.
+                Additionally, you can optionally specify a custom message, which will be used when showing warnings, e.g.
+                <code>[MustUseReturnValue("Use the return value to...")]</code>.
             </remarks>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.ProvidesContextAttribute">
             <summary>
-            Indicates the type member or parameter of some type, that should be used instead of all other ways
-            to get the value of that type. This annotation is useful when you have some "context" value evaluated
-            and stored somewhere, meaning that all other ways to get this value must be consolidated with existing one.
+                Indicates the type member or parameter of some type, that should be used instead of all other ways
+                to get the value of that type. This annotation is useful when you have some "context" value evaluated
+                and stored somewhere, meaning that all other ways to get this value must be consolidated with existing one.
             </summary>
-            <example><code>
+            <example>
+                <code>
             class Foo {
               [ProvidesContext] IBarService _barService = ...;
             
@@ -736,30 +932,31 @@
                 //              ^ Warning: use value of '_barService' field
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.PathReferenceAttribute">
             <summary>
-            Indicates that a parameter is a path to a file or a folder within a web project.
-            Path can be relative or absolute, starting from web root (~).
+                Indicates that a parameter is a path to a file or a folder within a web project.
+                Path can be relative or absolute, starting from web root (~).
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">
             <summary>
-            An extension method marked with this attribute is processed by code completion
-            as a 'Source Template'. When the extension method is completed over some expression, its source code
-            is automatically expanded like a template at call site.
+                An extension method marked with this attribute is processed by code completion
+                as a 'Source Template'. When the extension method is completed over some expression, its source code
+                is automatically expanded like a template at call site.
             </summary>
             <remarks>
-            Template method body can contain valid source code and/or special comments starting with '$'.
-            Text inside these comments is added as source code when the template is applied. Template parameters
-            can be used either as additional method parameters or as identifiers wrapped in two '$' signs.
-            Use the <see cref="T:BilibiliDM_PluginFramework.Annotations.MacroAttribute"/> attribute to specify macros for parameters.
+                Template method body can contain valid source code and/or special comments starting with '$'.
+                Text inside these comments is added as source code when the template is applied. Template parameters
+                can be used either as additional method parameters or as identifiers wrapped in two '$' signs.
+                Use the <see cref="T:BilibiliDM_PluginFramework.Annotations.MacroAttribute" /> attribute to specify macros for parameters.
             </remarks>
             <example>
-            In this example, the 'forEach' method is a source template available over all values
-            of enumerable types, producing ordinary C# 'foreach' statement and placing caret inside block:
-            <code>
+                In this example, the 'forEach' method is a source template available over all values
+                of enumerable types, producing ordinary C# 'foreach' statement and placing caret inside block:
+                <code>
             [SourceTemplate]
             public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; xs) {
               foreach (var x in xs) {
@@ -771,17 +968,17 @@
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.MacroAttribute">
             <summary>
-            Allows specifying a macro for a parameter of a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see>.
+                Allows specifying a macro for a parameter of a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see>.
             </summary>
             <remarks>
-            You can apply the attribute on the whole method or on any of its additional parameters. The macro expression
-            is defined in the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Expression"/> property. When applied on a method, the target
-            template parameter is defined in the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Target"/> property. To apply the macro silently
-            for the parameter, set the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Editable"/> property value = -1.
+                You can apply the attribute on the whole method or on any of its additional parameters. The macro expression
+                is defined in the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Expression" /> property. When applied on a method, the target
+                template parameter is defined in the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Target" /> property. To apply the macro silently
+                for the parameter, set the <see cref="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Editable" /> property value = -1.
             </remarks>
             <example>
-            Applying the attribute on a source template method:
-            <code>
+                Applying the attribute on a source template method:
+                <code>
             [SourceTemplate, Macro(Target = "item", Expression = "suggestVariableName()")]
             public static void forEach&lt;T&gt;(this IEnumerable&lt;T&gt; collection) {
               foreach (var item in collection) {
@@ -789,8 +986,8 @@
               }
             }
             </code>
-            Applying the attribute on a template method parameter:
-            <code>
+                Applying the attribute on a template method parameter:
+                <code>
             [SourceTemplate]
             public static void something(this Entity x, [Macro(Expression = "guid()", Editable = -1)] string newguid) {
               /*$ var $x$Id = "$newguid$" + x.ToString();
@@ -801,145 +998,148 @@
         </member>
         <member name="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Expression">
             <summary>
-            Allows specifying a macro that will be executed for a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see>
-            parameter when the template is expanded.
+                Allows specifying a macro that will be executed for a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see>
+                parameter when the template is expanded.
             </summary>
         </member>
         <member name="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Editable">
             <summary>
-            Allows specifying which occurrence of the target parameter becomes editable when the template is deployed.
+                Allows specifying which occurrence of the target parameter becomes editable when the template is deployed.
             </summary>
             <remarks>
-            If the target parameter is used several times in the template, only one occurrence becomes editable;
-            other occurrences are changed synchronously. To specify the zero-based index of the editable occurrence,
-            use values >= 0. To make the parameter non-editable when the template is expanded, use -1.
+                If the target parameter is used several times in the template, only one occurrence becomes editable;
+                other occurrences are changed synchronously. To specify the zero-based index of the editable occurrence,
+                use values >= 0. To make the parameter non-editable when the template is expanded, use -1.
             </remarks>
         </member>
         <member name="P:BilibiliDM_PluginFramework.Annotations.MacroAttribute.Target">
             <summary>
-            Identifies the target parameter of a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see> if the
-            <see cref="T:BilibiliDM_PluginFramework.Annotations.MacroAttribute"/> is applied on a template method.
+                Identifies the target parameter of a <see cref="T:BilibiliDM_PluginFramework.Annotations.SourceTemplateAttribute">source template</see> if the
+                <see cref="T:BilibiliDM_PluginFramework.Annotations.MacroAttribute" /> is applied on a template method.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcActionAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
-            is an MVC action. If applied to a method, the MVC action name is calculated
-            implicitly from the context. Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+                is an MVC action. If applied to a method, the MVC action name is calculated
+                implicitly from the context. Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcAreaAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that the marked parameter is an MVC area.
-            Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
+                ASP.NET MVC attribute. Indicates that the marked parameter is an MVC area.
+                Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcControllerAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is
-            an MVC controller. If applied to a method, the MVC controller name is calculated
-            implicitly from the context. Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String, String)</c>.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is
+                an MVC controller. If applied to a method, the MVC controller name is calculated
+                implicitly from the context. Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.ChildActionExtensions.RenderAction(HtmlHelper, String, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcMasterAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that the marked parameter is an MVC Master. Use this attribute
-            for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, String)</c>.
+                ASP.NET MVC attribute. Indicates that the marked parameter is an MVC Master. Use this attribute
+                for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcModelTypeAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that the marked parameter is an MVC model type. Use this attribute
-            for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, Object)</c>.
+                ASP.NET MVC attribute. Indicates that the marked parameter is an MVC model type. Use this attribute
+                for custom wrappers similar to <c>System.Web.Mvc.Controller.View(String, Object)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcPartialViewAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC
-            partial view. If applied to a method, the MVC partial view name is calculated implicitly
-            from the context. Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper, String)</c>.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter is an MVC
+                partial view. If applied to a method, the MVC partial view name is calculated implicitly
+                from the context. Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.RenderPartialExtensions.RenderPartial(HtmlHelper, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcSuppressViewErrorAttribute">
             <summary>
-            ASP.NET MVC attribute. Allows disabling inspections for MVC views within a class or a method.
+                ASP.NET MVC attribute. Allows disabling inspections for MVC views within a class or a method.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcDisplayTemplateAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that a parameter is an MVC display template.
-            Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.DisplayExtensions.DisplayForModel(HtmlHelper, String)</c>.
+                ASP.NET MVC attribute. Indicates that a parameter is an MVC display template.
+                Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.DisplayExtensions.DisplayForModel(HtmlHelper, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcEditorTemplateAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that the marked parameter is an MVC editor template.
-            Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Html.EditorExtensions.EditorForModel(HtmlHelper, String)</c>.
+                ASP.NET MVC attribute. Indicates that the marked parameter is an MVC editor template.
+                Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Html.EditorExtensions.EditorForModel(HtmlHelper, String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcTemplateAttribute">
             <summary>
-            ASP.NET MVC attribute. Indicates that the marked parameter is an MVC template.
-            Use this attribute for custom wrappers similar to
-            <c>System.ComponentModel.DataAnnotations.UIHintAttribute(System.String)</c>.
+                ASP.NET MVC attribute. Indicates that the marked parameter is an MVC template.
+                Use this attribute for custom wrappers similar to
+                <c>System.ComponentModel.DataAnnotations.UIHintAttribute(System.String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcViewAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
-            is an MVC view component. If applied to a method, the MVC view name is calculated implicitly
-            from the context. Use this attribute for custom wrappers similar to
-            <c>System.Web.Mvc.Controller.View(Object)</c>.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+                is an MVC view component. If applied to a method, the MVC view name is calculated implicitly
+                from the context. Use this attribute for custom wrappers similar to
+                <c>System.Web.Mvc.Controller.View(Object)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcViewComponentAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
-            is an MVC view component name.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+                is an MVC view component name.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcViewComponentViewAttribute">
             <summary>
-            ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
-            is an MVC view component view. If applied to a method, the MVC view component view name is default.
+                ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter
+                is an MVC view component view. If applied to a method, the MVC view component view name is default.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AspMvcActionSelectorAttribute">
             <summary>
-            ASP.NET MVC attribute. When applied to a parameter of an attribute,
-            indicates that this parameter is an MVC action name.
+                ASP.NET MVC attribute. When applied to a parameter of an attribute,
+                indicates that this parameter is an MVC action name.
             </summary>
-            <example><code>
+            <example>
+                <code>
             [ActionName("Foo")]
             public ActionResult Login(string returnUrl) {
               ViewBag.ReturnUrl = Url.Action("Foo"); // OK
               return RedirectToAction("Bar"); // Error: Cannot resolve action
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.RazorSectionAttribute">
             <summary>
-            Razor attribute. Indicates that the marked parameter or method is a Razor section.
-            Use this attribute for custom wrappers similar to
-            <c>System.Web.WebPages.WebPageBase.RenderSection(String)</c>.
+                Razor attribute. Indicates that the marked parameter or method is a Razor section.
+                Use this attribute for custom wrappers similar to
+                <c>System.Web.WebPages.WebPageBase.RenderSection(String)</c>.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.CollectionAccessAttribute">
             <summary>
-            Indicates how method, constructor invocation, or property access
-            over collection type affects the contents of the collection.
-            Use <see cref="P:BilibiliDM_PluginFramework.Annotations.CollectionAccessAttribute.CollectionAccessType"/> to specify the access type.
+                Indicates how method, constructor invocation, or property access
+                over collection type affects the contents of the collection.
+                Use <see cref="P:BilibiliDM_PluginFramework.Annotations.CollectionAccessAttribute.CollectionAccessType" /> to specify the access type.
             </summary>
             <remarks>
-            Using this attribute only makes sense if all collection methods are marked with this attribute.
+                Using this attribute only makes sense if all collection methods are marked with this attribute.
             </remarks>
-            <example><code>
+            <example>
+                <code>
             public class MyStringCollection : List&lt;string&gt;
             {
               [CollectionAccess(CollectionAccessType.Read)]
@@ -957,12 +1157,13 @@
                 string x = col.GetFirstString();
               }
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.CollectionAccessType">
             <summary>
-            Provides a value for the <see cref="T:BilibiliDM_PluginFramework.Annotations.CollectionAccessAttribute"/> to define
-            how the collection method invocation affects the contents of the collection.
+                Provides a value for the <see cref="T:BilibiliDM_PluginFramework.Annotations.CollectionAccessAttribute" /> to define
+                how the collection method invocation affects the contents of the collection.
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.CollectionAccessType.None">
@@ -979,22 +1180,22 @@
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AssertionMethodAttribute">
             <summary>
-            Indicates that the marked method is assertion method, i.e. it halts the control flow if
-            one of the conditions is satisfied. To set the condition, mark one of the parameters with
-            <see cref="T:BilibiliDM_PluginFramework.Annotations.AssertionConditionAttribute"/> attribute.
+                Indicates that the marked method is assertion method, i.e. it halts the control flow if
+                one of the conditions is satisfied. To set the condition, mark one of the parameters with
+                <see cref="T:BilibiliDM_PluginFramework.Annotations.AssertionConditionAttribute" /> attribute.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AssertionConditionAttribute">
             <summary>
-            Indicates the condition parameter of the assertion method. The method itself should be
-            marked by <see cref="T:BilibiliDM_PluginFramework.Annotations.AssertionMethodAttribute"/> attribute. The mandatory argument of
-            the attribute is the assertion type.
+                Indicates the condition parameter of the assertion method. The method itself should be
+                marked by <see cref="T:BilibiliDM_PluginFramework.Annotations.AssertionMethodAttribute" /> attribute. The mandatory argument of
+                the attribute is the assertion type.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.AssertionConditionType">
             <summary>
-            Specifies assertion type. If the assertion method argument satisfies the condition,
-            then the execution continues. Otherwise, execution is assumed to be halted.
+                Specifies assertion type. If the assertion method argument satisfies the condition,
+                then the execution continues. Otherwise, execution is assumed to be halted.
             </summary>
         </member>
         <member name="F:BilibiliDM_PluginFramework.Annotations.AssertionConditionType.IS_TRUE">
@@ -1011,23 +1212,24 @@
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.TerminatesProgramAttribute">
             <summary>
-            Indicates that the marked method unconditionally terminates control flow execution.
-            For example, it could unconditionally throw exception.
+                Indicates that the marked method unconditionally terminates control flow execution.
+                For example, it could unconditionally throw exception.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.LinqTunnelAttribute">
             <summary>
-            Indicates that method is pure LINQ method, with postponed enumeration (like Enumerable.Select,
-            .Where). This annotation allows inference of [InstantHandle] annotation for parameters
-            of delegate type by analyzing LINQ method chains.
+                Indicates that method is pure LINQ method, with postponed enumeration (like Enumerable.Select,
+                .Where). This annotation allows inference of [InstantHandle] annotation for parameters
+                of delegate type by analyzing LINQ method chains.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.NoEnumerationAttribute">
             <summary>
-            Indicates that IEnumerable passed as a parameter is not enumerated.
-            Use this annotation to suppress the 'Possible multiple enumeration of IEnumerable' inspection.
+                Indicates that IEnumerable passed as a parameter is not enumerated.
+                Use this annotation to suppress the 'Possible multiple enumeration of IEnumerable' inspection.
             </summary>
-            <example><code>
+            <example>
+                <code>
             static void ThrowIfNull&lt;T&gt;([NoEnumeration] T v, string n) where T : class
             {
               // custom check for null but no enumeration
@@ -1038,47 +1240,48 @@
               ThrowIfNull(values, nameof(values));
               var x = values.ToList(); // No warnings about multiple enumeration
             }
-            </code></example>
+            </code>
+            </example>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.RegexPatternAttribute">
             <summary>
-            Indicates that the marked parameter is a regular expression pattern.
+                Indicates that the marked parameter is a regular expression pattern.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.NoReorderAttribute">
             <summary>
-            Prevents the Member Reordering feature from tossing members of the marked class.
+                Prevents the Member Reordering feature from tossing members of the marked class.
             </summary>
             <remarks>
-            The attribute must be mentioned in your member reordering patterns.
+                The attribute must be mentioned in your member reordering patterns.
             </remarks>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.XamlItemsControlAttribute">
             <summary>
-            XAML attribute. Indicates the type that has <c>ItemsSource</c> property and should be treated
-            as <c>ItemsControl</c>-derived type, to enable inner items <c>DataContext</c> type resolve.
+                XAML attribute. Indicates the type that has <c>ItemsSource</c> property and should be treated
+                as <c>ItemsControl</c>-derived type, to enable inner items <c>DataContext</c> type resolve.
             </summary>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.XamlItemBindingOfItemsControlAttribute">
             <summary>
-            XAML attribute. Indicates the property of some <c>BindingBase</c>-derived type, that
-            is used to bind some item of <c>ItemsControl</c>-derived type. This annotation will
-            enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
+                XAML attribute. Indicates the property of some <c>BindingBase</c>-derived type, that
+                is used to bind some item of <c>ItemsControl</c>-derived type. This annotation will
+                enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
             </summary>
             <remarks>
-            Property should have the tree ancestor of the <c>ItemsControl</c> type or
-            marked with the <see cref="T:BilibiliDM_PluginFramework.Annotations.XamlItemsControlAttribute"/> attribute.
+                Property should have the tree ancestor of the <c>ItemsControl</c> type or
+                marked with the <see cref="T:BilibiliDM_PluginFramework.Annotations.XamlItemsControlAttribute" /> attribute.
             </remarks>
         </member>
         <member name="T:BilibiliDM_PluginFramework.Annotations.XamlItemStyleOfItemsControlAttribute">
             <summary>
-            XAML attribute. Indicates the property of some <c>Style</c>-derived type, that
-            is used to style items of <c>ItemsControl</c>-derived type. This annotation will
-            enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
+                XAML attribute. Indicates the property of some <c>Style</c>-derived type, that
+                is used to style items of <c>ItemsControl</c>-derived type. This annotation will
+                enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
             </summary>
             <remarks>
-            Property should have the tree ancestor of the <c>ItemsControl</c> type or
-            marked with the <see cref="T:BilibiliDM_PluginFramework.Annotations.XamlItemsControlAttribute"/> attribute.
+                Property should have the tree ancestor of the <c>ItemsControl</c> type or
+                marked with the <see cref="T:BilibiliDM_PluginFramework.Annotations.XamlItemsControlAttribute" /> attribute.
             </remarks>
         </member>
     </members>

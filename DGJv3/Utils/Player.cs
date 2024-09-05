@@ -37,35 +37,23 @@ namespace DGJv3
         public UniversalCommand PlayPauseCommand { get; private set; }
         public UniversalCommand NextCommand { get; private set; }
 
-        /// <summary>
-        /// 播放器类型
-        /// </summary>
-        public PlayerType PlayerType { get => _playerType; set => SetField(ref _playerType, value); }
-        private PlayerType _playerType;
 
         /// <summary>
-        /// DirectSound 设备
+        /// 播放器音量
         /// </summary>
-        public Guid DirectSoundDevice { get => _directSoundDevice; set => SetField(ref _directSoundDevice, value); }
-        private Guid _directSoundDevice;
-
-        /// <summary>
-        /// WaveoutEvent 设备
-        /// </summary>
-        public int WaveoutEventDevice { get => _waveoutEventDevice; set => SetField(ref _waveoutEventDevice, value); }
-        private int _waveoutEventDevice;
-
-        /// <summary>
-        /// 用户点歌优先
-        /// </summary>
-        public bool IsUserPrior { get => _isUserPrior; set => SetField(ref _isUserPrior, value); }
-        private bool _isUserPrior = false;
-
-        /// <summary>
-        /// 单曲最大播放时长
-        /// </summary>
-        public double MaxPlayTime { get => _maxPlayTime < 60 ? 60 : _maxPlayTime; set => SetField(ref _maxPlayTime, value); }
-        private double _maxPlayTime;
+        public float Volume
+        {
+            get => Config.Current.Volume;
+            set
+            {
+                Config.Current.Volume = value;
+                if (sampleChannel != null)
+                {
+                    sampleChannel.Volume = value;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Volume)));
+            }
+        }
 
         /// <summary>
         /// 当前播放时间
@@ -148,23 +136,6 @@ namespace DGJv3
         }
 
         /// <summary>
-        /// 播放器音量
-        /// </summary>
-        public float Volume
-        {
-            get => _volume;
-            set
-            {
-                if (sampleChannel != null)
-                {
-                    sampleChannel.Volume = value;
-                }
-                SetField(ref _volume, value, nameof(Volume));
-            }
-        }
-        private float _volume = 1f;
-
-        /// <summary>
         /// 当前歌词
         /// </summary>
         public string CurrentLyric { get => currentLyric; set => SetField(ref currentLyric, value); }
@@ -174,12 +145,6 @@ namespace DGJv3
         /// 下一句歌词       
         /// </summary>
         public string UpcomingLyric { get => upcomingLyric; set => SetField(ref upcomingLyric, value); }
-
-        /// <summary>
-        /// 是否使用空闲歌单
-        /// </summary>
-        public bool IsPlaylistEnabled { get => _isPlaylistEnabled; set => SetField(ref _isPlaylistEnabled, value); }
-        private bool _isPlaylistEnabled;
 
         private string upcomingLyric;
 
@@ -263,7 +228,7 @@ namespace DGJv3
 
             FillSongsWithSparePlaylist();
 
-            if (MaxPlayTime <= CurrentTimeDouble)
+            if (Config.Current.MaxPlayTime <= CurrentTimeDouble)
             {
                 Next();
             }
@@ -271,7 +236,7 @@ namespace DGJv3
 
         private void FillSongsWithSparePlaylist()
         {
-            if (Songs.Count < 2 && IsPlaylistEnabled && Playlist.Count > 0)
+            if (Songs.Count < 2 && Config.Current.IsPlaylistEnabled && Playlist.Count > 0)
             {
                 int index = -1;
                 int time = 0;
@@ -313,7 +278,7 @@ namespace DGJv3
                     Volume = Volume
                 };
 
-                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(Utilities.SkipKeyWord +  "播放出错！", e.Exception); };
+                wavePlayer.PlaybackStopped += (sender, e) => { UnloadSong(); if (e.Exception != null) Log(SendDanmaku.LogWithDamu("播放出错！", false), e.Exception); };
 
                 wavePlayer.Init(sampleChannel);
                 wavePlayer.Play();
@@ -325,7 +290,7 @@ namespace DGJv3
             }
             catch (Exception ex)
             {
-                Log($"下载出错，可能为VIP/无版权/网络波动。“{songItem.SongName}”", ex);
+                Log(SendDanmaku.LogWithDamu($"下载出错，可能无版权/网络波动。“{songItem.SongName}”", songItem), ex);
                 UnloadSong();
             }
         }
@@ -393,12 +358,12 @@ namespace DGJv3
         /// <returns></returns>
         private IWavePlayer CreateIWavePlayer()
         {
-            switch (PlayerType)
+            switch (Config.Current.PlayerType)
             {
                 case PlayerType.WaveOutEvent:
-                    return new WaveOutEvent() { DeviceNumber = WaveoutEventDevice };
+                    return new WaveOutEvent() { DeviceNumber = Config.Current.WaveoutEventDevice };
                 case PlayerType.DirectSound:
-                    return new DirectSoundOut(DirectSoundDevice);
+                    return new DirectSoundOut(Config.Current.DirectSoundDevice);
                 default:
                     return null;
             }
@@ -444,10 +409,7 @@ namespace DGJv3
         /// </summary>
         public void Next()
         {
-            if (wavePlayer != null)
-            {
-                wavePlayer.Stop();
-            }
+            wavePlayer?.Stop();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

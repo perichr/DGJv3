@@ -11,7 +11,7 @@ namespace DGJv3
     {
         private readonly DGJWindow window;
 
-        private VersionChecker versionChecker;
+        //private VersionChecker versionChecker;
 
         public static DGJMain SELF { get; set; }
         public DGJMain()
@@ -40,10 +40,12 @@ namespace DGJv3
                 Directory.CreateDirectory(Utilities.ConfigBackupDirectoryPath);
             }
             catch (Exception) { }
+            Config.Load();
             window = new DGJWindow(this);
-            versionChecker = new VersionChecker("DGJv3");
             SELF = this;
-            Task.Run(() =>
+            /*
+            versionChecker = new VersionChecker("DGJv3");
+           Task.Run(() =>
             {
                 if (versionChecker.FetchInfo())
                 {
@@ -62,17 +64,18 @@ namespace DGJv3
                     Log("版本检查出错：" + versionChecker?.LastException?.Message);
                 }
             });
+            */
         }
 
         public override void Admin()
         {
-            window.TryApplyConfig();
+            window.ApplyConfig();
             window.Show();
             window.Activate();
         }
         public override void Start()
         {
-            window.TryApplyConfig();
+            window.ApplyConfig();
             base.Start();
         }
 
